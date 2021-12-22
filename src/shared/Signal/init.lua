@@ -1,4 +1,14 @@
 type Function = (...any) -> ...any
+type ConnectionConstructor = {
+	Connected: boolean?,
+	_signal: Signal,
+	_fn: Function,
+	_previous: Connection?,
+}
+
+type SignalConstructor = {
+	_previous: Connection?,
+}
 
 local freeRunnerThread: thread? = nil
 
@@ -23,12 +33,7 @@ Connection.prototype.Connected = true
 Connection.__index = Connection.prototype
 
 function Connection.new(signal: Signal, fn: Function): Connection
-	local constructor: {
-		Connected: boolean,
-		_signal: Signal,
-		_fn: Function,
-		_previous: Connection?,
-	} = {
+	local constructor: ConnectionConstructor = {
 		_signal = signal,
 		_fn = fn,
 	}
@@ -119,12 +124,8 @@ Signal.prototype.wait = Signal.prototype.Wait
 Signal.prototype.destroy = Signal.prototype.Destroy
 
 function Signal.new(): Signal
-	local constructor: {
-		_previous: Connection?,
-	} = {}
-
+	local constructor: SignalConstructor = {}
 	local self = setmetatable(constructor, Signal)
-
 	return self
 end
 
