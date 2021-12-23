@@ -1,0 +1,21 @@
+{
+    "name": "roblox-luau-utils",
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "$path": "src/shared"
+        },
+        "ServerStorage": {
+            "$className": "ServerStorage",
+            "$path": "src/server"
+        },
+        "StarterPlayer": {
+            "$className": "StarterPlayer",
+            "StarterPlayerScripts": {
+                "$className": "StarterPlayerScripts",
+                "$path": "src/cleint"
+            }
+        }
+    }
+}
