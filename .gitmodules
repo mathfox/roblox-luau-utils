@@ -1,0 +1,15 @@
+[submodule "submodules/testez"]
+	path = submodules/testez
+	url = https://github.com/Roblox/testez
+[submodule "submodules/roact"]
+	path = submodules/roact
+	url = https://github.com/Roblox/roact
+[submodule "submodules/rodux"]
+	path = submodules/rodux
+	url = https://github.com/Roblox/rodux
+[submodule "submodules/enumerator"]
+	path = submodules/enumerator
+	url = https://github.com/howmanysmall/enumerator
+[submodule "submodules/roact-rodux"]
+	path = submodules/roact-rodux
+	url = https://github.com/Roblox/roact-rodux
