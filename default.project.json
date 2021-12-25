@@ -5,19 +5,7 @@
         "ReplicatedStorage": {
             "$className": "ReplicatedStorage",
             "Shared": {
-                "$path": "src/shared",
-                "Roact": {
-                    "$path": "submodules/roact/src"
-                },
-                "Rodux": {
-                    "$path": "submodules/rodux/src"
-                },
-                "RoactRodux": {
-                    "$path": "submodules/roact-rodux/src"
-                },
-                "Enumerator": {
-                    "$path": "submodules/enumerator/src"
-                }
+                "$path": "src/shared"
             }
         },
         "ServerStorage": {
