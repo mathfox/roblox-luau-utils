@@ -1,11 +1,11 @@
 local Unite = require(game:GetService("ReplicatedStorage").Unite)
 local MarketplaceService = game:GetService("MarketplaceService")
 
-local MarketplaceUtils = Unite.getSharedUtil("MarketplaceUtils")
-local TableUtils = Unite.getSharedUtil("TableUtils")
+local MarketplaceUtils = require(Unite.SharedUtils.MarketplaceUtils)
+local TableUtils = require(Unite.SharedUtils.TableUtils)
 
-local GamePassesModule = Unite.getServerModule("GamePassesModule")
-local ProductsModule = Unite.getServerModule("ProductsModule")
+local GamePassesModule = require(Unite.ServerModules.GamePassesModule)
+local ProductsModule = require(Unite.ServerModules.ProductsModule)
 
 local function getGamePassInfoTableFromId(id: number): table?
 	if type(id) ~= "number" then

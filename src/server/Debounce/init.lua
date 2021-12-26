@@ -1,7 +1,7 @@
 local Unite = require(game:GetService("ReplicatedStorage").Unite)
 
-local TableUtils = Unite.getSharedUtil("TableUtils")
+local TableUtils = require(Unite.SharedModules.TableUtils)
 
-return TableUtils.assign(Unite.getSharedUtil("Debounce"), {
+return TableUtils.assign(require(Unite.SharedModules.Debounce), {
 	Player = require(script.PlayerDebounce),
 })

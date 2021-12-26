@@ -1,7 +1,7 @@
 local Unite = require(game:GetService("ReplicatedStorage").Unite)
 local BadgeService = game:GetService("BadgeService")
 
-local Promise = Unite.getSharedUtil("Promise")
+local Promise = require(Unite.SharedUtils.Promise)
 
 local BadgeUtils = {}
 
