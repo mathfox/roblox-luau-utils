@@ -1,13 +1,14 @@
-local Promise = require(script.Parent.Promise)
-local Symbol = require(script.Symbol)
+type StringOrTrue = string | boolean
 
-local IndicesReference = Symbol("IndicesReference")
-local LinkToInstanceIndex = Symbol("LinkToInstanceIndex")
+local Promise = require(script.Parent.Promise)
+local Symbol = require(script.Parent.Symbol)
+
+local IndicesReference = Symbol.named("IndicesReference")
+local LinkToInstanceIndex = Symbol.named("LinkToInstanceIndex")
 
 local WARNING_METHOD_NOT_FOUND = "Object %s doesn't have method %s, are you sure you want to add it? Traceback: %s"
-local ERROR_NOT_PROMISE_PROVIDED = "Invalid argument #1 to 'Janitor:AddPromise' (Promise expected, got %s (%s))"
 
-local MethodNameDefaults = {
+local DefaultMethodNames = {
 	["function"] = true,
 	RBXScriptConnection = "Disconnect",
 }
@@ -16,10 +17,21 @@ local function isObjectCallable(object: any): boolean
 	return type(object) == "function" or (type(object) == "table" and type(getmetatable(object).__call) == "function")
 end
 
-local JanitorPrototype = {}
-JanitorPrototype.__index = JanitorPrototype
+local Janitor = {}
+Janitor.prototype = {}
+Janitor.__index = Janitor.prototype
 
-function JanitorPrototype:add(object: any, methodName: StringOrTrue?, index: any): any
+function Janitor.new()
+	local self = setmetatable({}, Janitor)
+
+	return self
+end
+
+function Janitor.is(object: any): boolean
+	return type(object) == "table" and getmetatable(object) == Janitor
+end
+
+function Janitor.prototype:add(object: any, methodName: StringOrTrue?, index: any): any
 	if index then
 		self:remove(index)
 
@@ -32,7 +44,7 @@ function JanitorPrototype:add(object: any, methodName: StringOrTrue?, index: any
 		this[index] = object
 	end
 
-	methodName = methodName or MethodNameDefaults[typeof(object)] or "Destroy"
+	methodName = methodName or DefaultMethodNames[typeof(object)] or "Destroy"
 
 	if not isObjectCallable(object) and not object[methodName] then
 		warn(WARNING_METHOD_NOT_FOUND:format(tostring(object), tostring(methodName), debug.traceback(nil, 2)))
@@ -43,112 +55,57 @@ function JanitorPrototype:add(object: any, methodName: StringOrTrue?, index: any
 	return object
 end
 
-function JanitorPrototype:addPromise(promise)
-	if not Promise.is(PromiseObject) then
-		error(string.format(NOT_A_PROMISE, typeof(PromiseObject), tostring(PromiseObject)))
+function Janitor.prototype:addPromise(promise)
+	if promise:getStatus() ~= Promise.Status.Started then
+		return promise
 	end
 
-	if PromiseObject:getStatus() == Promise.Status.Started then
-		local Id = newproxy(false)
-		local NewPromise = self:Add(
-			Promise.new(function(Resolve, _, OnCancel)
-				if OnCancel(function()
-					PromiseObject:cancel()
-				end) then
-					return
-				end
+	local proxy = newproxy(false)
+	self:add(promise, "cancel", proxy)
 
-				Resolve(PromiseObject)
-			end),
-			"cancel",
-			Id
-		)
+	promise:finally(function()
+		self:remove(proxy)
+	end)
 
-		NewPromise:finallyCall(self.Remove, self, Id)
-		return NewPromise
-	else
-		return PromiseObject
-	end
+	return promise
 end
 
---[=[
-	Cleans up whatever `Object` was set to this namespace by the 3rd parameter of [Janitor.Add](#Add).
+function Janitor.prototype:remove(index: any)
+	local this = self[IndicesReference]
 
-	```lua
-	local Obliterator = Janitor.new()
-	Obliterator:Add(workspace.Baseplate, "Destroy", "Baseplate")
-	Obliterator:Remove("Baseplate")
-	```
+	if this then
+		local object = this[index]
 
-	```ts
-	import { Workspace } from "@rbxts/services";
-	import { Janitor } from "@rbxts/janitor";
+		if object then
+			local methodName = self[object]
 
-	const Obliterator = new Janitor<{ Baseplate: Part }>();
-	Obliterator.Add(Workspace.FindFirstChild("Baseplate") as Part, "Destroy", "Baseplate");
-	Obliterator.Remove("Baseplate");
-	```
-
-	@param Index any -- The index you want to remove.
-	@return Janitor
-]=]
-function Janitor:Remove(Index: any)
-	local This = self[IndicesReference]
-
-	if This then
-		local Object = This[Index]
-
-		if Object then
-			local MethodName = self[Object]
-
-			if MethodName then
-				if MethodName == true then
-					Object()
+			if methodName then
+				if methodName == true then
+					object()
 				else
-					local ObjectMethod = Object[MethodName]
+					local ObjectMethod = object[methodName]
 					if ObjectMethod then
-						ObjectMethod(Object)
+						ObjectMethod(object)
 					end
 				end
 
-				self[Object] = nil
+				self[object] = nil
 			end
 
-			This[Index] = nil
+			this[index] = nil
 		end
 	end
 
 	return self
 end
 
---[=[
-	Gets whatever object is stored with the given index, if it exists. This was added since Maid allows getting the task using `__index`.
-
-	```lua
-	local Obliterator = Janitor.new()
-	Obliterator:Add(workspace.Baseplate, "Destroy", "Baseplate")
-	print(Obliterator:Get("Baseplate")) -- Returns Baseplate.
-	```
-
-	```ts
-	import { Workspace } from "@rbxts/services";
-	import { Janitor } from "@rbxts/janitor";
-
-	const Obliterator = new Janitor<{ Baseplate: Part }>();
-	Obliterator.Add(Workspace.FindFirstChild("Baseplate") as Part, "Destroy", "Baseplate");
-	print(Obliterator.Get("Baseplate")); // Returns Baseplate.
-	```
-
-	@param Index any -- The index that the object is stored under.
-	@return any? -- This will return the object if it is found, but it won't return anything if it doesn't exist.
-]=]
-function Janitor:Get(Index: any): any?
-	local This = self[IndicesReference]
-	if This then
-		return This[Index]
-	else
-		return nil
+function Janitor.prototype:get(index: any): any
+	local this = self[IndicesReference]
+	if this then
+		return this[index]
 	end
+
+	return nil
 end
 
 local function GetFenv(self)
@@ -161,170 +118,85 @@ local function GetFenv(self)
 	end
 end
 
---[=[
-	Calls each Object's `MethodName` (or calls the Object if `MethodName == true`) and removes them from the Janitor. Also clears the namespace.
-	This function is also called when you call a Janitor Object (so it can be used as a destructor callback).
+function Janitor.prototype:cleanup()
+	local Get = GetFenv(self)
+	local Object, MethodName = Get()
 
-	```lua
-	Obliterator:Cleanup() -- Valid.
-	Obliterator() -- Also valid.
-	```
-
-	```ts
-	Obliterator.Cleanup()
-	```
-]=]
-function Janitor:Cleanup()
-	if not self.CurrentlyCleaning then
-		self.CurrentlyCleaning = nil
-
-		local Get = GetFenv(self)
-		local Object, MethodName = Get()
-
-		while Object and MethodName do -- changed to a while loop so that if you add to the janitor inside of a callback it doesn't get untracked (instead it will loop continuously which is a lot better than a hard to pindown edgecase)
-			if MethodName == true then
-				Object()
-			else
-				local ObjectMethod = Object[MethodName]
-				if ObjectMethod then
-					ObjectMethod(Object)
-				end
+	while Object and MethodName do
+		if MethodName == true then
+			Object()
+		else
+			local ObjectMethod = Object[MethodName]
+			if ObjectMethod then
+				ObjectMethod(Object)
 			end
-
-			self[Object] = nil
-			Object, MethodName = Get()
 		end
 
-		local This = self[IndicesReference]
-		if This then
-			table.clear(This)
-			self[IndicesReference] = {}
-		end
+		self[Object] = nil
+		Object, MethodName = Get()
+	end
 
-		self.CurrentlyCleaning = false
+	local This = self[IndicesReference]
+	if This then
+		table.clear(This)
+		self[IndicesReference] = {}
 	end
 end
 
---[=[
-	Calls [Janitor.Cleanup](#Cleanup) and renders the Janitor unusable.
-
-	:::warning
-	Running this will make any attempts to call a function of Janitor error.
-	:::
-]=]
-function Janitor:Destroy()
-	self:Cleanup()
+function Janitor:destroy()
+	self:cleanup()
 	table.clear(self)
 	setmetatable(self, nil)
 end
 
-Janitor.__call = Janitor.Cleanup
+Janitor.prototype.__call = Janitor.prototype.cleanup
 
-local Janitor = {}
-Janitor.CurrentlyCleaning = true
-Janitor[IndicesReference] = nil
+function Janitor.prototype:linkToInstance(object: Instance, allowMultiple: boolean?)
+	local IndexToUse = allowMultiple and newproxy(false) or LinkToInstanceIndex
 
-function Janitor.is(object: any): boolean
-	return type(object) == "table" and getmetatable(object) == JanitorPrototype
-end
+	local isNilParented = object.Parent == nil
+	local isConnected = true
+	local linkConnection = {}
 
-type StringOrTrue = string | boolean
+	local function onAncestryChanged(_, newParent: Instance?)
+		if not isConnected then
+			return
+		end
 
-local ConnectionPrototype = {}
-ConnectionPrototype.__index = ConnectionPrototype
+		isNilParented = newParent == nil
+		if isNilParented then
+			task.defer(function()
+				if not isConnected then
+					return
+				end
 
-local Connection = {}
-
-local RbxScriptConnection = {}
-RbxScriptConnection.Connected = true
-RbxScriptConnection.__index = RbxScriptConnection
-
---[=[
-	Disconnects the Signal.
-]=]
-function RbxScriptConnection:Disconnect()
-	if self.Connected then
-		self.Connected = false
-		self.Connection:Disconnect()
-	end
-end
-
-function RbxScriptConnection._new(RBXScriptConnection: RBXScriptConnection)
-	return setmetatable({
-		Connection = RBXScriptConnection,
-	}, RbxScriptConnection)
-end
-
-function RbxScriptConnection:__tostring()
-	return "RbxScriptConnection<" .. tostring(self.Connected) .. ">"
-end
-
-type RbxScriptConnection = typeof(RbxScriptConnection._new(
-	game:GetPropertyChangedSignal("ClassName"):Connect(function() end)
-))
-
-function Janitor:LinkToInstance(Object: Instance, AllowMultiple: boolean?): RbxScriptConnection
-	local Connection
-	local IndexToUse = AllowMultiple and newproxy(false) or LinkToInstanceIndex
-	local IsNilParented = Object.Parent == nil
-	local ManualDisconnect = setmetatable({}, RbxScriptConnection)
-
-	local function ChangedFunction(_DoNotUse, NewParent)
-		if ManualDisconnect.Connected then
-			_DoNotUse = nil
-			IsNilParented = NewParent == nil
-
-			if IsNilParented then
-				task.defer(function()
-					if not ManualDisconnect.Connected then
-						return
-					elseif not Connection.Connected then
-						self:Cleanup()
-					else
-						while IsNilParented and Connection.Connected and ManualDisconnect.Connected do
-							task.wait()
-						end
-
-						if ManualDisconnect.Connected and IsNilParented then
-							self:Cleanup()
-						end
-					end
-				end)
-			end
+				isConnected = false
+				self:cleanup()
+			end)
 		end
 	end
 
-	Connection = Object.AncestryChanged:Connect(ChangedFunction)
-	ManualDisconnect.Connection = Connection
+	local ancestryConnection = object.AncestryChanged:Connect(onAncestryChanged)
 
-	if IsNilParented then
-		ChangedFunction(nil, Object.Parent)
+	function linkConnection:disconnect()
+		ancestryConnection:Disconnect()
 	end
 
-	Object = nil :: any
-	return self:Add(ManualDisconnect, "Disconnect", IndexToUse)
-end
-
---[=[
-	Links several instances to a new Janitor, which is then returned.
-
-	@param ... Instance -- All the Instances you want linked.
-	@return Janitor -- A new Janitor that can be used to manually disconnect all LinkToInstances.
-]=]
-function Janitor:LinkToInstances(...: Instance)
-	local ManualCleanup = Janitor.new()
-	for _, Object in ipairs({ ... }) do
-		ManualCleanup:Add(self:LinkToInstance(Object, true), "Disconnect")
+	if isNilParented then
+		onAncestryChanged(nil, object.Parent)
 	end
 
-	return ManualCleanup
+	return self:add(linkConnection, "disconnect", IndexToUse)
 end
 
-function Janitor.new()
-	return setmetatable({
-		CurrentlyCleaning = false,
-		[IndicesReference] = nil,
-	}, Janitor)
+function Janitor.prototype:linkToInstances(...: Instance)
+	local linkJanitor = Janitor.new()
+
+	for _, object in ipairs({ ... }) do
+		linkJanitor:add(self:linkToInstance(object, true), "disconnect")
+	end
+
+	return linkJanitor
 end
 
 return Janitor
