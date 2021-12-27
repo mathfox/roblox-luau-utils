@@ -7,8 +7,7 @@ local HttpService = game:GetService("HttpService")
 local Promise = require(script.Parent.Promise)
 
 local Maid = {}
-Maid.prototype = {}
-Maid.__index = Maid.prototype
+Maid.__index = Maid
 
 function Maid.is(object: any): boolean
 	return type(object) == "table" and getmetatable(object) == Maid
@@ -34,16 +33,16 @@ local function finalizeTask(oldTask: MaidTask)
 	end
 end
 
-function Maid.prototype:__index(index: any): any
-	if Maid.prototype[index] then
-		return Maid.prototype[index]
+function Maid:__index(index: any): any
+	if Maid[index] then
+		return Maid[index]
 	end
 
 	return self._tasks[index]
 end
 
-function Maid.prototype:__newindex(index: any, newTask: MaidTask | nil)
-	if Maid.prototype[index] ~= nil then
+function Maid:__newindex(index: any, newTask: MaidTask | nil)
+	if Maid[index] ~= nil then
 		error(("'%s' is reserved"):format(tostring(index)), 2)
 	end
 
@@ -61,7 +60,7 @@ function Maid.prototype:__newindex(index: any, newTask: MaidTask | nil)
 	end
 end
 
-function Maid.prototype:giveTask(newTask: MaidTask): string
+function Maid:giveTask(newTask: MaidTask): string
 	if not newTask then
 		error("task can't be false or nil", 2)
 	end
@@ -71,7 +70,7 @@ function Maid.prototype:giveTask(newTask: MaidTask): string
 	return taskId
 end
 
-function Maid.prototype:finalizeTask(taskId: string)
+function Maid:finalizeTask(taskId: string)
 	if not self._tasks[taskId] then
 		error("attempt to finalize ungiven task", 2)
 	end
@@ -79,7 +78,7 @@ function Maid.prototype:finalizeTask(taskId: string)
 	self[taskId] = nil
 end
 
-function Maid.prototype:givePromise(promise)
+function Maid:givePromise(promise)
 	if not Promise.is(promise) then
 		error("no promise provided", 2)
 	elseif promise:getStatus() ~= Promise.Status.Started then
@@ -99,7 +98,7 @@ function Maid.prototype:givePromise(promise)
 	return promise
 end
 
-function Maid.prototype:destroy()
+function Maid:destroy()
 	local tasks = self._tasks
 
 	for index, oldTask in pairs(tasks) do
@@ -117,9 +116,9 @@ function Maid.prototype:destroy()
 	end
 end
 
-Maid.prototype.GiveTask = Maid.prototype.giveTask
-Maid.prototype.GivePromise = Maid.prototype.givePromise
-Maid.prototype.FinalizeTask = Maid.prototype.finalizeTask
-Maid.prototype.Destroy = Maid.prototype.destroy
+Maid.GiveTask = Maid.giveTask
+Maid.GivePromise = Maid.givePromise
+Maid.FinalizeTask = Maid.finalizeTask
+Maid.Destroy = Maid.destroy
 
 return Maid
