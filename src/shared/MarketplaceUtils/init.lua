@@ -32,7 +32,7 @@ local function getGamePassIdFromName(name: string): number?
 	return nil
 end
 
-local function getGamePassInfoTableFromId(id: number): table?
+local function getGamePassInfoTableFromId(id: number): GamePassesModule.GamePassInfoTable?
 	if type(id) ~= "number" then
 		error("#1 argument must be a number!", 2)
 	end
@@ -46,7 +46,7 @@ local function getGamePassInfoTableFromId(id: number): table?
 	return nil
 end
 
-local function getGamePassInfoTableFromName(name: string): table?
+local function getGamePassInfoTableFromName(name: string): GamePassesModule.GamePassInfoTable?
 	if type(name) ~= "string" then
 		error("#1 argument must be a string!", 2)
 	end
@@ -96,7 +96,7 @@ local function getProductIdFromName(name: string): number?
 	return nil
 end
 
-local function getProductInfoTableFromId(id: number): table?
+local function getProductInfoTableFromId(id: number): ProductsModule.ProductInfoTable?
 	if type(id) ~= "number" then
 		error("#1 argument must be a number!", 2)
 	end
@@ -110,7 +110,7 @@ local function getProductInfoTableFromId(id: number): table?
 	return nil
 end
 
-local function getProductInfoTableFromName(name: string): table?
+local function getProductInfoTableFromName(name: string): ProductsModule.ProductInfoTable?
 	if type(name) ~= "string" then
 		error("#1 argument must be a string!", 2)
 	end

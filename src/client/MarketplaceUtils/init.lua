@@ -4,21 +4,24 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local MarketplaceUtils = require(Unite.SharedUtils.MarketplaceUtils)
 local TableUtils = require(Unite.SharedUtils.TableUtils)
 
-local GamePassesModule = require(Unite.SharedModules.GamePassesModule)
-local ProductsModule = require(Unite.SharedModules.ProductsModule)
+local GamePassesModule = require(Unite.ClientUtils.GamePassesModule)
+local ProductsModule = require(Unite.ClientUtils.ProductsModule)
 
-local function getGamePassInfoTableFromId(id: number): table?
-	if type(id) ~= "number" then
-		error("#1 argument must be a number!", 2)
+local function getGamePassInfoTableFromId(id: number): GamePassesModule.GamePassInfoTable?
+	if id == nil then
+		error("missing argument #1 to 'getGamePassInfoTableFromId' (number expected)", 2)
+	elseif type(id) ~= "number" then
+		error(("invalid argument #1 to 'getGamePassInfoTableFromId' (number expected, got %s)"):format(type(id)), 2)
 	end
 
-	for _, info in ipairs(GamePassesModule) do
+	-- first check server module
+	for _, info in pairs(GamePassesModule) do
 		if info.gamePassId == id then
 			return info
 		end
 	end
 
-	for _, info in ipairs(MarketplaceUtils.gamePasses) do
+	for _, info in pairs(MarketplaceUtils.gamePasses) do
 		if info.gamePassId == id then
 			return info
 		end
@@ -27,18 +30,21 @@ local function getGamePassInfoTableFromId(id: number): table?
 	return nil
 end
 
-local function getGamePassInfoTableFromName(name: string): table?
-	if type(name) ~= "string" then
-		error("#1 argument must be a string!", 2)
+local function getGamePassInfoTableFromName(name: string): GamePassesModule.GamePassInfoTable?
+	if name == nil then
+		error("missing argument #1 to 'getGamePassInfoTableFromName' (string expected)", 2)
+	elseif type(name) ~= "string" then
+		error(("invalid argument #1 to 'getGamePassInfoTableFromName' (string expected, got %s)"):format(type(name)), 2)
 	end
 
-	for _, info in ipairs(GamePassesModule) do
+	-- first check server module
+	for _, info in pairs(GamePassesModule) do
 		if info.gamePassName == name then
 			return info
 		end
 	end
 
-	for _, info in ipairs(MarketplaceUtils.gamePasses) do
+	for _, info in pairs(MarketplaceUtils.gamePasses) do
 		if info.gamePassName == name then
 			return info
 		end
@@ -51,7 +57,7 @@ local function promptGamePassPurchaseFromId(id: number)
 	if type(id) ~= "number" then
 		error("#1 argument must be a number!", 2)
 	elseif not MarketplaceUtils.doesGamePassExistFromId(id) then
-		error(string.format("gamepass with id {%d} does not exist!", id), 2)
+		error(("gamepass with id {%d} does not exist!"):format(id), 2)
 	end
 
 	MarketplaceService:PromptGamePassPurchase(Unite.localPlayer, id)
@@ -64,7 +70,7 @@ local function promptGamePassPurchaseFromName(name: string)
 
 	local id = MarketplaceUtils.getGamePassIdFromName(name)
 	if not id then
-		error(string.format("gamepass with name {%s} does not exist!", name), 2)
+		error(("gamepass with name {%s} does not exist!"):format(name), 2)
 	end
 
 	promptGamePassPurchaseFromId(id)
@@ -74,7 +80,7 @@ local function doesOwnGamePassFromId(id: number): boolean
 	if type(id) ~= "number" then
 		error("#1 argument must be a number!", 2)
 	elseif not MarketplaceUtils.doesGamePassExistFromId(id) then
-		error(string.format("gamepass with id {%d} does not exist!", id), 2)
+		error(("gamepass with id {%d} does not exist!"):format(id), 2)
 	end
 
 	return MarketplaceService:UserOwnsGamePassAsync(Unite.userId, id)
@@ -87,7 +93,7 @@ local function doesOwnGamePassFromName(name: string): boolean?
 
 	local id = MarketplaceUtils.getGamePassIdFromName(name)
 	if not id then
-		error(string.format("gamepass with name {%s} does not exist!", name), 2)
+		error(("gamepass with name {%s} does not exist!"):format(name), 2)
 	end
 
 	return doesOwnGamePassFromId(id)
@@ -114,18 +120,19 @@ local function doesOwnGamePassNames(tbl: { string }): boolean
 end
 
 local function doesOwnAllGamePasses(): boolean
-	for _, info in ipairs(MarketplaceUtils.gamePasses) do
+	for _, info in pairs(MarketplaceUtils.gamePasses) do
 		if not doesOwnGamePassFromId(info.gamePassId) then
 			return false
 		end
 	end
+
 	return true
 end
 
 local function getRandomNotOwnedGamepassId(): number?
 	local gamepasses = {}
 
-	for _, info in ipairs(MarketplaceUtils.gamePasses) do
+	for _, info in pairs(MarketplaceUtils.gamePasses) do
 		if not doesOwnGamePassFromId(info.gamePassId) then
 			table.insert(gamepasses, info.gamePassId)
 		end
@@ -137,7 +144,7 @@ end
 local function getRandomNotOwnedGamepassName(): string?
 	local gamepasses = {}
 
-	for _, info in ipairs(MarketplaceUtils.gamePasses) do
+	for _, info in pairs(MarketplaceUtils.gamePasses) do
 		if not doesOwnGamePassFromId(info.gamePassId) then
 			table.insert(gamepasses, info.gamePassName)
 		end
@@ -147,9 +154,9 @@ local function getRandomNotOwnedGamepassName(): string?
 end
 
 local function bindOnGamePassPurchase(callback: (id: number, name: string) -> ...any): RBXScriptConnection
-	return MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, gid, isPurchased)
+	return MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, gamepassId, isPurchased)
 		if isPurchased and plr == Unite.localPlayer then
-			callback(gid, MarketplaceUtils.getGamePassNameFromId(gid))
+			callback(gamepassId, MarketplaceUtils.getGamePassNameFromId(gamepassId))
 		end
 	end)
 end
@@ -158,11 +165,11 @@ local function bindOnGamePassIdPurchase(id: number, callback: (name: string) -> 
 	if type(id) ~= "number" then
 		error("#1 argument must be a number!", 2)
 	elseif not MarketplaceUtils.doesGamePassExistFromId(id) then
-		error(string.format("gamepass with id {%d} does not exist", id), 2)
+		error(("gamepass with id {%d} does not exist"):format(id), 2)
 	end
 
-	return MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, gid, isPurchased)
-		if isPurchased and plr == Unite.localPlayer and gid == id then
+	return MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, gamepassId, isPurchased)
+		if isPurchased and plr == Unite.localPlayer and gamepassId == id then
 			callback(MarketplaceUtils.getGamePassNameFromId(id))
 		end
 	end)
@@ -175,28 +182,28 @@ local function bindOnGamePassNamePurchase(name: string, callback: (id: number) -
 
 	local id = MarketplaceUtils.getGamepassIdFromGamepassName(name)
 	if not id then
-		error(string.format("gamepass with name {%s} does not exist!", name), 2)
+		error(("gamepass with name {%s} does not exist!"):format(name), 2)
 	end
 
-	return MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, gid, isPurchased)
-		if isPurchased and plr == Unite.localPlayer and gid == id then
+	return MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, gamepassId, isPurchased)
+		if isPurchased and plr == Unite.localPlayer and gamepassId == id then
 			callback(id)
 		end
 	end)
 end
 
-local function getProductInfoTableFromId(id: number): table?
+local function getProductInfoTableFromId(id: number): ProductsModule.ProductInfoTable?
 	if type(id) ~= "number" then
 		error("#1 argument must be a number!", 2)
 	end
 
-	for _, info in ipairs(ProductsModule) do
+	for _, info in pairs(ProductsModule) do
 		if info.productId == id then
 			return info
 		end
 	end
 
-	for _, info in ipairs(MarketplaceUtils.products) do
+	for _, info in pairs(MarketplaceUtils.products) do
 		if info.productId == id then
 			return info
 		end
@@ -210,13 +217,13 @@ local function getProductInfoTableFromName(name: string): table?
 		error("#1 argument must be a string!", 2)
 	end
 
-	for _, info in ipairs(ProductsModule) do
+	for _, info in pairs(ProductsModule) do
 		if info.productName == name then
 			return info
 		end
 	end
 
-	for _, info in ipairs(MarketplaceUtils.products) do
+	for _, info in pairs(MarketplaceUtils.products) do
 		if info.productName == name then
 			return info
 		end
@@ -229,7 +236,7 @@ local function promptProductPurchaseFromId(id: number)
 	if type(id) ~= "number" then
 		error("#1 argument must be a number!", 2)
 	elseif not MarketplaceUtils.doesProductExistFromId(id) then
-		error(string.format("product with id {%d} does not exist!", id), 2)
+		error(("product with id {%d} does not exist!"):format(id), 2)
 	end
 
 	MarketplaceService:PromptProductPurchase(Unite.localPlayer, id)
@@ -242,7 +249,7 @@ local function promptProductPurchaseFromName(name: string)
 
 	local id = MarketplaceUtils.getProductIdFromName(name)
 	if not id then
-		error(string.format("product with name {%s} does not exist!", name), 2)
+		error(("product with name {%s} does not exist!"):format(name), 2)
 	end
 
 	promptProductPurchaseFromId(id)

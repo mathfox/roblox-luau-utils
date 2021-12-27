@@ -7,7 +7,7 @@ local TableUtils = require(Unite.SharedUtils.TableUtils)
 local GamePassesModule = require(Unite.ServerModules.GamePassesModule)
 local ProductsModule = require(Unite.ServerModules.ProductsModule)
 
-local function getGamePassInfoTableFromId(id: number): table?
+local function getGamePassInfoTableFromId(id: number): GamePassesModule.GamePassInfoTable?
 	if type(id) ~= "number" then
 		error("#1 argument must be a number!", 2)
 	end
@@ -27,7 +27,7 @@ local function getGamePassInfoTableFromId(id: number): table?
 	return nil
 end
 
-local function getGamePassInfoTableFromName(name: string): table?
+local function getGamePassInfoTableFromName(name: string): GamePassesModule.GamePassInfoTable?
 	if type(name) ~= "string" then
 		error("#1 argument must be a string!", 2)
 	end
@@ -221,7 +221,7 @@ local function bindOnGamePassNamePurchase(
 	end)
 end
 
-local function getProductInfoTableFromId(id: number): table?
+local function getProductInfoTableFromId(id: number): ProductsModule.ProductInfoTable?
 	if type(id) ~= "number" then
 		error("#1 argument must be a number!", 2)
 	end
@@ -241,7 +241,7 @@ local function getProductInfoTableFromId(id: number): table?
 	return nil
 end
 
-local function getProductInfoTableFromName(name: string): table?
+local function getProductInfoTableFromName(name: string): ProductsModule.ProductInfoTable?
 	if type(name) ~= "string" then
 		error("#1 argument must be a string!", 2)
 	end
@@ -286,7 +286,7 @@ local function promptProductPurchaseFromName(player: Player, name: string)
 	promptProductPurchaseFromId(player, id)
 end
 
-local ServerMarketplaceUtils = TableUtils.assign(MarketplaceUtils, {
+local ServerMarketplaceUtils = {
 	gamePasses = GamePassesModule,
 	products = ProductsModule,
 
@@ -314,6 +314,10 @@ local ServerMarketplaceUtils = TableUtils.assign(MarketplaceUtils, {
 
 	promptProductPurchaseFromId = promptProductPurchaseFromId,
 	promptProductPurchaseFromName = promptProductPurchaseFromName,
+}
+
+setmetatable(ServerMarketplaceUtils, {
+	__index = MarketplaceUtils,
 })
 
 return ServerMarketplaceUtils

@@ -12,7 +12,7 @@ local Symbol = {}
 	When printed or coerced to a string, the symbol will turn into the string
 	given as its name.
 ]]
-function Symbol.named(name)
+function Symbol.named(name: string): userdata
 	assert(type(name) == "string", "Symbols must be created using a string name!")
 
 	local self = newproxy(true)
