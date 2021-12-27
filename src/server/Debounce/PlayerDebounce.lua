@@ -1,8 +1,8 @@
 local Unite = require(game:GetService("ReplicatedStorage").Unite)
 local Players = game:GetService("Players")
 
-local Promise = Unite.getSharedUtil("Promise")
-local Maid = Unite.getSharedUtil("Maid")
+local Promise = require(Unite.SharedUtils.Promise)
+local Maid = require(Unite.SharedUtils.Maid)
 
 local PlayerDebounce = {
 	ClassName = "PlayerDebounce",

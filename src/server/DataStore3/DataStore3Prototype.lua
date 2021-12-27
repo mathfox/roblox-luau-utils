@@ -1,7 +1,7 @@
 local Unite = require(game:GetService("ReplicatedStorage").Unite)
 local DataStoreService = game:GetService("DataStoreService")
 
-local Promise = Unite.getSharedUtil("Promise")
+local Promise = require(Unite.SharedUtils.Promise)
 
 local DataStore3Prototype = {}
 DataStore3Prototype.__index = DataStore3Prototype

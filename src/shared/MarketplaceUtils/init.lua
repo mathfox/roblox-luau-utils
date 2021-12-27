@@ -1,8 +1,8 @@
 local Unite = require(game:GetService("ReplicatedStorage").Unite)
 local MarketplaceService = game:GetService("MarketplaceService")
 
-local GamePassesModule = Unite.getSharedModule("GamePassesModule")
-local ProductsModule = Unite.getSharedModule("ProductsModule")
+local GamePassesModule = require(Unite.SharedModules.GamePassesModule)
+local ProductsModule = require(Unite.SharedModules.ProductsModule)
 
 local function getGamePassNameFromId(id: number): string?
 	if type(id) ~= "number" then
