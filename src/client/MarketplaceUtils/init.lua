@@ -4,8 +4,8 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local MarketplaceUtils = require(Unite.SharedUtils.MarketplaceUtils)
 local TableUtils = require(Unite.SharedUtils.TableUtils)
 
-local GamePassesModule = require(Unite.ClientUtils.GamePassesModule)
-local ProductsModule = require(Unite.ClientUtils.ProductsModule)
+local GamePassesModule = require(Unite.ClientModules.GamePassesModule)
+local ProductsModule = require(Unite.ClientModules.ProductsModule)
 
 local function getGamePassInfoTableFromId(id: number): GamePassesModule.GamePassInfoTable?
 	if id == nil then
