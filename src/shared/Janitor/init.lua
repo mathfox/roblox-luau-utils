@@ -18,20 +18,17 @@ local function isObjectCallable(object: any): boolean
 end
 
 local Janitor = {}
-Janitor.prototype = {}
-Janitor.__index = Janitor.prototype
+Janitor.__index = Janitor
 
 function Janitor.new()
-	local self = setmetatable({}, Janitor)
-
-	return self
+	return setmetatable({}, Janitor)
 end
 
 function Janitor.is(object: any): boolean
 	return type(object) == "table" and getmetatable(object) == Janitor
 end
 
-function Janitor.prototype:add(object: any, methodName: StringOrTrue?, index: any): any
+function Janitor:add(object: any, methodName: StringOrTrue?, index: any): any
 	if index then
 		self:remove(index)
 
@@ -55,7 +52,7 @@ function Janitor.prototype:add(object: any, methodName: StringOrTrue?, index: an
 	return object
 end
 
-function Janitor.prototype:addPromise(promise)
+function Janitor:addPromise(promise)
 	if promise:getStatus() ~= Promise.Status.Started then
 		return promise
 	end
@@ -70,7 +67,7 @@ function Janitor.prototype:addPromise(promise)
 	return promise
 end
 
-function Janitor.prototype:remove(index: any)
+function Janitor:remove(index: any)
 	local this = self[IndicesReference]
 
 	if this then
@@ -99,16 +96,12 @@ function Janitor.prototype:remove(index: any)
 	return self
 end
 
-function Janitor.prototype:get(index: any): any
+function Janitor:get(index: any): any
 	local this = self[IndicesReference]
-	if this then
-		return this[index]
-	end
-
-	return nil
+	return if this then this[index] else nil
 end
 
-local function GetFenv(self)
+local function getNextTask(self)
 	return function()
 		for Object, MethodName in pairs(self) do
 			if Object ~= IndicesReference then
@@ -118,27 +111,27 @@ local function GetFenv(self)
 	end
 end
 
-function Janitor.prototype:cleanup()
-	local Get = GetFenv(self)
-	local Object, MethodName = Get()
+function Janitor:cleanup()
+	local getNext = getNextTask(self)
+	local object, methodName = getNext()
 
-	while Object and MethodName do
-		if MethodName == true then
-			Object()
+	while object and methodName do
+		if methodName == true then
+			object()
 		else
-			local ObjectMethod = Object[MethodName]
-			if ObjectMethod then
-				ObjectMethod(Object)
+			local method = object[methodName]
+			if method then
+				method(object)
 			end
 		end
 
-		self[Object] = nil
-		Object, MethodName = Get()
+		self[object] = nil
+		object, methodName = getNext()
 	end
 
-	local This = self[IndicesReference]
-	if This then
-		table.clear(This)
+	local this = self[IndicesReference]
+	if this then
+		table.clear(this)
 		self[IndicesReference] = {}
 	end
 end
@@ -149,25 +142,24 @@ function Janitor:destroy()
 	setmetatable(self, nil)
 end
 
-Janitor.prototype.__call = Janitor.prototype.cleanup
+Janitor.__call = Janitor.cleanup
 
-function Janitor.prototype:linkToInstance(object: Instance, allowMultiple: boolean?)
-	local IndexToUse = allowMultiple and newproxy(false) or LinkToInstanceIndex
+function Janitor:linkToInstance(object: Instance, allowMultiple: boolean?)
+	local indexToUse = allowMultiple and newproxy(false) or LinkToInstanceIndex
 
-	local isNilParented = object.Parent == nil
-	local isConnected = true
-	local linkConnection = {}
+	local isNilParented: boolean = object.Parent == nil
+	local isConnected: boolean = true
 
 	local function onAncestryChanged(_, newParent: Instance?)
 		if not isConnected then
-			return
+			return nil
 		end
 
 		isNilParented = newParent == nil
 		if isNilParented then
 			task.defer(function()
 				if not isConnected then
-					return
+					return nil
 				end
 
 				isConnected = false
@@ -176,7 +168,9 @@ function Janitor.prototype:linkToInstance(object: Instance, allowMultiple: boole
 		end
 	end
 
-	local ancestryConnection = object.AncestryChanged:Connect(onAncestryChanged)
+	local ancestryConnection: RBXScriptConnection = object.AncestryChanged:Connect(onAncestryChanged)
+
+	local linkConnection = {}
 
 	function linkConnection:disconnect()
 		ancestryConnection:Disconnect()
@@ -186,10 +180,10 @@ function Janitor.prototype:linkToInstance(object: Instance, allowMultiple: boole
 		onAncestryChanged(nil, object.Parent)
 	end
 
-	return self:add(linkConnection, "disconnect", IndexToUse)
+	return self:add(linkConnection, "disconnect", indexToUse)
 end
 
-function Janitor.prototype:linkToInstances(...: Instance)
+function Janitor:linkToInstances(...: Instance)
 	local linkJanitor = Janitor.new()
 
 	for _, object in ipairs({ ... }) do
