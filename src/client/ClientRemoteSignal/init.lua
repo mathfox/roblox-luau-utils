@@ -1,33 +1,30 @@
 local ClientRemoteSignal = {}
-ClientRemoteSignal.prototype = {}
-ClientRemoteSignal.__index = ClientRemoteSignal.prototype
+ClientRemoteSignal.__index = ClientRemoteSignal
 
 function ClientRemoteSignal.is(object)
 	return type(object) == "table" and getmetatable(object) == ClientRemoteSignal
 end
 
 function ClientRemoteSignal.new(remoteEvent: RemoteEvent)
-	local self = setmetatable({
+	return setmetatable({
 		_remote = remoteEvent,
 	}, ClientRemoteSignal)
-
-	return self
 end
 
-function ClientRemoteSignal.prototype:Fire(...)
+function ClientRemoteSignal:Fire(...)
 	self._remote:FireServer(...)
 end
 
-function ClientRemoteSignal.prototype:Wait()
+function ClientRemoteSignal:Wait()
 	return self._remote.OnClientEvent:Wait()
 end
 
-function ClientRemoteSignal.prototype:Connect(handler)
+function ClientRemoteSignal:Connect(handler)
 	return self._remote.OnClientEvent:Connect(handler)
 end
 
-ClientRemoteSignal.prototype.fire = ClientRemoteSignal.prototype.Fire
-ClientRemoteSignal.prototype.wait = ClientRemoteSignal.prototype.Wait
-ClientRemoteSignal.prototype.connect = ClientRemoteSignal.prototype.Connect
+ClientRemoteSignal.fire = ClientRemoteSignal.Fire
+ClientRemoteSignal.wait = ClientRemoteSignal.Wait
+ClientRemoteSignal.connect = ClientRemoteSignal.Connect
 
 return ClientRemoteSignal

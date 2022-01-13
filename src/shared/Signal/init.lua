@@ -28,9 +28,8 @@ local function runEventHandlerInFreeThread(...)
 end
 
 local Connection = {}
-Connection.prototype = {}
-Connection.prototype.Connected = true
-Connection.__index = Connection.prototype
+Connection.Connected = true
+Connection.__index = Connection
 
 function Connection.new(signal: Signal, fn: Function): Connection
 	local constructor: ConnectionConstructor = {
@@ -43,7 +42,7 @@ function Connection.new(signal: Signal, fn: Function): Connection
 	return self
 end
 
-function Connection.prototype:Disconnect()
+function Connection:Disconnect()
 	if not self.Connected then
 		return
 	else
@@ -65,13 +64,13 @@ function Connection.prototype:Disconnect()
 	end
 end
 
-Connection.prototype.disconnect = Connection.prototype.Disconnect
+Connection.disconnect = Connection.Disconnect
 
 local Signal = {}
-Signal.prototype = {}
-Signal.__index = Signal.prototype
+Signal.__index = Signal
+Signal.__metatable = "The metatable is locked"
 
-function Signal.prototype:Connect(fn: Function): Connection
+function Signal:Connect(fn: Function): Connection
 	local connection = Connection.new(self, fn)
 
 	if self._previous then
@@ -85,7 +84,7 @@ function Signal.prototype:Connect(fn: Function): Connection
 	return connection
 end
 
-function Signal.prototype:Fire(...: any)
+function Signal:Fire(...: any)
 	local connection = self._previous
 
 	while connection do
@@ -101,7 +100,7 @@ function Signal.prototype:Fire(...: any)
 	end
 end
 
-function Signal.prototype:Wait(): ...any
+function Signal:Wait(): ...any
 	local waitingCoroutine = coroutine.running()
 
 	local connection
@@ -114,14 +113,14 @@ function Signal.prototype:Wait(): ...any
 	return coroutine.yield()
 end
 
-function Signal.prototype:Destroy()
+function Signal:Destroy()
 	self._previous = nil
 end
 
-Signal.prototype.connect = Signal.prototype.Connect
-Signal.prototype.fire = Signal.prototype.Fire
-Signal.prototype.wait = Signal.prototype.Wait
-Signal.prototype.destroy = Signal.prototype.Destroy
+Signal.connect = Signal.Connect
+Signal.fire = Signal.Fire
+Signal.wait = Signal.Wait
+Signal.destroy = Signal.Destroy
 
 function Signal.new(): Signal
 	local constructor: SignalConstructor = {}

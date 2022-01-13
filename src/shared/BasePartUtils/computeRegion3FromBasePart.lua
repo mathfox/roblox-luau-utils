@@ -1,8 +1,11 @@
-local function convertBasePartToRegion3(part: BasePart): Region3
+local function computeRegion3FromBasePart(part: BasePart): Region3
 	if part == nil then
-		error("missing argument #1 to 'convertBasePartToRegion3' (BasePart expected)", 2)
+		error("missing argument #1 to 'computeRegion3FromBasePart' (BasePart expected)", 2)
 	elseif typeof(part) ~= "Instance" or not part:IsA("BasePart") then
-		error(("invalid argument #1 to 'convertBasePartToRegion3' (BasePart expected, got %s)"):format(typeof(part)), 2)
+		error(
+			("invalid argument #1 to 'computeRegion3FromBasePart' (BasePart expected, got %s)"):format(typeof(part)),
+			2
+		)
 	end
 
 	local new, abs = Vector3.new, math.abs
@@ -21,4 +24,4 @@ local function convertBasePartToRegion3(part: BasePart): Region3
 	return Region3.new(new(minX, minY, minZ), new(maxX, maxY, maxZ))
 end
 
-return convertBasePartToRegion3
+return computeRegion3FromBasePart

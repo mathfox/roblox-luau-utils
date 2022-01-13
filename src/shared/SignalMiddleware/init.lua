@@ -20,7 +20,6 @@ end
 
 local SignalMiddleware = {
 	fireOnDispatch = fireOnDispatch,
-	FireOnDispatch = fireOnDispatch,
 }
 
 return SignalMiddleware

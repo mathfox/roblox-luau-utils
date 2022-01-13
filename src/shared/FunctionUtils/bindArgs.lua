@@ -1,6 +1,6 @@
 --[[
     Returns a function which will receive provided varargs as the first arguments
-        and lastly the arguments provided when it was called
+    and lastly the arguments provided when it was called
 ]]
 local function bindArgs(func: (...any) -> ...any, ...: any)
 	local args = table.pack(...)

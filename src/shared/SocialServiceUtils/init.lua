@@ -42,9 +42,7 @@ end
 
 local SocialServiceUtils = {
 	promiseCanSendGameInviteAsync = promiseCanSendGameInviteAsync,
-	PromiseCanSendGameInviteAsync = promiseCanSendGameInviteAsync,
 	promisePromptGameInvite = promisePromptGameInvite,
-	PromisePromptGameInvite = promisePromptGameInvite,
 }
 
 return SocialServiceUtils

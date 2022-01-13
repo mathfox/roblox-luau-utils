@@ -8,6 +8,7 @@ local Promise = require(script.Parent.Promise)
 
 local Maid = {}
 Maid.__index = Maid
+Maid.__metatable = "The metatable is locked"
 
 function Maid.is(object: any): boolean
 	return type(object) == "table" and getmetatable(object) == Maid
@@ -28,17 +29,17 @@ local function finalizeTask(oldTask: MaidTask)
 		oldTask:Disconnect()
 	elseif oldTask.Destroy then
 		oldTask:Destroy()
+	elseif oldTask.Disconnect then
+		oldTask:Disconnect()
 	elseif oldTask.destroy then
 		oldTask:destroy()
+	elseif oldTask.disconnect then
+		oldTask:disconnect()
 	end
 end
 
 function Maid:__index(index: any): any
-	if Maid[index] then
-		return Maid[index]
-	end
-
-	return self._tasks[index]
+	return if Maid[index] then Maid[index] else self._tasks[index]
 end
 
 function Maid:__newindex(index: any, newTask: MaidTask | nil)
@@ -50,7 +51,7 @@ function Maid:__newindex(index: any, newTask: MaidTask | nil)
 	local oldTask = tasks[index]
 
 	if oldTask == newTask then
-		return
+		return nil
 	end
 
 	tasks[index] = newTask
@@ -60,9 +61,9 @@ function Maid:__newindex(index: any, newTask: MaidTask | nil)
 	end
 end
 
-function Maid:giveTask(newTask: MaidTask): string
+function Maid:GiveTask(newTask: MaidTask): string
 	if not newTask then
-		error("task can't be false or nil", 2)
+		error("task can not be false or nil", 2)
 	end
 
 	local taskId = HttpService:GenerateGUID(false)
@@ -70,7 +71,7 @@ function Maid:giveTask(newTask: MaidTask): string
 	return taskId
 end
 
-function Maid:finalizeTask(taskId: string)
+function Maid:FinalizeTask(taskId: string)
 	if not self._tasks[taskId] then
 		error("attempt to finalize ungiven task", 2)
 	end
@@ -78,7 +79,7 @@ function Maid:finalizeTask(taskId: string)
 	self[taskId] = nil
 end
 
-function Maid:givePromise(promise)
+function Maid:GivePromise(promise): string
 	if not Promise.is(promise) then
 		error("no promise provided", 2)
 	elseif promise:getStatus() ~= Promise.Status.Started then
@@ -95,10 +96,10 @@ function Maid:givePromise(promise)
 		self[taskId] = nil
 	end)
 
-	return promise
+	return taskId
 end
 
-function Maid:destroy()
+function Maid:Destroy()
 	local tasks = self._tasks
 
 	for index, oldTask in pairs(tasks) do
@@ -116,9 +117,9 @@ function Maid:destroy()
 	end
 end
 
-Maid.GiveTask = Maid.giveTask
-Maid.GivePromise = Maid.givePromise
-Maid.FinalizeTask = Maid.finalizeTask
-Maid.Destroy = Maid.destroy
+Maid.giveTask = Maid.GiveTask
+Maid.givePromise = Maid.GivePromise
+Maid.finalizeTask = Maid.FinalizeTask
+Maid.destroy = Maid.Destroy
 
 return Maid

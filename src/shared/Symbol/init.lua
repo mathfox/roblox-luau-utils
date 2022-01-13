@@ -26,10 +26,7 @@ function Symbol.named(name: string): userdata
 	return self
 end
 
---[[
-	Create an unnamed Symbol. Usually, you should create a named Symbol using
-	Symbol.named(name)
-]]
+-- Create an unnamed Symbol. Usually, you should create a named Symbol using Symbol.named(name)
 function Symbol.unnamed()
 	local self = newproxy(true)
 
