@@ -1,21 +1,3 @@
---!nocheck
--- ^ change to strict to crash studio c:
-
--- Defines all FC types.
--- Any script that requires this will have these types defined.
-
---[[
-local TypeDefs = require(script.TypeDefinitions)
-type CanPierceFunction = TypeDefs.CanPierceFunction
-type GenericTable = TypeDefs.GenericTable
-type Caster = TypeDefs.Caster
-type FastCastBehavior = TypeDefs.FastCastBehavior
-type CastTrajectory = TypeDefs.CastTrajectory
-type CastStateInfo = TypeDefs.CastStateInfo
-type CastRayInfo = TypeDefs.CastRayInfo
-type ActiveCast = TypeDefs.ActiveCast
---]]
-
 -- Represents the function to determine piercing.
 export type CanPierceFunction = (ActiveCast, RaycastResult, Vector3) -> boolean
 
@@ -29,11 +11,11 @@ export type Caster = {
 	RayHit: RBXScriptSignal,
 	RayPierced: RBXScriptSignal,
 	CastTerminating: RBXScriptSignal,
-	Fire: (Vector3, Vector3, Vector3 | number, FastCastBehavior) -> (),
+	Fire: (Vector3, Vector3, Vector3 | number, CasterBehavior) -> (),
 }
 
 -- Represents a FastCastBehavior :: https://etithespirit.github.io/FastCastAPIDocs/fastcast-objects/fcbehavior/
-export type FastCastBehavior = {
+export type CasterBehavior = {
 	RaycastParams: RaycastParams?,
 	MaxDistance: number,
 	Acceleration: Vector3,

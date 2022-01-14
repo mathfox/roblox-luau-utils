@@ -1,6 +1,6 @@
-type Function = (...any) -> ...any
+type Function = (...any) -> (...any)?
 
-local freeRunnerThread: thread = nil
+local freeRunnerThread: thread? = nil
 local runEventHandlerInFreeThread = nil
 
 do
