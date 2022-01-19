@@ -9,9 +9,7 @@ local function getPlayersInRadiusList(
 ): PlayersInRadiusList
 	local playersInRadiusList: PlayersInRadiusList = {}
 
-	local basePartsFoundInRadius = workspace:GetPartBoundsInRadius(position, radius, overlapParams)
-
-	for _, basePart in ipairs(basePartsFoundInRadius) do
+	for _, basePart in ipairs(workspace:GetPartBoundsInRadius(position, radius, overlapParams)) do
 		local player: Player? = Players:GetPlayerFromCharacter(basePart.Parent)
 		if player and not table.find(playersInRadiusList, player) then
 			table.insert(playersInRadiusList, player)
