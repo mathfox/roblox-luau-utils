@@ -1,7 +1,7 @@
 export type PartCache = {
 	_available: { BasePart },
 	_inUse: { BasePart },
-	_cacheParent: Instance,
+	parent: Instance,
 	_template: BasePart,
 	_expansionSize: number,
 }
@@ -26,7 +26,7 @@ function PartCache.new(template: BasePart, numPrecreatedParts: number, cachePare
 		_available = {},
 		_availableAmount = numPrecreatedParts,
 		_inUse = {},
-		_cacheParent = cacheParent,
+		parent = cacheParent,
 		_template = template,
 		_expansionSize = 10,
 	}, PartCache)
@@ -72,7 +72,7 @@ function PartCache:ReturnPart(basePart: BasePart)
 end
 
 function PartCache:SetCacheParent(cacheParent: Instance)
-	self._cacheParent = cacheParent
+	self.parent = cacheParent
 
 	for _, basePart in ipairs(self._available) do
 		basePart.Parent = cacheParent
@@ -85,7 +85,7 @@ end
 
 function PartCache:Expand(numParts: number)
 	for _ = 1, numParts or self._expansionSize do
-		table.insert(self._available, cloneFromTemplate(self._template, self._cacheParent))
+		table.insert(self._available, cloneFromTemplate(self._template, self.parent))
 	end
 end
 
