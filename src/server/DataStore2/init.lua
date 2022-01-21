@@ -287,11 +287,11 @@ function DataStore:SaveAsync()
 			return
 		end
 
-		if RunService:IsStudio() and not SaveInStudio then
-			warn(("Data store %s attempted to save in studio while SaveInStudio is false."):format(self.Name))
-			resolve(false)
-			return
-		end
+		-- if RunService:IsStudio() and not SaveInStudio then
+		-- 	warn(("Data store %s attempted to save in studio while SaveInStudio is false."):format(self.Name))
+		-- 	resolve(false)
+		-- 	return
+		-- end
 
 		if self.backup then
 			warn("This data store is a backup store, and thus will not be saved.")
