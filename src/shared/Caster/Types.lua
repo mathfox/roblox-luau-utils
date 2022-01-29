@@ -1,10 +1,11 @@
-export type CanPierceFunction = (ActiveCast, RaycastResult, Vector3) -> boolean
+local Signal = require(script.Parent.Parent.Signal)
 export type Caster = {
 	worldRoot: WorldRoot,
-	LengthChanged: RBXScriptSignal,
-	RayHit: RBXScriptSignal,
-	RayPierced: RBXScriptSignal,
-	CastTerminating: RBXScriptSignal,
+	LengthChanged: Signal.Signal,
+	RayHit: Signal.Signal,
+	RayPierced: Signal.Signal,
+	RayOutranged: Signal.Signal,
+	CastTerminating: Signal.Signal,
 	fire: (Vector3, Vector3, Vector3 | number, CasterBehavior) -> (),
 }
 export type CasterBehavior = {
@@ -16,8 +17,7 @@ export type CasterBehavior = {
 	cosmeticBulletTemplate: Instance?,
 	cosmeticBulletProvider: any,
 	cosmeticBulletContainer: Instance?,
-	autoIgnoreContainer: boolean,
-	canPierceFunction: CanPierceFunction,
+	canPierceFunction: (Cast, RaycastResult, Vector3) -> boolean,
 }
 export type CastTrajectory = {
 	startTime: number,
@@ -37,18 +37,19 @@ export type CastStateInfo = {
 	isActivelyResimulating: boolean,
 	cancelHighResCast: boolean,
 	trajectories: { CastTrajectory },
+	latestTrajectory: CastTrajectory,
 }
 export type CastRayInfo = {
 	raycastParams: RaycastParams,
 	worldRoot: WorldRoot,
 	maxDistance: number,
 	cosmeticBulletObject: Instance?,
-	canPierceCallback: CanPierceFunction,
 }
-export type ActiveCast = {
+export type Cast = {
 	caster: Caster,
 	stateInfo: CastStateInfo,
 	rayInfo: CastRayInfo,
+	behavior: CasterBehavior,
 	userData: { [any]: any },
 }
 
