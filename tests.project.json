@@ -1,42 +1,42 @@
 {
-    "name": "roblox-luau-utils-tests",
-    "tree": {
-        "$className": "DataModel",
-        "Players": {
-            "$className": "Players",
-            "$properties": {
-                "CharacterAutoLoads": false
+   "name": "roblox-luau-utils-tests",
+   "tree": {
+      "$className": "DataModel",
+      "Players": {
+         "$className": "Players",
+         "$properties": {
+            "CharacterAutoLoads": false
+         }
+      },
+      "ReplicatedStorage": {
+         "$className": "ReplicatedStorage",
+         "Shared": {
+            "$path": "src/shared"
+         },
+         "TestEZ": {
+            "$path": "submodules/testez/src"
+         }
+      },
+      "ServerScriptService": {
+         "$className": "ServerScriptService",
+         "TestsRunner": {
+            "$path": "tests/runner.server.lua"
+         }
+      },
+      "ServerStorage": {
+         "$className": "ServerStorage",
+         "Server": {
+            "$path": "src/server"
+         }
+      },
+      "StarterPlayer": {
+         "$className": "StarterPlayer",
+         "StarterPlayerScripts": {
+            "$className": "StarterPlayerScripts",
+            "Client": {
+               "$path": "src/client"
             }
-        },
-        "ReplicatedStorage": {
-            "$className": "ReplicatedStorage",
-            "Shared": {
-                "$path": "src/shared"
-            },
-            "TestEZ": {
-                "$path": "submodules/testez/src"
-            }
-        },
-        "ServerScriptService": {
-            "$className": "ServerScriptService",
-            "TestsRunner": {
-                "$path": "tests/runner.server.lua"
-            }
-        },
-        "ServerStorage": {
-            "$className": "ServerStorage",
-            "Server": {
-                "$path": "src/server"
-            }
-        },
-        "StarterPlayer": {
-            "$className": "StarterPlayer",
-            "StarterPlayerScripts": {
-                "$className": "StarterPlayerScripts",
-                "Client": {
-                    "$path": "src/client"
-                }
-            }
-        }
-    }
+         }
+      }
+   }
 }

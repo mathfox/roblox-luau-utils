@@ -1,10 +1,4 @@
--- Represents the function to determine piercing.
 export type CanPierceFunction = (ActiveCast, RaycastResult, Vector3) -> boolean
-
--- Represents any table.
-export type GenericTable = { [any]: any }
-
--- Represents a Caster :: https://etithespirit.github.io/FastCastAPIDocs/fastcast-objects/caster/
 export type Caster = {
 	worldRoot: WorldRoot,
 	LengthChanged: RBXScriptSignal,
@@ -13,8 +7,6 @@ export type Caster = {
 	CastTerminating: RBXScriptSignal,
 	fire: (Vector3, Vector3, Vector3 | number, CasterBehavior) -> (),
 }
-
--- Represents a FastCastBehavior :: https://etithespirit.github.io/FastCastAPIDocs/fastcast-objects/fcbehavior/
 export type CasterBehavior = {
 	raycastParams: RaycastParams?,
 	maxDistance: number,
@@ -27,8 +19,6 @@ export type CasterBehavior = {
 	autoIgnoreContainer: boolean,
 	canPierceFunction: CanPierceFunction,
 }
-
--- Represents a CastTrajectory :: https://etithespirit.github.io/FastCastAPIDocs/fastcast-objects/casttrajectory/
 export type CastTrajectory = {
 	startTime: number,
 	endTime: number,
@@ -36,8 +26,6 @@ export type CastTrajectory = {
 	initialVelocity: Vector3,
 	acceleration: Vector3,
 }
-
--- Represents a CastStateInfo :: https://etithespirit.github.io/FastCastAPIDocs/fastcast-objects/caststateinfo/
 export type CastStateInfo = {
 	updateConnection: RBXScriptConnection,
 	highFidelityBehavior: number,
@@ -50,8 +38,6 @@ export type CastStateInfo = {
 	cancelHighResCast: boolean,
 	trajectories: { CastTrajectory },
 }
-
--- Represents a CastRayInfo :: https://etithespirit.github.io/FastCastAPIDocs/fastcast-objects/castrayinfo/
 export type CastRayInfo = {
 	raycastParams: RaycastParams,
 	worldRoot: WorldRoot,
@@ -59,8 +45,6 @@ export type CastRayInfo = {
 	cosmeticBulletObject: Instance?,
 	canPierceCallback: CanPierceFunction,
 }
-
--- Represents an ActiveCast :: https://etithespirit.github.io/FastCastAPIDocs/fastcast-objects/activecast/
 export type ActiveCast = {
 	caster: Caster,
 	stateInfo: CastStateInfo,

@@ -6,7 +6,8 @@
 local RunService = game:GetService("RunService")
 
 local cloneRaycastParams = require(script.Parent.RaycastParamsUtils.cloneRaycastParams)
-local Vector3Utils = require(script.Parent.Vector3Utils)
+local getPositionAtTime = require(script.Parent.Vector3Utils.getPositionAtTime)
+local getVelocityAtTime = require(script.Parent.Vector3Utils.getVelocityAtTime)
 local Signal = require(script.Parent.Signal)
 local Types = require(script.Types)
 
@@ -23,8 +24,8 @@ local function getTrajectoryInfo(cast: Types.ActiveCast, index: number): { Vecto
 	local acceleration = trajectory.acceleration
 
 	return {
-		Vector3Utils.getPositionAtTime(duration, trajectory.origin, velocity, acceleration),
-		Vector3Utils.getVelocityAtTime(duration, velocity, acceleration),
+		getPositionAtTime(duration, trajectory.origin, velocity, acceleration),
+		getVelocityAtTime(duration, velocity, acceleration),
 	}
 end
 
@@ -60,7 +61,7 @@ local function simulateCast(cast: Types.ActiveCast, delta: number, expectingShor
 	local initialVelocity = latestTrajectory.initialVelocity
 	local acceleration = latestTrajectory.acceleration
 
-	local lastPoint = Vector3Utils.getPositionAtTime(totalDelta, origin, initialVelocity, acceleration)
+	local lastPoint = getPositionAtTime(totalDelta, origin, initialVelocity, acceleration)
 	local lastDelta = stateInfo.totalRuntime - latestTrajectory.startTime
 
 	stateInfo.totalRuntime += delta
@@ -68,8 +69,8 @@ local function simulateCast(cast: Types.ActiveCast, delta: number, expectingShor
 	-- recalculate this
 	totalDelta = stateInfo.totalRuntime - latestTrajectory.startTime
 
-	local currentTarget = Vector3Utils.getPositionAtTime(totalDelta, origin, initialVelocity, acceleration)
-	local segmentVelocity = Vector3Utils.getVelocityAtTime(totalDelta, initialVelocity, acceleration)
+	local currentTarget = getPositionAtTime(totalDelta, origin, initialVelocity, acceleration)
+	local segmentVelocity = getVelocityAtTime(totalDelta, initialVelocity, acceleration)
 
 	-- This is the displacement from where the ray was on the last from to where the ray is now.
 	local totalDisplacement = currentTarget - lastPoint
@@ -170,14 +171,14 @@ local function simulateCast(cast: Types.ActiveCast, delta: number, expectingShor
 						break
 					end
 
-					local subPosition = Vector3Utils.getPositionAtTime(
+					local subPosition = getPositionAtTime(
 						lastDelta + (timeIncrement * segmentIndex),
 						origin,
 						initialVelocity,
 						acceleration
 					)
 
-					local subVelocity = Vector3Utils.getVelocityAtTime(
+					local subVelocity = getVelocityAtTime(
 						lastDelta + (timeIncrement * segmentIndex),
 						initialVelocity,
 						acceleration
@@ -387,7 +388,7 @@ function Cast:getVelocity(): Vector3
 	local stateInfo = self.stateInfo
 	local currentTrajectory = stateInfo.trajectories[#stateInfo.trajectories]
 
-	return Vector3Utils.getVelocityAtTime(
+	return getVelocityAtTime(
 		stateInfo.totalRuntime - currentTrajectory.startTime,
 		currentTrajectory.initialVelocity,
 		currentTrajectory.acceleration
@@ -403,7 +404,7 @@ function Cast:getPosition(): Vector3
 	local stateInfo = self.stateInfo
 	local currentTrajectory = stateInfo.trajectories[#stateInfo.trajectories]
 
-	return Vector3Utils.getPositionAtTime(
+	return getPositionAtTime(
 		stateInfo.totalRuntime - currentTrajectory.startTime,
 		currentTrajectory.origin,
 		currentTrajectory.initialVelocity,
@@ -527,7 +528,7 @@ function Caster:Fire(
 		error("no cosmetic bullet provider was set", 2)
 	end
 
-	rayInfo.cosmeticBulletObject = casterBehavior.cosmeticBulletProvider:GetPart()
+	rayInfo.cosmeticBulletObject = casterBehavior.cosmeticBulletProvider:getPart()
 	rayInfo.cosmeticBulletObject.CFrame = CFrame.new(origin, origin + direction)
 
 	local targetContainer = casterBehavior.cosmeticBulletProvider.parent
@@ -573,20 +574,15 @@ function Caster:Fire(
 					local initialVelocity = latestTrajectory.initialVelocity
 					local acceleration = latestTrajectory.acceleration
 
-					local lastPoint = Vector3Utils.getPositionAtTime(totalDelta, origin, initialVelocity, acceleration)
+					local lastPoint = getPositionAtTime(totalDelta, origin, initialVelocity, acceleration)
 
 					stateInfo.totalRuntime += delta
 
 					-- Recalculate this.
 					totalDelta = stateInfo.totalRuntime - latestTrajectory.startTime
 
-					local currentPoint = Vector3Utils.getPositionAtTime(
-						totalDelta,
-						origin,
-						initialVelocity,
-						acceleration
-					)
-					local currentVelocity = Vector3Utils.getVelocityAtTime(totalDelta, initialVelocity, acceleration)
+					local currentPoint = getPositionAtTime(totalDelta, origin, initialVelocity, acceleration)
+					local currentVelocity = getVelocityAtTime(totalDelta, initialVelocity, acceleration)
 
 					-- This is the displacement from where the ray was on the last from to where the ray is now.
 					local totalDisplacement = currentPoint - lastPoint

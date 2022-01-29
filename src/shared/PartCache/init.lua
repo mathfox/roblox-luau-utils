@@ -1,15 +1,12 @@
 export type PartCache = {
-	_available: { BasePart },
-	_inUse: { BasePart },
 	parent: Instance,
-	_template: BasePart,
-	_expansionSize: number,
+	expansionSize: number,
 }
 
 local CFRAME_MATH_HUGE = CFrame.new(0, math.huge, 0)
 
 local function cloneFromTemplate(template: BasePart, currentCacheParent: Instance): BasePart
-	local part: BasePart = template:Clone()
+	local part = template:Clone()
 	part.CFrame = CFRAME_MATH_HUGE
 	part.Anchored = true
 	part.Parent = currentCacheParent
@@ -22,13 +19,13 @@ PartCache.__index = PartCache
 function PartCache.new(template: BasePart, numPrecreatedParts: number, cacheParent: Instance?): PartCache
 	assert(numPrecreatedParts > 0, "numPrecreatedParts can not be negative or equal to 0!")
 
-	local self: PartCache = setmetatable({
+	local self = setmetatable({
 		_available = {},
 		_availableAmount = numPrecreatedParts,
 		_inUse = {},
 		parent = cacheParent,
 		_template = template,
-		_expansionSize = 10,
+		expansionSize = 10,
 	}, PartCache)
 
 	self:Expand(numPrecreatedParts)
@@ -42,7 +39,7 @@ function PartCache:GetPart(): BasePart
 	if self._availableAmount == 0 then
 		self:Expand()
 
-		self._availableAmount = self._expansionSize
+		self._availableAmount = self.expansionSize
 	end
 
 	local basePart: BasePart = availableBaseParts[self._availableAmount]
@@ -84,7 +81,7 @@ function PartCache:SetCacheParent(cacheParent: Instance)
 end
 
 function PartCache:Expand(numParts: number)
-	for _ = 1, numParts or self._expansionSize do
+	for _ = 1, numParts or self.expansionSize do
 		table.insert(self._available, cloneFromTemplate(self._template, self.parent))
 	end
 end

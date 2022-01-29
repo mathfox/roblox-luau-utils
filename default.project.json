@@ -1,27 +1,27 @@
 {
-    "name": "roblox-luau-utils",
-    "tree": {
-        "$className": "DataModel",
-        "ReplicatedStorage": {
-            "$className": "ReplicatedStorage",
-            "Shared": {
-                "$path": "src/shared"
+   "name": "roblox-luau-utils",
+   "tree": {
+      "$className": "DataModel",
+      "ReplicatedStorage": {
+         "$className": "ReplicatedStorage",
+         "Shared": {
+            "$path": "src/shared"
+         }
+      },
+      "ServerStorage": {
+         "$className": "ServerStorage",
+         "Server": {
+            "$path": "src/server"
+         }
+      },
+      "StarterPlayer": {
+         "$className": "StarterPlayer",
+         "StarterPlayerScripts": {
+            "$className": "StarterPlayerScripts",
+            "Client": {
+               "$path": "src/client"
             }
-        },
-        "ServerStorage": {
-            "$className": "ServerStorage",
-            "Server": {
-                "$path": "src/server"
-            }
-        },
-        "StarterPlayer": {
-            "$className": "StarterPlayer",
-            "StarterPlayerScripts": {
-                "$className": "StarterPlayerScripts",
-                "Client": {
-                    "$path": "src/client"
-                }
-            }
-        }
-    }
+         }
+      }
+   }
 }
