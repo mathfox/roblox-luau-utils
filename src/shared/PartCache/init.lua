@@ -28,16 +28,16 @@ function PartCache.new(template: BasePart, numPrecreatedParts: number, cachePare
 		expansionSize = 10,
 	}, PartCache)
 
-	self:Expand(numPrecreatedParts)
+	self:expand(numPrecreatedParts)
 
 	return self
 end
 
-function PartCache:GetPart(): BasePart
+function PartCache:getPart(): BasePart
 	local availableBaseParts = self._available
 
 	if self._availableAmount == 0 then
-		self:Expand()
+		self:expand()
 
 		self._availableAmount = self.expansionSize
 	end
@@ -54,7 +54,7 @@ function PartCache:GetPart(): BasePart
 end
 
 -- Returns a part to the cache.
-function PartCache:ReturnPart(basePart: BasePart)
+function PartCache:returnPart(basePart: BasePart)
 	local inUseBaseParts = self._inUse
 
 	local partIndex: number? = table.find(inUseBaseParts, basePart)
@@ -68,7 +68,7 @@ function PartCache:ReturnPart(basePart: BasePart)
 	basePart.CFrame = CFRAME_MATH_HUGE
 end
 
-function PartCache:SetCacheParent(cacheParent: Instance)
+function PartCache:setCacheParent(cacheParent: Instance)
 	self.parent = cacheParent
 
 	for _, basePart in ipairs(self._available) do
@@ -80,14 +80,14 @@ function PartCache:SetCacheParent(cacheParent: Instance)
 	end
 end
 
-function PartCache:Expand(numParts: number)
+function PartCache:expand(numParts: number)
 	for _ = 1, numParts or self.expansionSize do
 		table.insert(self._available, cloneFromTemplate(self._template, self.parent))
 	end
 end
 
 -- Destroys this cache entirely. Use this when you don't need this cache object anymore.
-function PartCache:Destroy()
+function PartCache:destroy()
 	for _, basePart in ipairs(self._available) do
 		basePart:Destroy()
 	end
@@ -98,11 +98,5 @@ function PartCache:Destroy()
 
 	setmetatable(self, nil)
 end
-
-PartCache.returnPart = PartCache.ReturnPart
-PartCache.getPart = PartCache.GetPart
-PartCache.setCacheParent = PartCache.SetCacheParent
-PartCache.expand = PartCache.Expand
-PartCache.destroy = PartCache.Destroy
 
 return PartCache

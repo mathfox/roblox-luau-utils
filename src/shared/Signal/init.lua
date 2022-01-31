@@ -33,7 +33,7 @@ function Connection.new(signal: Signal, fn: Function): Connection
 	return self
 end
 
-function Connection:Disconnect()
+function Connection:disconnect()
 	if self.Connected then
 		self.Connected = false
 
@@ -53,12 +53,10 @@ function Connection:Disconnect()
 	end
 end
 
-Connection.disconnect = Connection.Disconnect
-
 local Signal = {}
 Signal.__index = Signal
 
-function Signal:Connect(fn: Function): Connection
+function Signal:connect(fn: Function): Connection
 	local connection = Connection.new(self, fn)
 
 	if self._last then
@@ -70,7 +68,7 @@ function Signal:Connect(fn: Function): Connection
 	return connection
 end
 
-function Signal:Fire(...: any)
+function Signal:fire(...: any)
 	local connection = self._last
 
 	while connection do
@@ -86,7 +84,7 @@ function Signal:Fire(...: any)
 	end
 end
 
-function Signal:Wait(): ...any
+function Signal:wait(): ...any
 	local waitingCoroutine = coroutine.running()
 
 	local connection = nil
@@ -99,7 +97,7 @@ function Signal:Wait(): ...any
 	return coroutine.yield()
 end
 
-function Signal:Destroy()
+function Signal:destroy()
 	local last = self._last
 
 	while last do
@@ -109,11 +107,6 @@ function Signal:Destroy()
 
 	self._last = nil
 end
-
-Signal.connect = Signal.Connect
-Signal.fire = Signal.Fire
-Signal.wait = Signal.Wait
-Signal.destroy = Signal.Destroy
 
 function Signal.new(): Signal
 	local self = setmetatable({}, Signal)

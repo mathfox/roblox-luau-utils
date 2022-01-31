@@ -61,7 +61,7 @@ function Maid:__newindex(index: any, newTask: MaidTask | nil)
 	end
 end
 
-function Maid:GiveTask(newTask: MaidTask): string
+function Maid:giveTask(newTask: MaidTask): string
 	if not newTask then
 		error("task can not be false or nil", 2)
 	end
@@ -71,7 +71,7 @@ function Maid:GiveTask(newTask: MaidTask): string
 	return taskId
 end
 
-function Maid:FinalizeTask(taskId: string)
+function Maid:finalizeTask(taskId: string)
 	if not self._tasks[taskId] then
 		error("attempt to finalize ungiven task", 2)
 	end
@@ -79,7 +79,7 @@ function Maid:FinalizeTask(taskId: string)
 	self[taskId] = nil
 end
 
-function Maid:GivePromise(promise): string
+function Maid:givePromise(promise): string
 	if not Promise.is(promise) then
 		error("no promise provided", 2)
 	elseif promise:getStatus() ~= Promise.Status.Started then
@@ -99,7 +99,7 @@ function Maid:GivePromise(promise): string
 	return taskId
 end
 
-function Maid:Destroy()
+function Maid:destroy()
 	local tasks = self._tasks
 
 	for index, oldTask in pairs(tasks) do
@@ -116,10 +116,5 @@ function Maid:Destroy()
 		index, oldTask = next(tasks)
 	end
 end
-
-Maid.giveTask = Maid.GiveTask
-Maid.givePromise = Maid.GivePromise
-Maid.finalizeTask = Maid.FinalizeTask
-Maid.destroy = Maid.Destroy
 
 return Maid

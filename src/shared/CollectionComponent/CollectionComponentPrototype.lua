@@ -191,6 +191,4 @@ function CollectionComponentPrototype:getComponent(componentClass)
 	return componentClass._instancesToComponents[self.instance]
 end
 
-CollectionComponentPrototype.Destroy = CollectionComponentPrototype.destroy
-
 return CollectionComponentPrototype
