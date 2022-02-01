@@ -1,3 +1,5 @@
+local isPartOfAdorneeFast = require(script.Parent.isPartOfAdorneeFast)
+
 local function isPartOfAdornee(adornee: Instance, part: BasePart): boolean
 	if adornee == nil then
 		error("missing argument #1 to 'isPartOfAdornee' (Instance expected)", 2)
@@ -9,13 +11,7 @@ local function isPartOfAdornee(adornee: Instance, part: BasePart): boolean
 		error(("invalid argument #2 to 'isPartOfAdornee' (BasePart expected, got %s)"):format(typeof(part)), 2)
 	end
 
-	if adornee:IsA("Humanoid") then
-		local model: Model? = adornee.Parent
-
-		return if model then part:IsDescendantOf(model) else false
-	end
-
-	return adornee == part or part:IsDescendantOf(adornee)
+	return isPartOfAdorneeFast(adornee, part)
 end
 
 return isPartOfAdornee

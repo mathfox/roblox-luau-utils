@@ -8,11 +8,7 @@ local function getPlayerRootPart(player: Player): BasePart?
 	end
 
 	local humanoid = getPlayerHumanoid(player)
-	if humanoid then
-		return humanoid.RootPart
-	end
-
-	return nil
+	return if humanoid then humanoid.RootPart else nil
 end
 
 return getPlayerRootPart

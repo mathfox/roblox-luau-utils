@@ -6,11 +6,7 @@ local function getPlayerHumanoid(player: Player): Humanoid?
 	end
 
 	local character = player.Character
-	if character then
-		return character:FindFirstChildOfClass("Humanoid")
-	end
-
-	return nil
+	return if character then character:FindFirstChildOfClass("Humanoid") else nil
 end
 
 return getPlayerHumanoid

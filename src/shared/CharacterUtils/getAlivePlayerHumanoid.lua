@@ -8,11 +8,7 @@ local function getAlivePlayerHumanoid(player: Player): Humanoid?
 	end
 
 	local humanoid = getPlayerHumanoid(player)
-	if humanoid and humanoid.Health > 0 then
-		return humanoid
-	end
-
-	return nil
+	return if humanoid and humanoid.Health > 0 then humanoid else nil
 end
 
 return getAlivePlayerHumanoid

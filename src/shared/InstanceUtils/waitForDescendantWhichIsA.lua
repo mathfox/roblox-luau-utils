@@ -1,9 +1,11 @@
 local findFirstDescendantWhichIsA = require(script.Parent.findFirstDescendantWhichIsA)
 
 local function waitForDescendantWhichIsA(parent: Instance, className: string, timeOut: number?): Instance?
-	if not timeOut then
-		local descendant = findFirstDescendantWhichIsA(parent, className)
+	local descendant = findFirstDescendantWhichIsA(parent, className)
 
+	if descendant then
+		return descendant
+	elseif not timeOut then
 		while not descendant or not descendant:IsA(className) do
 			descendant = parent.DescendantAdded:Wait()
 		end

@@ -1,13 +1,4 @@
-local function getAdorneeCenterPosition(adornee: Instance): Vector3?
-	if adornee == nil then
-		error("missing argument #1 to 'getAdorneeCenterPosition' (Instance expected)", 2)
-	elseif typeof(adornee) ~= "Instance" then
-		error(
-			("invalid argument #1 to 'getAdorneeCenterPosition' (Instance expected, got %s)"):format(typeof(adornee)),
-			2
-		)
-	end
-
+local function getAdorneeCenterPositionFast(adornee: Instance): Vector3?
 	if adornee:IsA("BasePart") then
 		return adornee.Position
 	elseif adornee:IsA("Model") then
@@ -31,4 +22,4 @@ local function getAdorneeCenterPosition(adornee: Instance): Vector3?
 	end
 end
 
-return getAdorneeCenterPosition
+return getAdorneeCenterPositionFast

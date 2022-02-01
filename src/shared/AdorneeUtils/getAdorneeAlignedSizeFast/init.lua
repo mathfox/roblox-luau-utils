@@ -1,12 +1,6 @@
 local getAdorneeBasePart = require(script.Parent.getAdorneeBasePart)
 
-local function getAdorneeAlignedSize(adornee: Instance): Vector3?
-	if adornee == nil then
-		error("missing argument #1 to 'getAdorneeAlignedSize' (Instance expected)", 2)
-	elseif typeof(adornee) ~= "Instance" then
-		error(("invalid argument #1 to 'getAdorneeAlignedSize' (Instance expected, got %s)"):format(typeof(adornee)), 2)
-	end
-
+local function getAdorneeAlignedSizeFast(adornee: Instance): Vector3?
 	if adornee:IsA("Model") then
 		return select(2, adornee:GetBoundingBox())
 	elseif adornee:IsA("Humanoid") then
@@ -18,4 +12,4 @@ local function getAdorneeAlignedSize(adornee: Instance): Vector3?
 	end
 end
 
-return getAdorneeAlignedSize
+return getAdorneeAlignedSizeFast

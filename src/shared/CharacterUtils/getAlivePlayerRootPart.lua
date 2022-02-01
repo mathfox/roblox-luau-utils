@@ -8,11 +8,7 @@ local function getAlivePlayerRootPart(player: Player): BasePart?
 	end
 
 	local humanoid = getPlayerHumanoid(player)
-	if humanoid and humanoid.Health > 0 then
-		return humanoid.RootPart
-	end
-
-	return nil
+	return if humanoid and humanoid.Health > 0 then humanoid.RootPart else nil
 end
 
 return getAlivePlayerRootPart

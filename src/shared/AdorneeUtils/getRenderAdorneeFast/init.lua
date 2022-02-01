@@ -1,12 +1,6 @@
-export type RenderAdornee = BasePart | Model | Attachment
+local Types = require(script.Parent.Types)
 
-local function getRenderAdornee(adornee: Instance): RenderAdornee?
-	if adornee == nil then
-		error("missing argument #1 to 'getRenderAdornee' (Instance expected)", 2)
-	elseif typeof(adornee) ~= "Instance" then
-		error(("invalid argument #1 to 'getRenderAdornee' (Instance expected, got %s)"):format(typeof(adornee)), 2)
-	end
-
+local function getRenderAdorneeFast(adornee: Instance): Types.RenderAdornee?
 	if adornee:IsA("BasePart") then
 		return adornee
 	elseif adornee:IsA("Model") then
@@ -26,4 +20,4 @@ local function getRenderAdornee(adornee: Instance): RenderAdornee?
 	end
 end
 
-return getRenderAdornee
+return getRenderAdorneeFast

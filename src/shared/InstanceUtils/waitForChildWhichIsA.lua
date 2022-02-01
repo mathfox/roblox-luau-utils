@@ -1,7 +1,9 @@
 local function waitForChildWhichIsA(parent: Instance, className: string, timeOut: number?): Instance?
-	if not timeOut then
-		local child = parent:FindFirstChildWhichIsA(className)
+	local child = parent:FindFirstChildWhichIsA(className)
 
+	if child then
+		return child
+	elseif not timeOut then
 		while not child or not child:IsA(className) do
 			child = parent.ChildAdded:Wait()
 		end
