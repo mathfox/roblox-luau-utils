@@ -89,7 +89,7 @@ function Signal:wait(): ...any
 
 	local connection = nil
 	connection = self:connect(function(...: any)
-		connection:Disconnect()
+		connection:disconnect()
 
 		task.spawn(waitingCoroutine, ...)
 	end)
