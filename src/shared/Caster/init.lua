@@ -413,6 +413,7 @@ function Caster.new()
 		LengthChanged = Signal.new(),
 		RayHit = Signal.new(),
 		RayPierced = Signal.new(),
+		RayOutranged = Signal.new(),
 		CastTerminating = Signal.new(),
 		worldRoot = workspace,
 	}, Caster)
@@ -456,8 +457,9 @@ function Caster:fire(
 		}
 	end
 
-	local raycastParams =
-		if casterBehavior.raycastParams then cloneRaycastParams(casterBehavior.raycastParams) else RaycastParams.new()
+	local raycastParams = if casterBehavior.raycastParams
+		then cloneRaycastParams(casterBehavior.raycastParams)
+		else RaycastParams.new()
 
 	local rayInfo = {
 		raycastParams = raycastParams,
@@ -526,9 +528,9 @@ function Caster:fire(
 						raycastParams
 					)
 
-					local rayDisplacement = (
-						if not raycastResult then currentPoint else raycastResult.Position - lastPoint
-					).Magnitude
+					local rayDisplacement = (if not raycastResult
+						then currentPoint
+						else raycastResult.Position - lastPoint).Magnitude
 
 					-- Now undo this. The line below in the for loop will add this time back gradually.
 					stateInfo.totalRuntime -= delta
