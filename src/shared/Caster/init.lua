@@ -576,4 +576,14 @@ function Caster:fire(
 	return cast
 end
 
+function Caster:destroy()
+	self.LengthChanged:destroy()
+	self.RayHit:destroy()
+	self.RayPierced:destroy()
+	self.RayOutranged:destroy()
+	self.CastTerminating:destroy()
+
+	setmetatable(self, nil)
+end
+
 return Caster
