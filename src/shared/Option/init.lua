@@ -33,10 +33,10 @@ end
 
 --[[
 	Safely wraps the given value as an option. If the value is `nil`,
-   returns `Option.None`, otherwise returns a new Option
+   returns `Option.none`, otherwise returns a new Option
 ]]
 function Option.wrap(value: any): Option
-	return if value == nil then Option.None else Option._new(value)
+	return if value == nil then Option.none else Option._new(value)
 end
 
 function Option.is(object: any): boolean
@@ -93,9 +93,9 @@ function Option.prototype:intersect(option: Option): Option
 	return if self._s then option else Option.none
 end
 
--- extending the Option.None will result into always returning itself
+-- extending the Option.none will result into always returning itself
 function Option.prototype:extend(modifier: (any) -> Option): Option
-	return if self._s then Option.assert(modifier(self._v)) else Option.None
+	return if self._s then Option.assert(modifier(self._v)) else Option.none
 end
 
 --  if caller has a value, returns itself. otherwise, returns `option`
@@ -105,7 +105,7 @@ end
 
 -- returns `self` if this option has a value and the predicate returns `true. otherwise, returns None
 function Option.prototype:filter(predicate: (any) -> boolean): Option
-	return if not self._s or not predicate(self._v) then Option.None else self
+	return if not self._s or not predicate(self._v) then Option.none else self
 end
 
 -- returns `true` if this option contains `value`
@@ -119,14 +119,13 @@ end
 
 function Option:__eq(object: Option | any): boolean
 	return if Option.is(object)
-		then if self._s and object:isSome()
-then self._v == object:unwrap() else not self._s and object:isNone()
+		then if self._s and object:isSome() then self._v == object:unwrap() else not self._s and object:isNone()
 		else false
 end
 
 -- represents no value
-Option.None = Option._new()
+Option.none = Option._new()
 
-export type Option = typeof(Option.None)
+export type Option = typeof(Option.none)
 
 return Option
