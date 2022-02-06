@@ -12,6 +12,8 @@ local InstanceUtils = {
 	waitForDescendantOfClass = require(script.waitForDescendantOfClass),
 	waitForDescendantWhichIsA = require(script.waitForDescendantWhichIsA),
 
+	waitUntilParentedTo = require(script.waitUntilParentedTo),
+
 	clearAllChildrenOfClass = require(script.clearAllChildrenOfClass),
 	clearAllChildrenWhichIsA = require(script.clearAllChildrenWhichIsA),
 	clearAllDescendantsOfClass = require(script.clearAllDescendantsOfClass),
