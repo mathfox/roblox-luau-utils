@@ -19,7 +19,7 @@ local InstanceUtils = {
 	clearAllDescendantsOfClass = require(script.clearAllDescendantsOfClass),
 	clearAllDescendantsWhichIsA = require(script.clearAllDescendantsWhichIsA),
 
-	getInstanceMass = require(script.getInstanceMass),
+	getPVInstanceMass = require(script.getPVInstanceMass),
 }
 
 return InstanceUtils

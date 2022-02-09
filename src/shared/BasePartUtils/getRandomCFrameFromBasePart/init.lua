@@ -1,3 +1,5 @@
+local getRandomCFrameFromBasePartFast = require(script.Parent.getRandomCFrameFromBasePartFast)
+
 local function getRandomCFrameFromBasePart(part: BasePart, rngOverride: Random?): CFrame
 	if part == nil then
 		error("missing argument #1 to 'getRandomCFrameFromBasePart' (BasePart expected)", 2)
@@ -15,18 +17,7 @@ local function getRandomCFrameFromBasePart(part: BasePart, rngOverride: Random?)
 		)
 	end
 
-	local random = rngOverride or Random.new()
-	local size = part.Size
-
-	local halfSizeX = size.X / 2
-	local halfSizeY = size.Y / 2
-	local halfSizeZ = size.Z / 2
-
-	local randomX = random:NextNumber(-halfSizeX, halfSizeX)
-	local randomY = random:NextNumber(-halfSizeY, halfSizeY)
-	local randomZ = random:NextNumber(-halfSizeZ, halfSizeZ)
-
-	return part.CFrame * CFrame.new(randomX, randomY, randomZ)
+	return getRandomCFrameFromBasePartFast(part, rngOverride)
 end
 
 return getRandomCFrameFromBasePart

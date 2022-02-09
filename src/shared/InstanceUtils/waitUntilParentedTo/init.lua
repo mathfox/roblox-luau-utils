@@ -1,5 +1,5 @@
 local function waitUntilParentedTo(instance: Instance, parent: Instance?, timeout: number?): Instance?
-	local currentParent = instance.Parent
+	local currentParent: Instance? = instance.Parent
 
 	if currentParent == parent then
 		return parent

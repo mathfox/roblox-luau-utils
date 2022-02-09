@@ -1,13 +1,4 @@
-local function computeRegion3FromBasePart(part: BasePart): Region3
-	if part == nil then
-		error("missing argument #1 to 'computeRegion3FromBasePart' (BasePart expected)", 2)
-	elseif typeof(part) ~= "Instance" or not part:IsA("BasePart") then
-		error(
-			("invalid argument #1 to 'computeRegion3FromBasePart' (BasePart expected, got %s)"):format(typeof(part)),
-			2
-		)
-	end
-
+local function computeRegion3FromBasePartFast(part: BasePart): Region3
 	local new, abs = Vector3.new, math.abs
 	local size = part.Size
 	local sX, sY, sZ = size.X, size.Y, size.Z
@@ -24,4 +15,4 @@ local function computeRegion3FromBasePart(part: BasePart): Region3
 	return Region3.new(new(minX, minY, minZ), new(maxX, maxY, maxZ))
 end
 
-return computeRegion3FromBasePart
+return computeRegion3FromBasePartFast
