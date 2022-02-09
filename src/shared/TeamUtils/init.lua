@@ -54,9 +54,7 @@ end
 
 local TeamUtils = {
 	areTeamMates = areTeamMates,
-	AreTeamMates = areTeamMates,
 	areOpponents = areOpponents,
-	AreOpponents = areOpponents,
 }
 
 return TeamUtils

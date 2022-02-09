@@ -6,16 +6,10 @@ function Queue.is(object: any): boolean
 	return type(object) == "table" and getmetatable(object) == Queue
 end
 
-local function new()
+function Queue.new(): Queue
 	return setmetatable({
 		_queue = {},
 	}, Queue)
-end
-
-export type Queue = typeof(new())
-
-function Queue.new(): Queue
-	return new()
 end
 
 function Queue.prototype:enqueue(...: any)
@@ -40,10 +34,6 @@ function Queue.prototype:getLength(): number
 	return #self._queue
 end
 
-Queue.prototype.Enqueue = Queue.prototype.enqueue
-Queue.prototype.Dequeue = Queue.prototype.dequeue
-Queue.prototype.GetFront = Queue.prototype.getFront
-Queue.prototype.GetBack = Queue.prototype.getBack
-Queue.prototype.GetLength = Queue.prototype.getLength
+export type Queue = typeof(Queue.new())
 
 return Queue
