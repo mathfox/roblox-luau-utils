@@ -53,6 +53,8 @@ function Connection:disconnect()
 	end
 end
 
+Connection.Disconnect = Connection.disconnect
+
 local Signal = {}
 Signal.__index = Signal
 
