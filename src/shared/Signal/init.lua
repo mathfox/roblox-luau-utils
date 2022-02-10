@@ -120,4 +120,9 @@ function Signal.is(object: any): boolean
 	return type(object) == "table" and getmetatable(object) == Signal
 end
 
+Signal.Fire = Signal.fire
+Signal.Connect = Signal.connect
+Signal.Wait = Signal.wait
+Signal.Destroy = Signal.destroy
+
 return Signal
