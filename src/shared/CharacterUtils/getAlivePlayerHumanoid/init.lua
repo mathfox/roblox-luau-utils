@@ -1,4 +1,4 @@
-local getPlayerHumanoid = require(script.Parent.getPlayerHumanoid)
+local getAlivePlayerHumanoidFast = require(script.Parent.getAlivePlayerHumanoidFast)
 
 local function getAlivePlayerHumanoid(player: Player): Humanoid?
 	if player == nil then
@@ -7,8 +7,7 @@ local function getAlivePlayerHumanoid(player: Player): Humanoid?
 		error(("invalid argument #1 to 'getAlivePlayerHumanoid' (Player expected, got %s)"):format(typeof(player)), 2)
 	end
 
-	local humanoid = getPlayerHumanoid(player)
-	return if humanoid and humanoid.Health > 0 then humanoid else nil
+	return getAlivePlayerHumanoidFast(player)
 end
 
 return getAlivePlayerHumanoid

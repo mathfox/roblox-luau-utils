@@ -1,4 +1,4 @@
-local Players = game:GetService("Players")
+local getPlayerFromCharacterDescendantFast = require(script.Parent.getPlayerFromCharacterDescendantFast)
 
 local function getPlayerFromCharacterDescendant(descendant: Instance): Player?
 	if descendant == nil then
@@ -12,18 +12,7 @@ local function getPlayerFromCharacterDescendant(descendant: Instance): Player?
 		)
 	end
 
-	local character = descendant
-
-	while character do
-		local player: Player? = Players:GetPlayerFromCharacter(character)
-		if player then
-			return player
-		else
-			character = character.Parent
-		end
-	end
-
-	return nil
+	return getPlayerFromCharacterDescendantFast(descendant)
 end
 
 return getPlayerFromCharacterDescendant

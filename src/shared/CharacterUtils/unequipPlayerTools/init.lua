@@ -1,4 +1,4 @@
-local getPlayerHumanoid = require(script.Parent.getPlayerHumanoid)
+local unequipPlayerToolsFast = require(script.Parent.unequipPlayerToolsFast)
 
 local function unequipPlayerTools(player: Player)
 	if player == nil then
@@ -7,10 +7,7 @@ local function unequipPlayerTools(player: Player)
 		error(("invalid argument #1 to 'unequipPlayerTools' (Player expected, got %s)"):format(typeof(player)), 2)
 	end
 
-	local humanoid = getPlayerHumanoid(player)
-	if humanoid then
-		humanoid:UnequipTools()
-	end
+	unequipPlayerToolsFast(player)
 end
 
 return unequipPlayerTools

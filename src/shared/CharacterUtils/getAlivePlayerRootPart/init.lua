@@ -1,4 +1,4 @@
-local getPlayerHumanoid = require(script.Parent.getPlayerHumanoid)
+local getAlivePlayerRootPartFast = require(script.Parent.getAlivePlayerRootPartFast)
 
 local function getAlivePlayerRootPart(player: Player): BasePart?
 	if player == nil then
@@ -7,8 +7,7 @@ local function getAlivePlayerRootPart(player: Player): BasePart?
 		error(("invalid argument #1 to 'getAlivePlayerRootPart' (Player expected, got %s)"):format(typeof(player)), 2)
 	end
 
-	local humanoid = getPlayerHumanoid(player)
-	return if humanoid and humanoid.Health > 0 then humanoid.RootPart else nil
+	return getAlivePlayerRootPartFast(player)
 end
 
 return getAlivePlayerRootPart
