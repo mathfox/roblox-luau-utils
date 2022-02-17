@@ -1,9 +1,9 @@
-local DebouncePrototype = require(script.DebouncePrototype)
-
 local Debounce = {}
+Debounce.prototype = {}
+Debounce.__index = Debounce.prototype
 
-function Debounce.is(obj: any): boolean
-	return type(obj) == "table" and obj.ClassName == DebouncePrototype.ClassName
+function Debounce.is(object: any): boolean
+	return type(object) == "table" and getmetatable(object) == Debounce
 end
 
 function Debounce.once(successFunction: ((...any) -> ...any), failFunction: ((...any) -> ...any)?)
@@ -13,7 +13,7 @@ function Debounce.once(successFunction: ((...any) -> ...any), failFunction: ((..
 		error("#2 argument must be a function or nil!", 2)
 	end
 
-	local self = setmetatable({}, DebouncePrototype)
+	local self = setmetatable({}, Debounce)
 
 	self.OnInvoke = function(...)
 		if self:_getLastInvokeTime() then
@@ -39,7 +39,7 @@ function Debounce.time(debounceTime: number, successFunction: ((...any) -> ...an
 		error("#3 argument must be a function or nil!", 2)
 	end
 
-	local self = setmetatable({}, DebouncePrototype)
+	local self = setmetatable({}, Debounce)
 
 	self:_updateLastInvokeTime(0)
 	self.OnInvoke = function(...)
@@ -54,6 +54,18 @@ function Debounce.time(debounceTime: number, successFunction: ((...any) -> ...an
 	end
 
 	return self
+end
+
+function Debounce.prototype:_updateLastInvokeTime(invokeTime: number)
+	self._lastInvokeTime = invokeTime
+end
+
+function Debounce.prototype:_getLastInvokeTime(): number?
+	return self._lastInvokeTime
+end
+
+function Debounce.prototype:Destroy()
+	self._lastInvokeTime = nil
 end
 
 return Debounce

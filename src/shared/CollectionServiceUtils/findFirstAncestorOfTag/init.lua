@@ -1,4 +1,4 @@
-local CollectionService = game:GetService("CollectionService")
+local findFirstAncestorOfTagFast = require(script.Parent.findFirstAncestorOfTagFast)
 
 local function findFirstAncestorOfTag(tagName: string, child: Instance): Instance?
 	if tagName == nil then
@@ -11,17 +11,7 @@ local function findFirstAncestorOfTag(tagName: string, child: Instance): Instanc
 		error(("invalid argument #2 to 'findFirstAncestorOfTag' (Instance expected, got %s)"):format(typeof(child)), 2)
 	end
 
-	local parent = child.Parent
-
-	while parent do
-		if CollectionService:HasTag(parent, tagName) then
-			return parent
-		end
-
-		parent = parent.Parent
-	end
-
-	return nil
+	return findFirstAncestorOfTagFast(tagName, child)
 end
 
 return findFirstAncestorOfTag
