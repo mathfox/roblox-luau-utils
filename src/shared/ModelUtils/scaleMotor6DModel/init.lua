@@ -1,4 +1,4 @@
-local getChildrenWhichIsA = require(script.Parent.Parent.InstanceUtils.getChildrenWhichIsA)
+local scaleMotor6DModelFast = require(script.Parent.scaleMotor6DModelFast)
 
 local function scaleMotor6DModel(model: Model, scaleNumber: number)
 	if model == nil then
@@ -15,16 +15,7 @@ local function scaleMotor6DModel(model: Model, scaleNumber: number)
 		error("invalid argument #2 to 'scaleMotor6DModel' (not infinite number expected, got infinite number)", 2)
 	end
 
-	for _, part in ipairs(getChildrenWhichIsA(model, "BasePart")) do
-		part.Size *= scaleNumber
-
-		for _, joint in ipairs(getChildrenWhichIsA(part, "JointInstance")) do
-			local jointScaleNumber: number = scaleNumber - 1
-
-			joint.C0 += joint.C0.Position * jointScaleNumber
-			joint.C1 += joint.C1.Position * jointScaleNumber
-		end
-	end
+	scaleMotor6DModelFast(model, scaleNumber)
 end
 
 return scaleMotor6DModel

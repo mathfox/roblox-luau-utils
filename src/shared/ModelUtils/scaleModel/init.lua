@@ -1,4 +1,4 @@
-local getDescendantsWhichIsA = require(script.Parent.Parent.InstanceUtils.getDescendantsWhichIsA)
+local scaleModelFast = require(script.Parent.scaleModelFast)
 
 local function scaleModel(model: Model, scaleNumber: number)
 	if model == nil then
@@ -15,17 +15,7 @@ local function scaleModel(model: Model, scaleNumber: number)
 		error("invalid argument #2 to 'scaleModel' (not infinite number expected, got infinite number)", 2)
 	end
 
-	local primaryPart: BasePart = model.PrimaryPart
-	local primaryCFrame: CFrame = primaryPart.CFrame
-	local inversedCFrame: CFrame = primaryCFrame:Inverse()
-
-	for _, part in ipairs(getDescendantsWhichIsA(model, "BasePart")) do
-		part.Size *= scaleNumber
-
-		if part ~= primaryPart then
-			part.CFrame = primaryCFrame + (inversedCFrame * part.Position * scaleNumber)
-		end
-	end
+	scaleModelFast(model, scaleNumber)
 end
 
 return scaleModel
