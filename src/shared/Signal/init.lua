@@ -13,7 +13,6 @@ do
 
 	function runEventHandlerInFreeThread(...)
 		acquireRunnerThreadAndCallEventHandler(...)
-
 		while true do
 			acquireRunnerThreadAndCallEventHandler(coroutine.yield())
 		end
@@ -25,15 +24,13 @@ Connection.Connected = true
 Connection.__index = Connection
 
 function Connection.new(signal: Signal, fn: Function): Connection
-	local self = setmetatable({
+	return setmetatable({
 		_signal = signal,
 		_fn = fn,
 	}, Connection)
-
-	return self
 end
 
-function Connection:disconnect()
+function Connection:Disconnect()
 	if self.Connected then
 		self.Connected = false
 
@@ -53,12 +50,12 @@ function Connection:disconnect()
 	end
 end
 
-Connection.Disconnect = Connection.disconnect
+Connection.disconnect = Connection.Disconnect
 
 local Signal = {}
 Signal.__index = Signal
 
-function Signal:connect(fn: Function): Connection
+function Signal:Connect(fn: Function): Connection
 	local connection = Connection.new(self, fn)
 
 	if self._last then
@@ -70,7 +67,7 @@ function Signal:connect(fn: Function): Connection
 	return connection
 end
 
-function Signal:fire(...: any)
+function Signal:Fire(...: any)
 	local connection = self._last
 
 	while connection do
@@ -86,12 +83,12 @@ function Signal:fire(...: any)
 	end
 end
 
-function Signal:wait(): ...any
+function Signal:Wait(): ...any
 	local waitingCoroutine = coroutine.running()
 
 	local connection = nil
-	connection = self:connect(function(...: any)
-		connection:disconnect()
+	connection = self:Connect(function(...: any)
+		connection:Disconnect()
 
 		task.spawn(waitingCoroutine, ...)
 	end)
@@ -99,7 +96,7 @@ function Signal:wait(): ...any
 	return coroutine.yield()
 end
 
-function Signal:destroy()
+function Signal:Destroy()
 	local last = self._last
 
 	while last do
@@ -110,21 +107,20 @@ function Signal:destroy()
 	self._last = nil
 end
 
+function Signal.is(object: any): boolean
+	return type(object) == "table" and getmetatable(object) == Signal
+end
+
 function Signal.new(): Signal
-	local self = setmetatable({}, Signal)
-	return self
+	return setmetatable({}, Signal)
 end
 
 export type Signal = typeof(Signal.new())
 export type Connection = typeof(Connection.new(Signal.new(), function() end))
 
-function Signal.is(object: any): boolean
-	return type(object) == "table" and getmetatable(object) == Signal
-end
-
-Signal.Fire = Signal.fire
-Signal.Connect = Signal.connect
-Signal.Wait = Signal.wait
-Signal.Destroy = Signal.destroy
+Signal.fire = Signal.Fire
+Signal.connect = Signal.Connect
+Signal.wait = Signal.Wait
+Signal.destroy = Signal.Destroy
 
 return Signal
