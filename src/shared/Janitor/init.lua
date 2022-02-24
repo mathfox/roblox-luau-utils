@@ -9,7 +9,6 @@ local WARNING_METHOD_NOT_FOUND = "Object %s doesn't have method %s, are you sure
 local DefaultMethodNamesOrMethods = {
 	["function"] = true,
 	RBXScriptConnection = "Disconnect",
-	thread = coroutine.close,
 }
 
 local function isObjectCallable(object: any): boolean
@@ -27,7 +26,7 @@ function Janitor.is(object: any): boolean
 	return type(object) == "table" and getmetatable(object) == Janitor
 end
 
-function Janitor:add(object: any, methodNameOrMethod: string | boolean | (...any) -> ...any, index: any): any
+function Janitor:add(object: any, methodNameOrTrue: string | boolean, index: any): any
 	if index then
 		self:remove(index)
 
@@ -40,14 +39,13 @@ function Janitor:add(object: any, methodNameOrMethod: string | boolean | (...any
 		this[index] = object
 	end
 
-	local typeOfObject = typeof(object)
-	methodNameOrMethod = methodNameOrMethod or DefaultMethodNamesOrMethods[typeOfObject] or "Destroy"
+	methodNameOrTrue = methodNameOrTrue or DefaultMethodNamesOrMethods[typeof(object)] or "Destroy"
 
-	if typeOfObject ~= "thread" and not isObjectCallable(object) and not object[methodNameOrMethod] then
-		warn(WARNING_METHOD_NOT_FOUND:format(tostring(object), tostring(methodNameOrMethod), debug.traceback(nil, 2)))
+	if not isObjectCallable(object) and not object[methodNameOrTrue] then
+		warn(WARNING_METHOD_NOT_FOUND:format(tostring(object), tostring(methodNameOrTrue), debug.traceback(nil, 2)))
 	end
 
-	self[object] = methodNameOrMethod
+	self[object] = methodNameOrTrue
 
 	return object
 end
@@ -74,17 +72,15 @@ function Janitor:remove(index: any)
 		local object = this[index]
 
 		if object then
-			local methodNameOrMethod = self[object]
+			local methodName = self[object]
 
-			if methodNameOrMethod then
-				if methodNameOrMethod == true then
+			if methodName then
+				if methodName == true then
 					object()
 				else
-					local objectMethod = object[methodNameOrMethod]
+					local objectMethod = object[methodName]
 					if objectMethod then
 						objectMethod(object)
-					else
-						methodNameOrMethod(object)
 					end
 				end
 
@@ -105,9 +101,9 @@ end
 
 local function getNextTask(self)
 	return function()
-		for object, methodNameOrMethod in pairs(self) do
+		for object, methodName in pairs(self) do
 			if object ~= IndicesReference then
-				return object, methodNameOrMethod
+				return object, methodName
 			end
 		end
 	end
@@ -115,22 +111,20 @@ end
 
 function Janitor:cleanup()
 	local getNext = getNextTask(self)
-	local object, methodNameOrMethod = getNext()
+	local object, methodName = getNext()
 
-	while object and methodNameOrMethod do
-		if methodNameOrMethod == true then
+	while object and methodName do
+		if methodName == true then
 			object()
 		else
-			local objectMethod = object[methodNameOrMethod]
+			local objectMethod = object[methodName]
 			if objectMethod then
 				objectMethod(object)
-			else
-				methodNameOrMethod(object)
 			end
 		end
 
 		self[object] = nil
-		object, methodNameOrMethod = getNext()
+		object, methodName = getNext()
 	end
 
 	local this = self[IndicesReference]
