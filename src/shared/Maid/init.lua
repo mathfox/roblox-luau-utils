@@ -1,10 +1,7 @@
-type FunctionTask = (...any) -> ...any
-type TableTask = { Destroy: FunctionTask, [any]: any } | { destroy: FunctionTask, [any]: any }
-type MaidTask = RBXScriptConnection | FunctionTask | TableTask
-
 local HttpService = game:GetService("HttpService")
 
 local Promise = require(script.Parent.Promise)
+local Types = require(script.Types)
 
 local Maid = {}
 Maid.__index = Maid
@@ -22,11 +19,13 @@ end
 
 export type Maid = typeof(Maid.new())
 
-local function finalizeTask(oldTask: MaidTask)
+local function finalizeTask(oldTask: Types.MaidTask)
 	if type(oldTask) == "function" then
 		oldTask()
 	elseif typeof(oldTask) == "RBXScriptConnection" then
 		oldTask:Disconnect()
+	elseif type(oldTask) == "thread" then
+		coroutine.close(oldTask)
 	elseif oldTask.Destroy then
 		oldTask:Destroy()
 	elseif oldTask.Disconnect then
@@ -42,7 +41,7 @@ function Maid:__index(index: any): any
 	return if Maid[index] then Maid[index] else self._tasks[index]
 end
 
-function Maid:__newindex(index: any, newTask: MaidTask | nil)
+function Maid:__newindex(index: any, newTask: Types.MaidTask | nil)
 	if Maid[index] ~= nil then
 		error(("'%s' is reserved"):format(tostring(index)), 2)
 	end
@@ -61,7 +60,7 @@ function Maid:__newindex(index: any, newTask: MaidTask | nil)
 	end
 end
 
-function Maid:giveTask(newTask: MaidTask): string
+function Maid:giveTask(newTask: Types.MaidTask): string
 	if not newTask then
 		error("task can not be false or nil", 2)
 	end

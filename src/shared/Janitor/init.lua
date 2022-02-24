@@ -1,16 +1,15 @@
-type StringOrTrue = string | boolean
-
 local Promise = require(script.Parent.Promise)
 local Symbol = require(script.Parent.Symbol)
 
-local IndicesReference = Symbol.named("IndicesReference")
 local LinkToInstanceIndex = Symbol.named("LinkToInstanceIndex")
+local IndicesReference = Symbol.named("IndicesReference")
 
 local WARNING_METHOD_NOT_FOUND = "Object %s doesn't have method %s, are you sure you want to add it? Traceback: %s"
 
-local DefaultMethodNames = {
+local DefaultMethodNamesOrMethods = {
 	["function"] = true,
 	RBXScriptConnection = "Disconnect",
+	thread = coroutine.close,
 }
 
 local function isObjectCallable(object: any): boolean
@@ -28,7 +27,7 @@ function Janitor.is(object: any): boolean
 	return type(object) == "table" and getmetatable(object) == Janitor
 end
 
-function Janitor:add(object: any, methodName: StringOrTrue?, index: any): any
+function Janitor:add(object: any, methodNameOrMethod: string | boolean | (...any) -> ...any, index: any): any
 	if index then
 		self:remove(index)
 
@@ -41,13 +40,14 @@ function Janitor:add(object: any, methodName: StringOrTrue?, index: any): any
 		this[index] = object
 	end
 
-	methodName = methodName or DefaultMethodNames[typeof(object)] or "Destroy"
+	local typeOfObject = typeof(object)
+	methodNameOrMethod = methodNameOrMethod or DefaultMethodNamesOrMethods[typeOfObject] or "Destroy"
 
-	if not isObjectCallable(object) and not object[methodName] then
-		warn(WARNING_METHOD_NOT_FOUND:format(tostring(object), tostring(methodName), debug.traceback(nil, 2)))
+	if typeOfObject ~= "thread" and not isObjectCallable(object) and not object[methodNameOrMethod] then
+		warn(WARNING_METHOD_NOT_FOUND:format(tostring(object), tostring(methodNameOrMethod), debug.traceback(nil, 2)))
 	end
 
-	self[object] = methodName
+	self[object] = methodNameOrMethod
 
 	return object
 end
@@ -74,15 +74,17 @@ function Janitor:remove(index: any)
 		local object = this[index]
 
 		if object then
-			local methodName = self[object]
+			local methodNameOrMethod = self[object]
 
-			if methodName then
-				if methodName == true then
+			if methodNameOrMethod then
+				if methodNameOrMethod == true then
 					object()
 				else
-					local ObjectMethod = object[methodName]
-					if ObjectMethod then
-						ObjectMethod(object)
+					local objectMethod = object[methodNameOrMethod]
+					if objectMethod then
+						objectMethod(object)
+					else
+						methodNameOrMethod(object)
 					end
 				end
 
@@ -103,9 +105,9 @@ end
 
 local function getNextTask(self)
 	return function()
-		for Object, MethodName in pairs(self) do
-			if Object ~= IndicesReference then
-				return Object, MethodName
+		for object, methodNameOrMethod in pairs(self) do
+			if object ~= IndicesReference then
+				return object, methodNameOrMethod
 			end
 		end
 	end
@@ -113,20 +115,22 @@ end
 
 function Janitor:cleanup()
 	local getNext = getNextTask(self)
-	local object, methodName = getNext()
+	local object, methodNameOrMethod = getNext()
 
-	while object and methodName do
-		if methodName == true then
+	while object and methodNameOrMethod do
+		if methodNameOrMethod == true then
 			object()
 		else
-			local method = object[methodName]
-			if method then
-				method(object)
+			local objectMethod = object[methodNameOrMethod]
+			if objectMethod then
+				objectMethod(object)
+			else
+				methodNameOrMethod(object)
 			end
 		end
 
 		self[object] = nil
-		object, methodName = getNext()
+		object, methodNameOrMethod = getNext()
 	end
 
 	local this = self[IndicesReference]
@@ -145,30 +149,25 @@ end
 Janitor.__call = Janitor.cleanup
 
 function Janitor:linkToInstance(object: Instance, allowMultiple: boolean?)
-	local indexToUse = allowMultiple and newproxy(false) or LinkToInstanceIndex
-
-	local isNilParented: boolean = object.Parent == nil
-	local isConnected: boolean = true
+	local isNilParented = object.Parent == nil
+	local isConnected = true
 
 	local function onAncestryChanged(_, newParent: Instance?)
-		if not isConnected then
-			return nil
-		end
+		if isConnected then
+			isNilParented = newParent == nil
 
-		isNilParented = newParent == nil
-		if isNilParented then
-			task.defer(function()
-				if not isConnected then
-					return nil
-				end
-
-				isConnected = false
-				self:cleanup()
-			end)
+			if isNilParented then
+				task.defer(function()
+					if isConnected then
+						isConnected = false
+						self:cleanup()
+					end
+				end)
+			end
 		end
 	end
 
-	local ancestryConnection: RBXScriptConnection = object.AncestryChanged:Connect(onAncestryChanged)
+	local ancestryConnection = object.AncestryChanged:Connect(onAncestryChanged)
 
 	local linkConnection = {}
 
@@ -180,7 +179,7 @@ function Janitor:linkToInstance(object: Instance, allowMultiple: boolean?)
 		onAncestryChanged(nil, object.Parent)
 	end
 
-	return self:add(linkConnection, "disconnect", indexToUse)
+	return self:add(linkConnection, "disconnect", if allowMultiple then newproxy(false) else LinkToInstanceIndex)
 end
 
 function Janitor:linkToInstances(...: Instance)
