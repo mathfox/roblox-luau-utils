@@ -1,10 +1,11 @@
-type Function = (...any) -> (...any)?
+local FunctionUtilsTypes = require(script.Parent.FunctionUtils.Types)
+local Types = require(script.Types)
 
 local freeRunnerThread: thread? = nil
 local runEventHandlerInFreeThread = nil
 
 do
-	local function acquireRunnerThreadAndCallEventHandler(fn: Function, ...)
+	local function acquireRunnerThreadAndCallEventHandler(fn: FunctionUtilsTypes.GenericFunction, ...)
 		local acquiredRunnerThread = freeRunnerThread
 		freeRunnerThread = nil
 		fn(...)
@@ -23,7 +24,7 @@ local Connection = {}
 Connection.Connected = true
 Connection.__index = Connection
 
-function Connection.new(signal: Signal, fn: Function): Connection
+function Connection.new(signal: Types.Signal, fn: FunctionUtilsTypes.GenericFunction): Types.Connection
 	return setmetatable({
 		_signal = signal,
 		_fn = fn,
@@ -55,7 +56,7 @@ Connection.disconnect = Connection.Disconnect
 local Signal = {}
 Signal.__index = Signal
 
-function Signal:Connect(fn: Function): Connection
+function Signal:Connect(fn: FunctionUtilsTypes.GenericFunction): Types.Connection
 	local connection = Connection.new(self, fn)
 
 	if self._last then
@@ -111,12 +112,9 @@ function Signal.is(object: any): boolean
 	return type(object) == "table" and getmetatable(object) == Signal
 end
 
-function Signal.new(): Signal
+function Signal.new(): Types.Signal
 	return setmetatable({}, Signal)
 end
-
-export type Signal = typeof(Signal.new())
-export type Connection = typeof(Connection.new(Signal.new(), function() end))
 
 Signal.fire = Signal.Fire
 Signal.connect = Signal.Connect
