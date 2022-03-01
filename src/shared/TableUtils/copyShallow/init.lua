@@ -1,7 +1,7 @@
 local copyShallowFast = require(script.Parent.copyShallowFast)
 local Types = require(script.Parent.Types)
 
-local function copyShallow(tbl: Types.GenericTable): Types.GenericTable
+local function copyShallow(tbl: Types.GenericTable)
 	if tbl == nil then
 		error("missing argument #1 to 'copyShallow' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

@@ -1,7 +1,7 @@
 local someFast = require(script.Parent.someFast)
 local Types = require(script.Parent.Types)
 
-local function some(tbl: Types.GenericTable, predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean): boolean
+local function some(tbl: Types.GenericTable, predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean)
 	if tbl == nil then
 		error("missing argument #1 to 'some' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

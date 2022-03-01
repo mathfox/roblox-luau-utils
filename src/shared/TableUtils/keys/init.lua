@@ -1,7 +1,7 @@
 local keysFast = require(script.Parent.keysFast)
 local Types = require(script.Parent.Types)
 
-local function keys(tbl: Types.GenericTable): Types.GenericTable
+local function keys(tbl: Types.GenericTable)
 	if tbl == nil then
 		error("missing argument #1 to 'keys' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

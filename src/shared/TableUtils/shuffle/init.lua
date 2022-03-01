@@ -1,7 +1,7 @@
 local shuffleFast = require(script.Parent.shuffleFast)
 local Types = require(script.Parent.Types)
 
-local function shuffle(tbl: Types.GenericTable, rngOverride: Random?): Types.GenericTable
+local function shuffle(tbl: Types.GenericTable, rngOverride: Random?)
 	if tbl == nil then
 		error("missing argument #1 to 'shuffle' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

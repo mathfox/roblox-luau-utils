@@ -1,7 +1,7 @@
 local copyShallowFast = require(script.Parent.copyShallowFast)
 local Types = require(script.Parent.Types)
 
-local function overrideFast(tbl: Types.GenericTable, overridingTbl: Types.GenericTable): Types.GenericTable
+local function overrideFast(tbl: Types.GenericTable, overridingTbl: Types.GenericTable)
 	local new = copyShallowFast(tbl)
 
 	for k, v in pairs(overridingTbl) do

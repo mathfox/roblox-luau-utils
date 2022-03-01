@@ -1,10 +1,8 @@
 local Types = require(script.Parent.Types)
 
-local function filterFast(
-	tbl: Types.GenericTable,
-	predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean
-): Types.GenericTable
-	local new = table.create(#tbl)
+local function filterFast(tbl: Types.GenericTable, predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean)
+	local new: Types.GenericTable = table.create(#tbl)
+
 	if #tbl > 0 then
 		for i, v in ipairs(tbl) do
 			if predicate(v, i, tbl) then
@@ -18,6 +16,7 @@ local function filterFast(
 			end
 		end
 	end
+
 	return new
 end
 

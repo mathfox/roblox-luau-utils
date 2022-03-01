@@ -1,7 +1,7 @@
 local assignFast = require(script.Parent.assignFast)
 local Types = require(script.Parent.Types)
 
-local function assign(tbl: Types.GenericTable, ...: Types.GenericTable): Types.GenericTable
+local function assign(tbl: Types.GenericTable, ...: Types.GenericTable)
 	if tbl == nil then
 		error("missing argument #1 to 'assign' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

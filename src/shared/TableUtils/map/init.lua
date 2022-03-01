@@ -1,7 +1,7 @@
 local mapFast = require(script.Parent.mapFast)
 local Types = require(script.Parent.Types)
 
-local function map(tbl: Types.GenericTable, func: (v: any, k: any, tbl: Types.GenericTable) -> any): Types.GenericTable
+local function map(tbl: Types.GenericTable, func: (v: any, k: any, tbl: Types.GenericTable) -> any)
 	if tbl == nil then
 		error("missing argument #1 to 'map' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

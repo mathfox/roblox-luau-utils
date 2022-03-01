@@ -1,10 +1,7 @@
 local filterFast = require(script.Parent.filterFast)
 local Types = require(script.Parent.Types)
 
-local function filter(
-	tbl: Types.GenericTable,
-	predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean
-): Types.GenericTable
+local function filter(tbl: Types.GenericTable, predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean)
 	if tbl == nil then
 		error("missing argument #1 to 'filter' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

@@ -1,7 +1,7 @@
 local everyFast = require(script.Parent.everyFast)
 local Types = require(script.Parent.Types)
 
-local function every(tbl: Types.GenericTable, predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean): boolean
+local function every(tbl: Types.GenericTable, predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean)
 	if tbl == nil then
 		error("missing argument #1 to 'every' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

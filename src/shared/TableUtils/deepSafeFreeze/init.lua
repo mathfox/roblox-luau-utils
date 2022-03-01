@@ -8,7 +8,7 @@ local function deepSafeFreeze(tbl: Types.GenericTable)
 		error(("invalid argument #1 to 'deepSafeFreeze' (table expected, got %s)"):format(typeof(tbl)), 2)
 	end
 
-	return deepSafeFreezeFast(tbl)
+	deepSafeFreezeFast(tbl)
 end
 
 return deepSafeFreeze

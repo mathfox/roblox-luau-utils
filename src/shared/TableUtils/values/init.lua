@@ -1,7 +1,7 @@
 local valuesFast = require(script.Parent.valuesFast)
 local Types = require(script.Parent.Types)
 
-local function values(tbl: Types.GenericTable): Types.GenericTable
+local function values(tbl: Types.GenericTable)
 	if tbl == nil then
 		error("missing argument #1 to 'values' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

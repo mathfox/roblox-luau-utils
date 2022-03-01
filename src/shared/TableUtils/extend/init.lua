@@ -1,7 +1,7 @@
 local extendFast = require(script.Parent.extendFast)
 local Types = require(script.Parent.Types)
 
-local function extend(tbl: Types.GenericTable, extension: Types.GenericTable): Types.GenericTable
+local function extend(tbl: Types.GenericTable, extension: Types.GenericTable)
 	if tbl == nil then
 		error("missing argument #1 to 'extend' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

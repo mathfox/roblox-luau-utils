@@ -1,7 +1,7 @@
 local reverseFast = require(script.Parent.reverseFast)
 local Types = require(script.Parent.Types)
 
-local function reverse(tbl: Types.GenericTable): Types.GenericTable
+local function reverse(tbl: Types.GenericTable)
 	if tbl == nil then
 		error("missing argument #1 to 'reverse' (table expected)", 2)
 	elseif type(tbl) ~= "table" then

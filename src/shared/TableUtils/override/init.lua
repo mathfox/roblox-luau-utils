@@ -1,7 +1,7 @@
 local overrideFast = require(script.Parent.overrideFast)
 local Types = require(script.Parent.Types)
 
-local function override(tbl: Types.GenericTable, overridingTbl: Types.GenericTable): Types.GenericTable
+local function override(tbl: Types.GenericTable, overridingTbl: Types.GenericTable)
 	if tbl == nil then
 		error("missing argument #1 to 'override' (table expected)", 2)
 	elseif type(tbl) ~= "table" then
