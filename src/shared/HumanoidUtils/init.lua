@@ -7,11 +7,13 @@ local HumanoidUtils = {
 
 	getAliveHumanoidFromModel = require(script.getAliveHumanoidFromModel),
 	getAliveHumanoidFromModelFast = require(script.getAliveHumanoidFromModelFast),
+
 	getAliveHumanoidFromDescendant = require(script.getAliveHumanoidFromDescendant),
 	getAliveHumanoidFromDescendantFast = require(script.getAliveHumanoidFromDescendantFast),
 
 	getAliveRootPartFromModel = require(script.getAliveRootPartFromModel),
 	getAliveRootPartFromModelFast = require(script.getAliveRootPartFromModelFast),
+
 	getAliveRootPartFromDescendant = require(script.getAliveRootPartFromDescendant),
 	getAliveRootPartFromDescendantFast = require(script.getAliveRootPartFromDescendantFast),
 }
