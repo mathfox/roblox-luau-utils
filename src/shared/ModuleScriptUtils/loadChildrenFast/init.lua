@@ -1,5 +1,7 @@
-local function loadChildren(parent: Instance): { any }
-	local modules = {}
+local Types = require(script.Parent.Parent.TableUtils.Types)
+
+local function loadChildrenFast(parent: Instance)
+	local modules: Types.GenericList = {}
 
 	for _, child in ipairs(parent:GetChildren()) do
 		if child:IsA("ModuleScript") then
@@ -11,4 +13,4 @@ local function loadChildren(parent: Instance): { any }
 	return modules
 end
 
-return loadChildren
+return loadChildrenFast
