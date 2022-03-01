@@ -3,7 +3,6 @@
 	statuses. Symbols have the type 'userdata', but when printed to the console,
 	the name of the symbol is shown.
 ]]
-
 local Symbol = {
 	named = require(script.named),
 	namedFast = require(script.namedFast),

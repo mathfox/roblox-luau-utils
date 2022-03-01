@@ -1,8 +1,9 @@
 local FriendUtils = {
 	getFriendsList = require(script.getFriendsList),
+	getFriendsListFast = require(script.getFriendsListFast),
+
 	getOnlineFriendsList = require(script.getOnlineFriendsList),
-	getOnlineFriendsListFromFriendsList = require(script.getOnlineFriendsListFromFriendsList),
-	getOnlineFriendsListExcludeThisServer = require(script.getOnlineFriendsListExcludeThisServer),
+	getOnlineFriendsListFast = require(script.getOnlineFriendsListFast),
 }
 
 return FriendUtils
