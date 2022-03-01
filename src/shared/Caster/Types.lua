@@ -1,13 +1,15 @@
-local Signal = require(script.Parent.Parent.Signal)
+local SignalTypes = require(script.Parent.Parent.Signal.Types)
+
 export type Caster = {
 	worldRoot: WorldRoot,
-	LengthChanged: Signal.Signal,
-	RayHit: Signal.Signal,
-	RayPierced: Signal.Signal,
-	RayOutranged: Signal.Signal,
-	CastTerminating: Signal.Signal,
+	LengthChanged: SignalTypes.Signal,
+	RayHit: SignalTypes.Signal,
+	RayPierced: SignalTypes.Signal,
+	RayOutranged: SignalTypes.Signal,
+	CastTerminating: SignalTypes.Signal,
 	fire: (Vector3, Vector3, Vector3 | number, CasterBehavior) -> (),
 }
+
 export type CasterBehavior = {
 	raycastParams: RaycastParams?,
 	maxDistance: number,
@@ -19,6 +21,7 @@ export type CasterBehavior = {
 	cosmeticBulletContainer: Instance?,
 	canPierceFunction: (Cast, RaycastResult, Vector3) -> boolean,
 }
+
 export type CastTrajectory = {
 	startTime: number,
 	endTime: number,
@@ -26,6 +29,7 @@ export type CastTrajectory = {
 	initialVelocity: Vector3,
 	acceleration: Vector3,
 }
+
 export type CastStateInfo = {
 	updateConnection: RBXScriptConnection,
 	highFidelityBehavior: number,
@@ -39,12 +43,14 @@ export type CastStateInfo = {
 	trajectories: { CastTrajectory },
 	latestTrajectory: CastTrajectory,
 }
+
 export type CastRayInfo = {
 	raycastParams: RaycastParams,
 	worldRoot: WorldRoot,
 	maxDistance: number,
 	cosmeticBulletObject: Instance?,
 }
+
 export type Cast = {
 	caster: Caster,
 	stateInfo: CastStateInfo,
