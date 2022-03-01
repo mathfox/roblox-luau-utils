@@ -1,5 +1,6 @@
 local StarterGuiUtils = {
-	setAllCoreGuiEnabledIgnore = require(script.setAllCoreGuiEnabledIgnore),
+	setAllCoreGuiTypesEnabledIgnore = require(script.setAllCoreGuiTypesEnabledIgnore),
+	setCoreGuiTypesEnabled = require(script.setCoreGuiTypesEnabled),
 }
 
 return StarterGuiUtils

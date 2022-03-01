@@ -1,7 +1,5 @@
-local getDateTimeNow = DateTime.now
-
 local function getUnixTime(): number
-	return getDateTimeNow().UnixTimestamp
+	return DateTime.now().UnixTimestamp
 end
 
 local function sync(syncTime: number): number
@@ -13,23 +11,23 @@ local function sync(syncTime: number): number
 		error("expected positive number, zero provided", 2)
 	end
 
-	local currentTime = (getDateTimeNow().UnixTimestampMillis % (syncTime * 1000) / 1000)
+	local currentTime = (DateTime.now().UnixTimestampMillis % (syncTime * 1000) / 1000)
 	return task.wait(if currentTime > syncTime then syncTime * 2 - currentTime else syncTime - currentTime)
 end
 
 local TimeUtilsMetatable = {}
 
-function TimeUtilsMetatable:__index(index): (DateTime | number)?
+function TimeUtilsMetatable:__index(index): DateTime | number | nil
 	if index == "unix" or index == "unixTime" then
 		return getUnixTime()
 	elseif index == "now" then
-		return getDateTimeNow()
+		return DateTime.now()
 	end
 end
 
 local TimeUtils = setmetatable({
 	getUnixTime = getUnixTime,
-	getTimeNow = getDateTimeNow,
+	getTimeNow = DateTime.now,
 	sync = sync,
 }, TimeUtilsMetatable)
 

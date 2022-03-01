@@ -6,6 +6,8 @@
 	prevent common bugs caused by nil values that can fail silently.
 --]]
 
+local Types = require(script.Types)
+
 --[[
 	Represents an optional value in Lua. This is useful to avoid `nil` bugs, which can
 	go silently undetected within code and cause hidden or hard-to-find bugs.
@@ -14,7 +16,7 @@ local Option = {}
 Option.prototype = {}
 Option.__index = Option.prototype
 
-function Option._new(value): Option
+function Option._new(value): Types.Option
 	return setmetatable({
 		_v = value,
 		_s = value ~= nil,
@@ -25,7 +27,7 @@ end
 	creates an Option instance with the given value.
    throws an error if the given value is `nil`.
 ]]
-function Option.some(value: any): Option
+function Option.some(value: any): Types.Option
 	assert(value ~= nil, "Option.some() value cannot be nil")
 
 	return Option._new(value)
@@ -35,7 +37,7 @@ end
 	Safely wraps the given value as an `Option`. If the value is `nil`,
    returns `Option.none`, otherwise returns a new `Option`.
 ]]
-function Option.wrap(value: any): Option
+function Option.wrap(value: any): Types.Option
 	return if value == nil then Option.none else Option._new(value)
 end
 
@@ -44,11 +46,11 @@ function Option.is(object: any): boolean
 end
 
 -- Throws an error if `object` is not an `Option`.
-function Option.assert(object: any): Option
+function Option.assert(object: any): Types.Option
 	return if Option.is(object) then object else error("result was not an Option", 2)
 end
 
-function Option.prototype:match(matches: { onSome: (v: any) -> (), onNone: () -> () }): any
+function Option.prototype:match(matches: Types.OptionMatches): any
 	local onSome = matches.some
 	local onNone = matches.none
 
@@ -89,22 +91,22 @@ function Option.prototype:unwrap(default): any
 end
 
 -- Returns `Option` if the calling option has a `value`, otherwise returns `Option.none`.
-function Option.prototype:intersect(option: Option): Option
+function Option.prototype:intersect(option: Types.Option): Types.Option
 	return if self._s then option else Option.none
 end
 
 -- If caller has a `value`, returns itself. Otherwise, returns `Option`
-function Option.prototype:union(option: Option): Option
+function Option.prototype:union(option: Types.Option): Types.Option
 	return if self._s then self else option
 end
 
 -- Extending the `Option.none` will always result into returning `Option.none`.
-function Option.prototype:extend(modifier: (any) -> Option): Option
+function Option.prototype:extend(modifier: (any) -> Types.Option): Types.Option
 	return if self._s then Option.assert(modifier(self._v)) else Option.none
 end
 
 -- Returns `self` if this option has a value and the predicate returns `true`. Otherwise, returns `Option.none`.
-function Option.prototype:filter(predicate: (any) -> boolean): Option
+function Option.prototype:filter(predicate: (any) -> boolean): Types.Option
 	return if not self._s or not predicate(self._v) then Option.none else self
 end
 
@@ -117,27 +119,15 @@ function Option:__tostring(): string
 	return if self._s then "Option<" .. typeof(self._v) .. ">" else "Option<None>"
 end
 
-function Option:__eq(object: Option | any): boolean
+function Option:__eq(object: any): boolean
 	return if Option.is(object)
-		then if self._s and object:isSome() then self._v == object:unwrap() else not self._s and object:isNone()
+		then if self._s and (object :: Types.Option):isSome()
+			then self._v == (object :: Types.Option):unwrap()
+			else not self._s and (object :: Types.Option):isNone()
 		else false
 end
 
 -- Represents no value `Option`.
 Option.none = Option._new()
-
-export type Option = {
-	match: (self: Option, matches: { onSome: (v: any) -> (), onNone: () -> () }) -> any,
-	isSome: (self: Option) -> boolean,
-	isNone: (self: Option) -> boolean,
-	expect: (self: Option, createMessage: () -> string) -> any,
-	expectNone: (self: Option, createMessage: () -> string) -> (),
-	unwrap: (self: Option, default: any | () -> any) -> any,
-	intersect: (self: Option, option: Option) -> Option,
-	union: (self: Option, option: Option) -> Option,
-	extend: (self: Option, modifier: (any) -> Option) -> Option,
-	filter: (self: Option, predicate: (any) -> boolean) -> Option,
-	contains: (self: Option, value: any) -> boolean,
-}
 
 return Option
