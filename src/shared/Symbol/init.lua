@@ -4,37 +4,11 @@
 	the name of the symbol is shown.
 ]]
 
-local Symbol = {}
+local Symbol = {
+	named = require(script.named),
+	namedFast = require(script.namedFast),
 
---[[
-	Creates a Symbol with the given name.
-
-	When printed or coerced to a string, the symbol will turn into the string
-	given as its name.
-]]
-function Symbol.named(name: string): userdata
-	assert(type(name) == "string", "Symbols must be created using a string name!")
-
-	local self = newproxy(true)
-
-	local wrappedName = ("Symbol(%s)"):format(name)
-
-	getmetatable(self).__tostring = function()
-		return wrappedName
-	end
-
-	return self
-end
-
--- Create an unnamed Symbol. Usually, you should create a named Symbol using Symbol.named(name)
-function Symbol.unnamed()
-	local self = newproxy(true)
-
-	getmetatable(self).__tostring = function()
-		return "Unnamed Symbol"
-	end
-
-	return self
-end
+	unnamed = require(script.unnamed),
+}
 
 return Symbol
