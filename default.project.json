@@ -5,7 +5,10 @@
       "ReplicatedStorage": {
          "$className": "ReplicatedStorage",
          "Shared": {
-            "$path": "src/shared"
+            "$path": "src/shared",
+            "Promise": {
+               "$path": "submodules/roblox-lua-promise/lib"
+            }
          }
       },
       "ServerStorage": {

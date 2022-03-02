@@ -1,3 +1,6 @@
 [submodule "submodules/testez"]
 	path = submodules/testez
 	url = https://github.com/Roblox/testez
+[submodule "submodules/roblox-lua-promise"]
+	path = submodules/roblox-lua-promise
+	url = https://github.com/evaera/roblox-lua-promise
