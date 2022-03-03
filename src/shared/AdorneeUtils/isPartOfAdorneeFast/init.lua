@@ -1,11 +1,10 @@
-local function isPartOfAdorneeFast(adornee: Instance, part: BasePart): boolean
+local function isPartOfAdorneeFast(adornee: Instance, part: BasePart)
 	if adornee:IsA("Humanoid") then
 		local model: Model? = adornee.Parent
-
 		return if model then part:IsDescendantOf(model) else false
+	else
+		return adornee == part or part:IsDescendantOf(adornee)
 	end
-
-	return adornee == part or part:IsDescendantOf(adornee)
 end
 
 return isPartOfAdorneeFast

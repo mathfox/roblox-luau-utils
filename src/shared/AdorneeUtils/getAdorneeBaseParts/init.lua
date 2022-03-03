@@ -1,7 +1,6 @@
 local getAdorneeBasePartsFast = require(script.Parent.getAdorneeBasePartsFast)
-local Types = require(script.Parent.Types)
 
-local function getAdorneeBaseParts(adornee: Instance): Types.BaseParts
+local function getAdorneeBaseParts(adornee: Instance)
 	if adornee == nil then
 		error("missing argument #1 to 'getAdorneeBaseParts' (Instance expected)", 2)
 	elseif typeof(adornee) ~= "Instance" then

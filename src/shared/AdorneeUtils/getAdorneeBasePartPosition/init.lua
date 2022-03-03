@@ -1,6 +1,6 @@
-local getAdorneeBasePart = require(script.Parent.getAdorneeBasePart)
+local getAdorneeBasePartPositionFast = require(script.Parent.getAdorneeBasePartPositionFast)
 
-local function getAdorneeBasePartPosition(adornee: Instance): Vector3?
+local function getAdorneeBasePartPosition(adornee: Instance)
 	if adornee == nil then
 		error("missing argument #1 to 'getAdorneeBasePartPosition' (Instance expected)", 2)
 	elseif typeof(adornee) ~= "Instance" then
@@ -10,9 +10,7 @@ local function getAdorneeBasePartPosition(adornee: Instance): Vector3?
 		)
 	end
 
-	local part: BasePart? = getAdorneeBasePart(adornee)
-
-	return if part then part.Position else nil
+	return getAdorneeBasePartPositionFast(adornee)
 end
 
 return getAdorneeBasePartPosition

@@ -1,6 +1,6 @@
 local getAdorneeAlignedSizeFast = require(script.Parent.getAdorneeAlignedSizeFast)
 
-local function getAdorneeAlignedSize(adornee: Instance): Vector3?
+local function getAdorneeAlignedSize(adornee: Instance)
 	if adornee == nil then
 		error("missing argument #1 to 'getAdorneeAlignedSize' (Instance expected)", 2)
 	elseif typeof(adornee) ~= "Instance" then

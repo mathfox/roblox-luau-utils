@@ -1,20 +1,26 @@
-local function getAdorneeBasePartFast(adornee: Instance): BasePart?
+local function getAdorneeBasePartFast(adornee: Instance)
 	if adornee:IsA("BasePart") then
-		return adornee
+		return adornee :: BasePart
 	elseif adornee:IsA("Model") then
 		local primaryPart: BasePart? = adornee.PrimaryPart
-
-		return if primaryPart then primaryPart else adornee:FindFirstChildWhichIsA("BasePart")
+		if primaryPart then
+			return primaryPart :: BasePart
+		else
+			local part = adornee:FindFirstChildWhichIsA("BasePart")
+			return if part then part :: BasePart else nil
+		end
 	elseif adornee:IsA("Attachment") then
-		return adornee.Parent
+		local part: Instance? = adornee.Parent
+		return if part and part:IsA("BasePart") then part :: BasePart else nil
 	elseif adornee:IsA("Humanoid") then
-		return adornee.RootPart
+		local rootPart: BasePart? = adornee.RootPart
+		return if rootPart then rootPart :: BasePart else nil
 	elseif adornee:IsA("Accessory") or adornee:IsA("Clothing") then
-		return adornee:FindFirstChildWhichIsA("BasePart")
+		local part: BasePart? = adornee:FindFirstChildWhichIsA("BasePart")
+		return if part then part :: BasePart else nil
 	elseif adornee:IsA("Tool") then
-		local handle: BasePart? = adornee:FindFirstChild("Handle")
-
-		return if handle and handle:IsA("BasePart") then handle else nil
+		local handle: Instance? = adornee:FindFirstChild("Handle")
+		return if handle and handle:IsA("BasePart") then handle :: BasePart else nil
 	else
 		return nil
 	end

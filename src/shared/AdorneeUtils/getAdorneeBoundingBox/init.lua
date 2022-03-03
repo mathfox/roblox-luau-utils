@@ -1,5 +1,4 @@
-local getAdorneeBasePartCFrame = require(script.Parent.getAdorneeBasePartCFrame)
-local getAdorneeAlignedSize = require(script.Parent.getAdorneeAlignedSize)
+local getAdorneeBoundingBoxFast = require(script.Parent.getAdorneeBoundingBoxFast)
 
 local function getAdorneeBoundingBox(adornee: Instance): (CFrame?, Vector3?)
 	if adornee == nil then
@@ -8,13 +7,7 @@ local function getAdorneeBoundingBox(adornee: Instance): (CFrame?, Vector3?)
 		error(("invalid argument #1 to 'getAdorneeBoundingBox' (Instance expected, got %s)"):format(typeof(adornee)), 2)
 	end
 
-	if adornee:IsA("Model") then
-		return adornee:GetBoundingBox()
-	elseif adornee:IsA("Attachment") then
-		return adornee.WorldCFrame, Vector3.zero
-	end
-
-	return getAdorneeBasePartCFrame(adornee), getAdorneeAlignedSize(adornee)
+	return getAdorneeBoundingBoxFast(adornee)
 end
 
 return getAdorneeBoundingBox

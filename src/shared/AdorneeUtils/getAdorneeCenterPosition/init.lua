@@ -1,6 +1,6 @@
 local getAdorneeCenterPositionFast = require(script.Parent.getAdorneeCenterPositionFast)
 
-local function getAdorneeCenterPosition(adornee: Instance): Vector3?
+local function getAdorneeCenterPosition(adornee: Instance)
 	if adornee == nil then
 		error("missing argument #1 to 'getAdorneeCenterPosition' (Instance expected)", 2)
 	elseif typeof(adornee) ~= "Instance" then

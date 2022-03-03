@@ -1,6 +1,6 @@
-local getAdorneeBasePart = require(script.Parent.getAdorneeBasePart)
+local getAdorneeBasePartCFrameFast = require(script.Parent.getAdorneeBasePartCFrameFast)
 
-local function getAdorneeBasePartCFrame(adornee: Instance): CFrame?
+local function getAdorneeBasePartCFrame(adornee: Instance)
 	if adornee == nil then
 		error("missing argument #1 to 'getAdorneeBasePartCFrame' (Instance expected)", 2)
 	elseif typeof(adornee) ~= "Instance" then
@@ -10,9 +10,7 @@ local function getAdorneeBasePartCFrame(adornee: Instance): CFrame?
 		)
 	end
 
-	local part: BasePart? = getAdorneeBasePart(adornee)
-
-	return if part then part.CFrame else nil
+	return getAdorneeBasePartCFrameFast(adornee)
 end
 
 return getAdorneeBasePartCFrame

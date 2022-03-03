@@ -1,7 +1,5 @@
-local Types = require(script.Parent.Types)
-
-local function getAdorneeBasePartsFast(adornee: Instance): Types.BaseParts
-	local parts: Types.BaseParts = { if adornee:IsA("BasePart") then adornee else nil }
+local function getAdorneeBasePartsFast(adornee: Instance)
+	local parts: { BasePart } = { if adornee:IsA("BasePart") then adornee else nil }
 
 	local searchParent: Instance? = if adornee:IsA("Humanoid") then adornee.Parent else adornee
 
