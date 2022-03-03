@@ -1,4 +1,4 @@
-local function computeRegion3FromBasePartFast(part: BasePart): Region3
+local function computeRegion3FromBasePartFast(part: BasePart)
 	local new, abs = Vector3.new, math.abs
 	local size = part.Size
 	local sX, sY, sZ = size.X, size.Y, size.Z

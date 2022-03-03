@@ -1,4 +1,4 @@
-local function getRandomCFrameFromBasePartFast(part: BasePart, rngOverride: Random?): CFrame
+local function getRandomCFrameFromBasePartFast(part: BasePart, rngOverride: Random?)
 	local random = rngOverride or Random.new()
 	local size = part.Size
 
