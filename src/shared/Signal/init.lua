@@ -21,8 +21,9 @@ do
 end
 
 local Connection = {}
-Connection.Connected = true
-Connection.__index = Connection
+Connection.prototype = {}
+Connection.prototype.Connected = true
+Connection.__index = Connection.prototype
 
 function Connection.new(signal: Types.Signal, fn: FunctionUtilsTypes.GenericFunction): Types.Connection
 	return setmetatable({
@@ -31,7 +32,7 @@ function Connection.new(signal: Types.Signal, fn: FunctionUtilsTypes.GenericFunc
 	}, Connection)
 end
 
-function Connection:Disconnect()
+function Connection.prototype:Disconnect()
 	if self.Connected then
 		self.Connected = false
 
@@ -51,12 +52,13 @@ function Connection:Disconnect()
 	end
 end
 
-Connection.disconnect = Connection.Disconnect
+Connection.prototype.disconnect = Connection.prototype.Disconnect
 
 local Signal = {}
-Signal.__index = Signal
+Signal.prototype = {}
+Signal.__index = Signal.prototype
 
-function Signal:Connect(fn: FunctionUtilsTypes.GenericFunction): Types.Connection
+function Signal.prototype:Connect(fn: FunctionUtilsTypes.GenericFunction): Types.Connection
 	local connection = Connection.new(self, fn)
 
 	if self._last then
@@ -68,7 +70,7 @@ function Signal:Connect(fn: FunctionUtilsTypes.GenericFunction): Types.Connectio
 	return connection
 end
 
-function Signal:Fire(...: any)
+function Signal.prototype:Fire(...: any)
 	local connection = self._last
 
 	while connection do
@@ -84,7 +86,7 @@ function Signal:Fire(...: any)
 	end
 end
 
-function Signal:Wait(): ...any
+function Signal.prototype:Wait(): ...any
 	local waitingCoroutine = coroutine.running()
 
 	local connection = nil
@@ -97,7 +99,7 @@ function Signal:Wait(): ...any
 	return coroutine.yield()
 end
 
-function Signal:Destroy()
+function Signal.prototype:Destroy()
 	local last = self._last
 
 	while last do
@@ -108,7 +110,7 @@ function Signal:Destroy()
 	self._last = nil
 end
 
-function Signal.is(object: any): boolean
+function Signal.is(object)
 	return type(object) == "table" and getmetatable(object) == Signal
 end
 
@@ -116,9 +118,9 @@ function Signal.new(): Types.Signal
 	return setmetatable({}, Signal)
 end
 
-Signal.fire = Signal.Fire
-Signal.connect = Signal.Connect
-Signal.wait = Signal.Wait
-Signal.destroy = Signal.Destroy
+Signal.prototype.fire = Signal.prototype.Fire
+Signal.prototype.connect = Signal.prototype.Connect
+Signal.prototype.wait = Signal.prototype.Wait
+Signal.prototype.destroy = Signal.prototype.Destroy
 
 return Signal
