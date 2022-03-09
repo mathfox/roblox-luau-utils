@@ -1,21 +1,10 @@
 local HumanoidUtils = {
-	healHumanoid = require(script.healHumanoid),
-	healHumanoidFast = require(script.healHumanoidFast),
-
-	scaleHumanoid = require(script.scaleHumanoid),
-	scaleHumanoidFast = require(script.scaleHumanoidFast),
-
-	getAliveHumanoidFromModel = require(script.getAliveHumanoidFromModel),
-	getAliveHumanoidFromModelFast = require(script.getAliveHumanoidFromModelFast),
-
-	getAliveHumanoidFromDescendant = require(script.getAliveHumanoidFromDescendant),
-	getAliveHumanoidFromDescendantFast = require(script.getAliveHumanoidFromDescendantFast),
-
-	getAliveRootPartFromModel = require(script.getAliveRootPartFromModel),
-	getAliveRootPartFromModelFast = require(script.getAliveRootPartFromModelFast),
-
 	getAliveRootPartFromDescendant = require(script.getAliveRootPartFromDescendant),
-	getAliveRootPartFromDescendantFast = require(script.getAliveRootPartFromDescendantFast),
+	getAliveHumanoidFromDescendant = require(script.getAliveHumanoidFromDescendant),
+	getAliveHumanoidFromModel = require(script.getAliveHumanoidFromModel),
+	getAliveRootPartFromModel = require(script.getAliveRootPartFromModel),
+	scaleHumanoid = require(script.scaleHumanoid),
+	healHumanoid = require(script.healHumanoid),
 }
 
 return HumanoidUtils

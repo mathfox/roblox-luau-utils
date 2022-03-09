@@ -1,15 +1,8 @@
-local getAlivePlayerHumanoidFast = require(script.Parent.getAlivePlayerHumanoidFast)
+local getPlayerHumanoid = require(script.Parent.getPlayerHumanoid)
 
 local function getAlivePlayerHumanoid(player: Player)
-	if player == nil then
-		error("missing argument #1 to 'getAlivePlayerHumanoid' (Player expected)", 2)
-	elseif typeof(player) ~= "Instance" then
-		error(("invalid argument #1 to 'getAlivePlayerHumanoid' (Player expected, got %s)"):format(typeof(player)), 2)
-	elseif not player:IsA("Player") then
-		error(("invalid argument #1 to 'getAlivePlayerHumanoid' (Player expected, got %s)"):format(player.ClassName), 2)
-	end
-
-	return getAlivePlayerHumanoidFast(player)
+	local humanoid = getPlayerHumanoid(player)
+	return if humanoid and humanoid.Health > 0 then humanoid :: Humanoid else nil
 end
 
 return getAlivePlayerHumanoid

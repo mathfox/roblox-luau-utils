@@ -1,15 +1,26 @@
-local getOnlineFriendsListFast = require(script.Parent.getOnlineFriendsListFast)
+local Players = game:GetService("Players")
+
+local Types = require(script.Parent.Types)
 
 local function getOnlineFriendsList(player: Player)
-	if player == nil then
-		error("missing argument #1 to 'getOnlineFriendsList' (Player expected)", 2)
-	elseif typeof(player) ~= "Instance" then
-		error(("invalid argument #1 to 'getOnlineFriendsList' (Player expected, got %s)"):format(typeof(player)), 2)
-	elseif not player:IsA("Player") then
-		error(("invalid argument #1 to 'getOnlineFriendsList' (Player expected, got %s)"):format(player.ClassName), 2)
+	local friendPages = Players:GetFriendsAsync(player.UserId)
+	local friendsList: Types.FriendsList = {}
+
+	while true do
+		for _, item in ipairs(friendPages:GetCurrentPage()) do
+			if item.IsOnline then
+				table.insert(friendsList, item)
+			end
+		end
+
+		if friendPages.IsFinished then
+			break
+		end
+
+		friendPages:AdvanceToNextPageAsync()
 	end
 
-	return getOnlineFriendsListFast(player)
+	return friendsList
 end
 
 return getOnlineFriendsList

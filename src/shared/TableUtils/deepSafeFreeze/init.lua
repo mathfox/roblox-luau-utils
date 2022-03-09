@@ -1,14 +1,14 @@
-local deepSafeFreezeFast = require(script.Parent.deepSafeFreezeFast)
+local safeFreeze = require(script.Parent.safeFreeze)
 local Types = require(script.Parent.Types)
 
 local function deepSafeFreeze(tbl: Types.GenericTable)
-	if tbl == nil then
-		error("missing argument #1 to 'deepSafeFreeze' (table expected)", 2)
-	elseif type(tbl) ~= "table" then
-		error(("invalid argument #1 to 'deepSafeFreeze' (table expected, got %s)"):format(typeof(tbl)), 2)
-	end
+	safeFreeze(tbl)
 
-	deepSafeFreezeFast(tbl)
+	for _, v in pairs(tbl) do
+		if type(v) == "table" then
+			deepSafeFreeze(v)
+		end
+	end
 end
 
 return deepSafeFreeze

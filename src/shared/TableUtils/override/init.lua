@@ -1,18 +1,14 @@
-local overrideFast = require(script.Parent.overrideFast)
+local copyShallow = require(script.Parent.copyShallow)
 local Types = require(script.Parent.Types)
 
 local function override(tbl: Types.GenericTable, overridingTbl: Types.GenericTable)
-	if tbl == nil then
-		error("missing argument #1 to 'override' (table expected)", 2)
-	elseif type(tbl) ~= "table" then
-		error(("invalid argument #1 to 'override' (table expected, got %s)"):format(typeof(tbl)), 2)
-	elseif overridingTbl == nil then
-		error("missing argument #2 to 'override' (table expected)", 2)
-	elseif type(overridingTbl) ~= "table" then
-		error(("invalid argument #2 to 'override' (table expected, got %s)"):format(typeof(overridingTbl)), 2)
+	local new = copyShallow(tbl)
+
+	for k, v in pairs(overridingTbl) do
+		new[k] = if type(v) == "table" then if new[k] then override(new[k], v) else v else v
 	end
 
-	return overrideFast(tbl, overridingTbl)
+	return new
 end
 
 return override

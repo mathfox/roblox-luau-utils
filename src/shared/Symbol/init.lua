@@ -5,8 +5,6 @@
 ]]
 local Symbol = {
 	named = require(script.named),
-	namedFast = require(script.namedFast),
-
 	unnamed = require(script.unnamed),
 }
 

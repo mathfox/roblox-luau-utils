@@ -1,14 +1,9 @@
-local getRandomFloatFast = require(script.Parent.getRandomFloatFast)
 local Types = require(script.Parent.Types)
 
-local function getRandomFloat(min: number, maxOrRngOverride: Types.NumberOrRandom?, rngOverride: Random?): number
-	if min == nil then
-		error("missing argument #1 to 'getRandomFloat' (number expected)", 2)
-	elseif type(min) ~= "number" then
-		error(("invalid argument #1 to 'getRandomFloat' (number expected, got %s)"):format(type(min)), 2)
-	end
-
-	return getRandomFloatFast(min, maxOrRngOverride, rngOverride)
+local function getRandomFloat(min: number, maxOrRngOverride: Types.NumberOrRandom?, rngOverride: Random?)
+	return if type(maxOrRngOverride) == "number"
+		then (rngOverride or Random.new()):NextNumber(min, maxOrRngOverride)
+		else (maxOrRngOverride or Random.new()):NextNumber(0, min)
 end
 
 return getRandomFloat

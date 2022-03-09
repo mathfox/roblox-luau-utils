@@ -1,13 +1,6 @@
-local getAliveHumanoidFromModelFast = require(script.Parent.getAliveHumanoidFromModelFast)
-
-local function getAliveHumanoidFromModel(model: Model): Humanoid?
-	if model == nil then
-		error("missing argument #1 to 'getAliveHumanoidFromModel' (Model expected)", 2)
-	elseif typeof(model) ~= "Instance" or not model:IsA("Model") then
-		error(("invalid argument #1 to 'getAliveHumanoidFromModel' (Model expected, got %s)"):format(typeof(model)), 2)
-	end
-
-	return getAliveHumanoidFromModelFast(model)
+local function getAliveHumanoidFromModel(model: Model)
+	local humanoid = model:FindFirstChildOfClass("Humanoid")
+	return if humanoid and humanoid.Health > 0 then humanoid else nil
 end
 
 return getAliveHumanoidFromModel

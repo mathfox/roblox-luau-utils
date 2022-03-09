@@ -1,29 +1,20 @@
-local evaluateNumberSequenceFast = require(script.Parent.evaluateNumberSequenceFast)
-
 local function evaluateNumberSequence(numberSequence: NumberSequence, t: number)
-	if numberSequence == nil then
-		error("missing argument #1 to 'evaluateNumberSequence' (NumberSequence expected)", 2)
-	elseif typeof(numberSequence) ~= "NumberSequence" then
-		error(
-			("invalid argument #1 to 'evaluateNumberSequence' (NumberSequence expected, got %s)"):format(
-				typeof(numberSequence)
-			),
-			2
-		)
-	elseif t == nil then
-		error("missing argument #2 to 'evaluateNumberSequence' (number expected)", 2)
-	elseif type(t) ~= "number" then
-		error(("invalid argument #2 to 'evaluateNumberSequence' (number expected, got %s)"):format(typeof(t)), 2)
-	elseif t < 0 or t > 1 then
-		error(
-			("invalid argument #2 to 'evaluateNumberSequence' (number from 0 to 1 inclusive expected, got %f)"):format(
-				t
-			),
-			2
-		)
+	if t == 0 then
+		return numberSequence.Keypoints[1].Value
+	elseif t == 1 then
+		return numberSequence.Keypoints[#numberSequence.Keypoints].Value
 	end
 
-	return evaluateNumberSequenceFast(numberSequence, t)
+	for i = 1, #numberSequence.Keypoints - 1 do
+		local this = numberSequence.Keypoints[i]
+		local next = numberSequence.Keypoints[i + 1]
+		if t >= this.Time and t < next.Time then
+			-- calculate how far alpha lies between the points
+			local alpha = (t - this.Time) / (next.Time - this.Time)
+
+			return (next.Value - this.Value) * alpha + this.Value
+		end
+	end
 end
 
 return evaluateNumberSequence

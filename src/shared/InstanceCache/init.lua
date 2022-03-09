@@ -12,16 +12,16 @@ function InstanceCache.new(params: Types.InstanceCacheParams): Types.InstanceCac
 		parent = params.parent,
 	}, InstanceCache)
 
-	self:expand(params.amount.initial)
+	self:Expand(params.amount.initial)
 
 	return self
 end
 
-function InstanceCache.prototype:getInstance()
+function InstanceCache.prototype:GetInstance()
 	local available = self._available
 
 	if #available == 0 then
-		self:expand()
+		self:Expand()
 	end
 
 	local instance: Instance = available[#available]
@@ -32,7 +32,7 @@ function InstanceCache.prototype:getInstance()
 	return instance
 end
 
-function InstanceCache.prototype:returnInstance(instance: Instance)
+function InstanceCache.prototype:ReturnInstance(instance: Instance)
 	local inUse = self._inUse
 
 	local index = table.find(inUse, instance)
@@ -44,7 +44,7 @@ function InstanceCache.prototype:returnInstance(instance: Instance)
 	table.insert(self._available, instance)
 end
 
-function InstanceCache.prototype:setParent(parent: Instance?)
+function InstanceCache.prototype:SetParent(parent: Instance?)
 	self.parent = parent
 
 	for _, instance in ipairs(self._available) do
@@ -52,7 +52,7 @@ function InstanceCache.prototype:setParent(parent: Instance?)
 	end
 end
 
-function InstanceCache.prototype:expand(amount: number)
+function InstanceCache.prototype:Expand(amount: number)
 	local parent = self.parent
 
 	for _ = 1, amount or self._params.amount.expansion do
@@ -63,7 +63,7 @@ function InstanceCache.prototype:expand(amount: number)
 	end
 end
 
-function InstanceCache.prototype:destroy()
+function InstanceCache.prototype:Destroy()
 	for _, field in ipairs({ "_inUse", "_available" }) do
 		for _, instance in ipairs(self[field]) do
 			instance:Destroy()
@@ -72,5 +72,11 @@ function InstanceCache.prototype:destroy()
 		table.clear(self[field])
 	end
 end
+
+InstanceCache.prototype.getInstance = InstanceCache.prototype.GetInstance
+InstanceCache.prototype.returnInstance = InstanceCache.prototype.ReturnInstance
+InstanceCache.prototype.setParent = InstanceCache.prototype.SetParent
+InstanceCache.prototype.expand = InstanceCache.prototype.Expand
+InstanceCache.prototype.destroy = InstanceCache.prototype.Destroy
 
 return InstanceCache

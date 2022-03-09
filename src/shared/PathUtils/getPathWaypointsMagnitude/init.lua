@@ -1,8 +1,8 @@
 local Types = require(script.Parent.Types)
 
 -- returns a total magnitude between waypoints, returns math.huge if waypoins table is empty
-local function getPathWaypointsMagnitude(waypoints: Types.PathWaypoints): number
-	local magnitude: number = 0
+local function getPathWaypointsMagnitude(waypoints: Types.PathWaypoints)
+	local magnitude = 0
 
 	local firstWaypoint: PathWaypoint? = waypoints[1]
 	if not firstWaypoint then

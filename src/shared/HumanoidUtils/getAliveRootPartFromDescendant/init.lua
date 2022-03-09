@@ -1,18 +1,8 @@
-local getAliveRootPartFromDescendantFast = require(script.Parent.getAliveRootPartFromDescendantFast)
+local getAliveHumanoidFromDescendant = require(script.Parent.getAliveHumanoidFromDescendant)
 
-local function getAliveRootPartFromDescendant(descendant: Instance): BasePart?
-	if descendant == nil then
-		error("missing argument #1 to 'getAliveRootPartFromDescendant' (Instance expected)", 2)
-	elseif typeof(descendant) ~= "Instance" then
-		error(
-			("invalid argument #1 to 'getAliveRootPartFromDescendant' (Instance expected, got %s)"):format(
-				typeof(descendant)
-			),
-			2
-		)
-	end
-
-	return getAliveRootPartFromDescendantFast(descendant)
+local function getAliveRootPartFromDescendant(descendant: Instance)
+	local humanoid = getAliveHumanoidFromDescendant(descendant)
+	return if humanoid then humanoid.RootPart else nil
 end
 
 return getAliveRootPartFromDescendant

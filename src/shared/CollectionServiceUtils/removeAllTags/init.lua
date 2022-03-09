@@ -1,13 +1,9 @@
-local removeAllTagsFast = require(script.Parent.removeAllTagsFast)
+local CollectionService = game:GetService("CollectionService")
 
 local function removeAllTags(instance: Instance)
-	if instance == nil then
-		error("missing argument #1 to 'removeAllTags' (Instance expected)", 2)
-	elseif typeof(instance) ~= "Instance" then
-		error(("invalid argument #1 to 'removeAllTags' (Instance expected, got %s)"):format(typeof(instance)), 2)
+	for _, tagName in ipairs(CollectionService:GetTags(instance)) do
+		CollectionService:RemoveTag(instance, tagName)
 	end
-
-	removeAllTagsFast(instance)
 end
 
 return removeAllTags

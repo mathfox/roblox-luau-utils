@@ -1,4 +1,4 @@
-local function cloneRaycastParams(raycastParams: RaycastParams): RaycastParams
+local function cloneRaycastParams(raycastParams: RaycastParams)
 	local newRaycastParams = RaycastParams.new()
 
 	newRaycastParams.CollisionGroup = raycastParams.CollisionGroup

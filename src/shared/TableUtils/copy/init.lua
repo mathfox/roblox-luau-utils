@@ -1,14 +1,13 @@
-local copyFast = require(script.Parent.copyFast)
 local Types = require(script.Parent.Types)
 
 local function copy(tbl: Types.GenericTable)
-	if tbl == nil then
-		error("missing argument #1 to 'copy' (table expected)", 2)
-	elseif type(tbl) ~= "table" then
-		error(("invalid argument #1 to 'copy' (table expected, got %s)"):format(typeof(tbl)), 2)
+	local new: Types.GenericTable = table.create(#tbl)
+
+	for k, v in pairs(tbl) do
+		new[k] = if type(v) == "table" then copy(v) else v
 	end
 
-	return copyFast(tbl)
+	return new
 end
 
 return copy

@@ -1,6 +1,6 @@
 local PathfindingUtils = {
-	promiseComputeAsync = require(script.promiseComputeAsync),
 	promiseCheckOcclusionAsync = require(script.promiseCheckOcclusionAsync),
+	promiseComputeAsync = require(script.promiseComputeAsync),
 }
 
 return PathfindingUtils

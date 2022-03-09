@@ -1,13 +1,16 @@
-local loadChildrenFast = require(script.Parent.loadChildrenFast)
+local Types = require(script.Parent.Parent.TableUtils.Types)
 
 local function loadChildren(parent: Instance)
-	if parent == nil then
-		error("missing argument #1 to 'loadChildren' (Instance expected)", 2)
-	elseif typeof(parent) ~= "Instance" then
-		error(("invalid argument #1 to 'loadChildren' (Instance expected, got %s)"):format(typeof(parent)), 2)
+	local modules: Types.GenericList = {}
+
+	for _, child in ipairs(parent:GetChildren()) do
+		if child:IsA("ModuleScript") then
+			local m = require(child)
+			table.insert(modules, m)
+		end
 	end
 
-	return loadChildrenFast(parent)
+	return modules
 end
 
 return loadChildren

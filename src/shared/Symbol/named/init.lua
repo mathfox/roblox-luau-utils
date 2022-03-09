@@ -1,14 +1,15 @@
-local namedFast = require(script.Parent.namedFast)
 local Types = require(script.Parent.Types)
 
 local function named(name: string): Types.Symbol
-	if name == nil then
-		error("missing argument #1 to 'named' (string expected)", 2)
-	elseif type(named) ~= "string" then
-		error(("invalid argument #1 to 'named' (string expected, got %s)"):format(typeof(named)), 2)
+	local self = newproxy(true)
+
+	local wrappedName = ("Symbol(%s)"):format(name)
+
+	getmetatable(self).__tostring = function()
+		return wrappedName
 	end
 
-	return namedFast(name)
+	return self
 end
 
 return named

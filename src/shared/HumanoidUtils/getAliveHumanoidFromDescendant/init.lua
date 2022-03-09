@@ -1,18 +1,8 @@
-local getAliveHumanoidFromDescendantFast = require(script.Parent.getAliveHumanoidFromDescendantFast)
+local getAliveHumanoidFromModel = require(script.Parent.getAliveHumanoidFromModel)
 
-local function getAliveHumanoidFromDescendant(descendant: Instance): Humanoid?
-	if descendant == nil then
-		error("missing argument #1 to 'getAliveHumanoidFromDescendant' (Instance expected)", 2)
-	elseif typeof(descendant) ~= "Instance" then
-		error(
-			("invalid argument #1 to 'getAliveHumanoidFromDescendant' (Instance expected, got %s)"):format(
-				typeof(descendant)
-			),
-			2
-		)
-	end
-
-	return getAliveHumanoidFromDescendantFast(descendant)
+local function getAliveHumanoidFromDescendant(descendant: Instance)
+	local model = descendant:FindFirstAncestorWhichIsA("Model")
+	return if model then getAliveHumanoidFromModel(model) else nil
 end
 
 return getAliveHumanoidFromDescendant

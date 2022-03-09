@@ -1,17 +1,16 @@
-local loadChildrenFilterFast = require(script.Parent.loadChildrenFilterFast)
+local Types = require(script.Parent.Parent.TableUtils.Types)
 
 local function loadChildrenFilter(parent: Instance, predicate: (ModuleScript) -> boolean)
-	if parent == nil then
-		error("missing argument #1 to 'loadChildrenFilter' (Instance expected)", 2)
-	elseif typeof(parent) ~= "Instance" then
-		error(("invalid argument #1 to 'loadChildrenFilter' (Instance expected, got %s)"):format(typeof(parent)), 2)
-	elseif predicate == nil then
-		error("missing argument #2 to 'loadChildrenFilter' (function expected)", 2)
-	elseif type(predicate) ~= "function" then
-		error(("invalid argument #2 to 'loadChildrenFilter' (function expected, got %s)"):format(typeof(predicate)), 2)
+	local modules: Types.GenericList = {}
+
+	for _, child in ipairs(parent:GetChildren()) do
+		if child:IsA("ModuleScript") and predicate(child) then
+			local m = require(child)
+			table.insert(modules, m)
+		end
 	end
 
-	return loadChildrenFilterFast(parent, predicate)
+	return modules
 end
 
 return loadChildrenFilter
