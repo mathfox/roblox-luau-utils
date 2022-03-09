@@ -1,12 +1,12 @@
 local Players = game:GetService("Players")
 
-local function getPlayerFromCharacterDescendantFast(descendant: Instance): Player?
+local function getPlayerFromCharacterDescendantFast(descendant: Instance)
 	local character = descendant
 
 	while character do
 		local player: Player? = Players:GetPlayerFromCharacter(character)
 		if player then
-			return player
+			return player :: Player
 		else
 			character = character.Parent
 		end

@@ -1,9 +1,7 @@
 local CollectionService = game:GetService("CollectionService")
 
 local function removeAllTagsFast(instance: Instance)
-	local tagNamesList = CollectionService:GetTags(instance)
-
-	for _, tagName in ipairs(tagNamesList) do
+	for _, tagName in ipairs(CollectionService:GetTags(instance)) do
 		CollectionService:RemoveTag(instance, tagName)
 	end
 end

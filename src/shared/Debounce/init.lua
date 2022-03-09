@@ -1,9 +1,9 @@
 local FunctionTypes = require(script.Parent.FunctionUtils.Types)
-local CustomEnum = require(script.Parent.CustomEnum)
+local Enumerator = require(script.Parent.Enumerator)
 local Types = require(script.Types)
 
 local Debounce = {}
-Debounce.Type = CustomEnum({ "Once", "Time" })
+Debounce.Type = Enumerator("DebounceType", { "Once", "Time" })
 Debounce.prototype = {}
 Debounce.__index = Debounce.prototype
 

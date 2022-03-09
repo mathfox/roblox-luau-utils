@@ -1,6 +1,6 @@
 local findFirstAncestorOfTagFast = require(script.Parent.findFirstAncestorOfTagFast)
 
-local function findFirstAncestorOfTag(tagName: string, child: Instance): Instance?
+local function findFirstAncestorOfTag(tagName: string, child: Instance)
 	if tagName == nil then
 		error("missing argument #1 to 'findFirstAncestorOfTag' (string expected)", 2)
 	elseif type(tagName) ~= "string" then

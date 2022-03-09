@@ -1,6 +1,6 @@
 local getPlayerFromCharacterDescendantFast = require(script.Parent.getPlayerFromCharacterDescendantFast)
 
-local function getPlayerFromCharacterDescendant(descendant: Instance): Player?
+local function getPlayerFromCharacterDescendant(descendant: Instance)
 	if descendant == nil then
 		error("missing argument #1 to 'getPlayerFromCharacterDescendant' (Instance expected)", 2)
 	elseif typeof(descendant) ~= "Instance" then

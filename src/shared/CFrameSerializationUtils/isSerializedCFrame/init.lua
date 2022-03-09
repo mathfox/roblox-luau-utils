@@ -1,4 +1,4 @@
-local function isSerializedCFrame(object: any)
+local function isSerializedCFrame(object)
 	return type(object) == "table" and #object == 12
 end
 

@@ -1,4 +1,4 @@
-local function isSerializedColor3(object: any)
+local function isSerializedColor3(object)
 	return type(object) == "table" and #object == 3
 end
 
