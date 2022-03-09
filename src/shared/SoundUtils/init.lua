@@ -1,6 +1,6 @@
 local SoundUtils = {
-	promiseSoundLoaded = require(script.promiseSoundLoaded),
 	promiseAllSoundsLoaded = require(script.promiseAllSoundsLoaded),
+	promiseSoundLoaded = require(script.promiseSoundLoaded),
 }
 
 return SoundUtils

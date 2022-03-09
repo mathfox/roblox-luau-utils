@@ -1,11 +1,11 @@
 local CharacterUtils = {
-	getPlayerHumanoid = require(script.getPlayerHumanoid),
-	getAlivePlayerHumanoid = require(script.getAlivePlayerHumanoid),
-	getPlayerRootPart = require(script.getPlayerRootPart),
-	getAlivePlayerRootPart = require(script.getAlivePlayerRootPart),
-	unequipPlayerTools = require(script.unequipPlayerTools),
 	getPlayerFromCharacterDescendant = require(script.getPlayerFromCharacterDescendant),
 	waitForPlayerCharacter = require(script.waitForPlayerCharacter),
+	getAlivePlayerRootPart = require(script.getAlivePlayerRootPart),
+	getAlivePlayerHumanoid = require(script.getAlivePlayerHumanoid),
+	unequipPlayerTools = require(script.unequipPlayerTools),
+	getPlayerHumanoid = require(script.getPlayerHumanoid),
+	getPlayerRootPart = require(script.getPlayerRootPart),
 }
 
 return CharacterUtils

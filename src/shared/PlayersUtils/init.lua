@@ -1,8 +1,8 @@
 local PlayersUtils = {
-	getCharactersInRadiusList = require(script.getCharactersInRadiusList),
-	getClosestAlivePlayerInRadius = require(script.getClosestAlivePlayerInRadius),
-	getClosestPlayerInRadius = require(script.getClosestPlayerInRadius),
 	getPlayersAndTheirCharactersInRadiusList = require(script.getPlayersAndTheirCharactersInRadiusList),
+	getClosestAlivePlayerInRadius = require(script.getClosestAlivePlayerInRadius),
+	getCharactersInRadiusList = require(script.getCharactersInRadiusList),
+	getClosestPlayerInRadius = require(script.getClosestPlayerInRadius),
 	getPlayersInRadiusList = require(script.getPlayersInRadiusList),
 }
 

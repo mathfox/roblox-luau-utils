@@ -2,9 +2,7 @@ local Promise = require(script.Parent.Parent.Promise)
 
 local promiseSoundLoaded = require(script.Parent.promiseSoundLoaded)
 
-export type SoundsList = { Sound }
-
-local function promiseAllSoundsLoaded(sounds: SoundsList)
+local function promiseAllSoundsLoaded(sounds: { Sound })
 	local promises = {}
 
 	for _, sound in ipairs(sounds) do

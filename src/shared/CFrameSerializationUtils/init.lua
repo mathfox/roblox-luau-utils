@@ -1,7 +1,7 @@
 local CFrameSerializationUtils = {
-	serializeCFrame = require(script.serializeCFrame),
-	deserializeCFrame = require(script.deserializeCFrame),
 	isSerializedCFrame = require(script.isSerializedCFrame),
+	deserializeCFrame = require(script.deserializeCFrame),
+	serializeCFrame = require(script.serializeCFrame),
 }
 
 return CFrameSerializationUtils
