@@ -479,7 +479,7 @@ function Caster:fire(
 		error("no cosmetic bullet provider was set", 2)
 	end
 
-	rayInfo.cosmeticBulletObject = casterBehavior.cosmeticBulletProvider:getPart()
+	rayInfo.cosmeticBulletObject = casterBehavior.cosmeticBulletProvider:getInstance()
 	rayInfo.cosmeticBulletObject.CFrame = CFrame.new(origin, origin + direction)
 
 	stateInfo.updateConnection =
