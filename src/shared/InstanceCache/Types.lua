@@ -3,13 +3,13 @@ export type InstanceCache = {
 	parent: Instance?,
 
 	GetInstance: (self: InstanceCache) -> Instance,
-	ReturnInstance: (self: InstanceCache) -> (),
+	ReturnInstance: (self: InstanceCache, instance: Instance) -> (),
 	SetParent: (self: InstanceCache, parent: Instance?) -> (),
 	Expand: (self: InstanceCache, amount: number) -> (),
 	Destroy: (self: InstanceCache) -> (),
 
 	getInstance: (self: InstanceCache) -> Instance,
-	returnInstance: (self: InstanceCache) -> (),
+	returnInstance: (self: InstanceCache, instance: Instance) -> (),
 	setParent: (self: InstanceCache, parent: Instance?) -> (),
 	expand: (self: InstanceCache, amount: number) -> (),
 	destroy: (self: InstanceCache) -> (),
