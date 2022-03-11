@@ -5,7 +5,9 @@ local function override(tbl: Types.GenericTable, overridingTbl: Types.GenericTab
 	local new = copyShallow(tbl)
 
 	for k, v in pairs(overridingTbl) do
-		new[k] = if type(v) == "table" then if type(new[k]) == "table" then override(v, new[k]) else v else v
+		new[k] = if type(v) == "table"
+			then if type(new[k]) == "table" then override(new[k], v) else copyShallow(v)
+			else v
 	end
 
 	return new
