@@ -1,8 +1,6 @@
 local StarterGui = game:GetService("StarterGui")
 
-local Types = require(script.Parent.Types)
-
-local function setAllCoreGuiTypesEnabledIgnore(enabled: boolean, ignoreCoreGuiTypesList: Types.CoreGuiTypesList)
+local function setAllCoreGuiTypesEnabledIgnore(enabled: boolean, ignoreCoreGuiTypesList: { Enum.CoreGuiType })
 	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, enabled)
 
 	for _, coreGuiType in ipairs(ignoreCoreGuiTypesList) do
