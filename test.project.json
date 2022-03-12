@@ -1,19 +1,16 @@
 {
-   "name": "roblox-luau-utils-tests",
+   "name": "roblox-luau-utils-test",
    "tree": {
       "$className": "DataModel",
-      "Players": {
-         "$className": "Players",
-         "$properties": {
-            "CharacterAutoLoads": false
-         }
-      },
       "ReplicatedStorage": {
          "$className": "ReplicatedStorage",
          "Shared": {
             "$path": "src/shared",
             "Promise": {
                "$path": "submodules/roblox-lua-promise/lib"
+            },
+            "Enumerator": {
+               "$path": "submodules/enumerator/src"
             }
          },
          "TestEZ": {
