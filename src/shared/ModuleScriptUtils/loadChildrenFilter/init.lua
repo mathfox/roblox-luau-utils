@@ -1,7 +1,5 @@
-local Types = require(script.Parent.Parent.TableUtils.Types)
-
 local function loadChildrenFilter(parent: Instance, predicate: (ModuleScript) -> boolean)
-	local modules: Types.GenericList = {}
+	local modules: { any } = {}
 
 	for _, child in ipairs(parent:GetChildren()) do
 		if child:IsA("ModuleScript") and predicate(child) then

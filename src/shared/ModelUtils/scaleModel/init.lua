@@ -1,15 +1,15 @@
 local getDescendantsWhichIsA = require(script.Parent.Parent.InstanceUtils.getDescendantsWhichIsA)
 
-local function scaleModel(model: Model, scaleNumber: number)
-	local primaryPart: BasePart = model.PrimaryPart
-	local primaryCFrame: CFrame = primaryPart.CFrame
-	local inversedCFrame: CFrame = primaryCFrame:Inverse()
+local function scaleModel(model: Model, scale: number)
+	local primaryPart = model.PrimaryPart
+	local primaryCFrame = primaryPart.CFrame
+	local inversedCFrame = primaryCFrame:Inverse()
 
 	for _, part in ipairs(getDescendantsWhichIsA(model, "BasePart")) do
-		part.Size *= scaleNumber
+		part.Size *= scale
 
 		if part ~= primaryPart then
-			part.CFrame = primaryCFrame + (inversedCFrame * part.Position * scaleNumber)
+			part.CFrame = primaryCFrame + (inversedCFrame * part.Position * scale)
 		end
 	end
 end

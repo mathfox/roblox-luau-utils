@@ -1,6 +1,6 @@
 local findFirstDescendantOfClass = require(script.Parent.findFirstDescendantOfClass)
 
-local function waitForDescendantOfClass(parent: Instance, className: string, timeOut: number?): Instance?
+local function waitForDescendantOfClass(parent: Instance, className: string, timeOut: number?)
 	local descendant = findFirstDescendantOfClass(parent, className)
 
 	if descendant then
@@ -22,13 +22,11 @@ local function waitForDescendantOfClass(parent: Instance, className: string, tim
 		task.spawn(waitingCoroutine, descendant)
 	end
 
-	local function onDescendantAdded(descendant: Instance)
+	descendantAddedConnection = parent.DescendantAdded:Connect(function(descendant)
 		if descendant.ClassName == className then
 			resumeWaitingCoroutine(descendant)
 		end
-	end
-
-	descendantAddedConnection = parent.DescendantAdded:Connect(onDescendantAdded)
+	end)
 
 	-- resume waiting coroutine with nil
 	task.delay(timeOut, resumeWaitingCoroutine, nil)

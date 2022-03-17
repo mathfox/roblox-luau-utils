@@ -1,12 +1,12 @@
-local function cloneRaycastParams(raycastParams: RaycastParams)
-	local newRaycastParams = RaycastParams.new()
+local function cloneRaycastParams(params: RaycastParams)
+	local raycastParams = RaycastParams.new()
 
-	newRaycastParams.CollisionGroup = raycastParams.CollisionGroup
-	newRaycastParams.FilterType = raycastParams.FilterType
-	newRaycastParams.FilterDescendantsInstances = raycastParams.FilterDescendantsInstances
-	newRaycastParams.IgnoreWater = raycastParams.IgnoreWater
+	raycastParams.CollisionGroup = params.CollisionGroup
+	raycastParams.FilterType = params.FilterType
+	raycastParams.FilterDescendantsInstances = params.FilterDescendantsInstances
+	raycastParams.IgnoreWater = params.IgnoreWater
 
-	return newRaycastParams
+	return raycastParams
 end
 
 return cloneRaycastParams

@@ -1,12 +1,10 @@
-local FunctionUtilsTypes = require(script.Parent.Parent.FunctionUtils.Types)
-
 export type Signal = {
-	Connect: (self: Signal, fn: FunctionUtilsTypes.GenericFunction) -> Connection,
+	Connect: (self: Signal, fn: (...any) -> ...any) -> Connection,
 	Fire: (self: Signal, ...any) -> (),
 	Wait: (self: Signal) -> ...any,
 	Destroy: (self: Signal) -> (),
 
-	connect: (self: Signal, fn: FunctionUtilsTypes.GenericFunction) -> Connection,
+	connect: (self: Signal, fn: (...any) -> ...any) -> Connection,
 	fire: (self: Signal, ...any) -> (),
 	wait: (self: Signal) -> ...any,
 	destroy: (self: Signal) -> (),

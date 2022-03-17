@@ -1,6 +1,6 @@
 local CollectionService = game:GetService("CollectionService")
 
-local function findFirstAncestorOfTag(tagName: string, child: Instance)
+local function findFirstAncestorOfTag(child: Instance, tagName: string)
 	local parent = child.Parent
 
 	while parent do

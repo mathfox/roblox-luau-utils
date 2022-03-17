@@ -1,7 +1,5 @@
-export type ChildrenOfClass = { Instance }
-
-local function getChildrenOfClass(parent: Instance, className: string): ChildrenOfClass
-	local children: ChildrenOfClass = {}
+local function getChildrenOfClass(parent: Instance, className: string)
+	local children: { Instance } = {}
 
 	for _, child in ipairs(parent:GetChildren()) do
 		if child.ClassName == className then

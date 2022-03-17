@@ -1,7 +1,5 @@
-local Types = require(script.Parent.Parent.TableUtils.Types)
-
 local function loadDescendants(parent: Instance)
-	local modules: Types.GenericList = {}
+	local modules: { any } = {}
 
 	for _, descendant in ipairs(parent:GetDescendants()) do
 		if descendant:IsA("ModuleScript") then

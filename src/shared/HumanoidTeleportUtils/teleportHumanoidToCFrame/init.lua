@@ -1,10 +1,8 @@
 local function teleportHumanoidToCFrame(humanoid: Humanoid, cframe: CFrame)
 	local rootPart = humanoid.RootPart
-	if not rootPart then
-		return
+	if rootPart then
+		rootPart.CFrame = cframe + Vector3.new(0, rootPart.Size.Y / 2 + humanoid.HipHeight, 0)
 	end
-
-	rootPart.CFrame = cframe + Vector3.new(0, rootPart.Size.Y / 2 + humanoid.HipHeight, 0)
 end
 
 return teleportHumanoidToCFrame

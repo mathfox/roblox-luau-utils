@@ -1,7 +1,5 @@
-export type DescendantsOfClass = { Instance }
-
-local function getDescendantsOfClass(parent: Instance, className: string): DescendantsOfClass
-	local descendants: DescendantsOfClass = {}
+local function getDescendantsOfClass(parent: Instance, className: string)
+	local descendants: { Instance } = {}
 
 	for _, descendant in ipairs(parent:GetDescendants()) do
 		if descendant.ClassName == className then

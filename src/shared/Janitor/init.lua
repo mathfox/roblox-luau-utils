@@ -11,7 +11,7 @@ local DefaultMethodNamesOrMethods = {
 	RBXScriptConnection = "Disconnect",
 }
 
-local function isObjectCallable(object: any): boolean
+local function isObjectCallable(object)
 	return type(object) == "function" or (type(object) == "table" and type(getmetatable(object).__call) == "function")
 end
 

@@ -1,4 +1,4 @@
-local function waitForChildWhichIsA(parent: Instance, className: string, timeOut: number?): Instance?
+local function waitForChildWhichIsA(parent: Instance, className: string, timeOut: number?)
 	local child = parent:FindFirstChildWhichIsA(className)
 
 	if child then
@@ -20,13 +20,11 @@ local function waitForChildWhichIsA(parent: Instance, className: string, timeOut
 		task.spawn(waitingCoroutine, child)
 	end
 
-	local function onChildAdded(child: Instance)
+	childAddedConnection = parent.ChildAdded:Connect(function(child)
 		if child:IsA(className) then
 			resumeWaitingCoroutine(child)
 		end
-	end
-
-	childAddedConnection = parent.ChildAdded:Connect(onChildAdded)
+	end)
 
 	-- resume waiting coroutine with nil
 	task.delay(timeOut, resumeWaitingCoroutine, nil)

@@ -2,9 +2,7 @@
 local function healHumanoid(humanoid: Humanoid, heal: number)
 	local potentialResultHealth = humanoid.Health + heal
 	local actualResultHealth = math.min(humanoid.MaxHealth, potentialResultHealth)
-
 	humanoid.Health = actualResultHealth
-
 	return potentialResultHealth - actualResultHealth
 end
 

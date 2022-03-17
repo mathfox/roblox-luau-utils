@@ -1,7 +1,5 @@
-export type ChildrenWhichIsA = { Instance }
-
-local function getChildrenWhichIsA(parent: Instance, className: string): ChildrenWhichIsA
-	local children: ChildrenWhichIsA = {}
+local function getChildrenWhichIsA(parent: Instance, className: string)
+	local children: { Instance } = {}
 
 	for _, child in ipairs(parent:GetChildren()) do
 		if child:IsA(className) then

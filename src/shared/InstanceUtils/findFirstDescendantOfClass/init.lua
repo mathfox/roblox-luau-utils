@@ -1,5 +1,5 @@
-local function findFirstDescendantOfClass(parent: Instance, className: string): Instance?
-	local children: { Instance } = parent:GetChildren()
+local function findFirstDescendantOfClass(parent: Instance, className: string)
+	local children = parent:GetChildren()
 
 	for _, child in ipairs(children) do
 		if child.ClassName == className then
@@ -10,7 +10,7 @@ local function findFirstDescendantOfClass(parent: Instance, className: string): 
 	for _, child in ipairs(children) do
 		local descendant: Instance? = findFirstDescendantOfClass(child, className)
 		if descendant then
-			return descendant
+			return descendant :: Instance
 		end
 	end
 

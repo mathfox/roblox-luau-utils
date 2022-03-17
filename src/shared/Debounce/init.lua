@@ -1,4 +1,3 @@
-local FunctionTypes = require(script.Parent.FunctionUtils.Types)
 local Enumerator = require(script.Parent.Enumerator)
 local Types = require(script.Types)
 
@@ -15,21 +14,7 @@ function Debounce.is(object)
 	return type(object) == "table" and getmetatable(object) == Debounce
 end
 
-function Debounce.once(
-	successFunction: FunctionTypes.GenericFunction,
-	failFunction: FunctionTypes.GenericFunction?
-): Types.Debounce
-	if successFunction == nil then
-		error("missing argument #1 to 'once' (function expected)", 2)
-	elseif type(successFunction) ~= "function" then
-		error(("invalid argument #1 to 'once' (function expected, got %s)"):format(typeof(successFunction)), 2)
-	elseif failFunction ~= nil and type(failFunction) ~= "function" then
-		error(
-			("missing argument #2 to 'once' (either function or nil expected, got %s)"):format(typeof(failFunction)),
-			2
-		)
-	end
-
+function Debounce.once(successFunction: (...any) -> ...any, failFunction: ((...any) -> ...any)?): Types.Debounce
 	return setmetatable({
 		type = Debounce.Type.Once,
 		_successFunction = successFunction,
@@ -39,29 +24,9 @@ end
 
 function Debounce.time(
 	debounceTime: number,
-	successFunction: FunctionTypes.GenericFunction,
-	failFunction: FunctionTypes.GenericFunction?
+	successFunction: (...any) -> ...any,
+	failFunction: ((...any) -> ...any)?
 ): Types.Debounce
-	if debounceTime == nil then
-		error("missing argument #1 to 'time' (number expected)", 2)
-	elseif type(debounceTime) ~= "number" then
-		error(("invalid argument #1 to 'time' (number expected, got %s)"):format(typeof(debounceTime)), 2)
-	elseif math.abs(debounceTime) == math.huge or debounceTime <= 0 or debounceTime ~= debounceTime then
-		error(
-			("invalid argument #1 to 'time' (positive valid number expected, got %s)"):format(tostring(debounceTime)),
-			2
-		)
-	elseif successFunction == nil then
-		error("missing argument #2 to 'time' (function expected)", 2)
-	elseif type(successFunction) ~= "function" then
-		error(("invalid argument #2 to 'time' (function expected, got %s)"):format(typeof(successFunction)), 2)
-	elseif failFunction ~= nil and type(failFunction) ~= "function" then
-		error(
-			("missing argument #3 to 'time' (either function or nil expected, got %s)"):format(typeof(failFunction)),
-			2
-		)
-	end
-
 	return setmetatable({
 		type = Debounce.Type.Time,
 		_debounceTime = debounceTime,

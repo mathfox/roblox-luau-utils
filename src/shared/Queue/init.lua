@@ -1,18 +1,20 @@
+local Types = require(script.Types)
+
 local Queue = {}
 Queue.prototype = {}
 Queue.__index = Queue.prototype
 
-function Queue.is(object: any): boolean
+function Queue.is(object)
 	return type(object) == "table" and getmetatable(object) == Queue
 end
 
-function Queue.new(): Queue
+function Queue.new(): Types.Queue
 	return setmetatable({
 		_queue = {},
 	}, Queue)
 end
 
-function Queue.prototype:enqueue(...: any)
+function Queue.prototype:enqueue(...)
 	table.insert(self._queue, 1, table.pack(...))
 end
 
@@ -33,7 +35,5 @@ end
 function Queue.prototype:getLength(): number
 	return #self._queue
 end
-
-export type Queue = typeof(Queue.new())
 
 return Queue

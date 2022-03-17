@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 
-local function getPlayerFromCharacterDescendant(descendant: Instance)
+local function getPlayerFromCharacterDescendant(descendant: Instance?)
 	local character = descendant
 
 	while character do

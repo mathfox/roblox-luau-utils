@@ -1,11 +1,10 @@
-local FunctionUtilsTypes = require(script.Parent.FunctionUtils.Types)
 local Types = require(script.Types)
 
 local freeRunnerThread: thread? = nil
 local runEventHandlerInFreeThread = nil
 
 do
-	local function acquireRunnerThreadAndCallEventHandler(fn: FunctionUtilsTypes.GenericFunction, ...)
+	local function acquireRunnerThreadAndCallEventHandler(fn: (...any) -> ...any, ...)
 		local acquiredRunnerThread = freeRunnerThread
 		freeRunnerThread = nil
 		fn(...)
@@ -25,7 +24,7 @@ Connection.prototype = {}
 Connection.prototype.Connected = true
 Connection.__index = Connection.prototype
 
-function Connection.new(signal: Types.Signal, fn: FunctionUtilsTypes.GenericFunction): Types.Connection
+function Connection.new(signal: Types.Signal, fn: (...any) -> ...any): Types.Connection
 	return setmetatable({
 		_signal = signal,
 		_fn = fn,
@@ -58,7 +57,7 @@ local Signal = {}
 Signal.prototype = {}
 Signal.__index = Signal.prototype
 
-function Signal.prototype:Connect(fn: FunctionUtilsTypes.GenericFunction): Types.Connection
+function Signal.prototype:Connect(fn: (...any) -> ...any): Types.Connection
 	local connection = Connection.new(self, fn)
 
 	if self._last then
@@ -70,7 +69,7 @@ function Signal.prototype:Connect(fn: FunctionUtilsTypes.GenericFunction): Types
 	return connection
 end
 
-function Signal.prototype:Fire(...: any)
+function Signal.prototype:Fire(...)
 	local connection = self._last
 
 	while connection do

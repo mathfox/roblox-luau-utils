@@ -1,6 +1,6 @@
 local findFirstDescendantWhichIsA = require(script.Parent.findFirstDescendantWhichIsA)
 
-local function waitForDescendantWhichIsA(parent: Instance, className: string, timeOut: number?): Instance?
+local function waitForDescendantWhichIsA(parent: Instance, className: string, timeOut: number?)
 	local descendant = findFirstDescendantWhichIsA(parent, className)
 
 	if descendant then
@@ -22,13 +22,11 @@ local function waitForDescendantWhichIsA(parent: Instance, className: string, ti
 		task.spawn(waitingCoroutine, descendant)
 	end
 
-	local function onDescendantAdded(descendant: Instance)
+	descendantAddedConnection = parent.DescendantAdded:Connect(function(descendant)
 		if descendant:IsA(className) then
 			resumeWaitingCoroutine(descendant)
 		end
-	end
-
-	descendantAddedConnection = parent.DescendantAdded:Connect(onDescendantAdded)
+	end)
 
 	-- resume waiting coroutine with nil
 	task.delay(timeOut, resumeWaitingCoroutine, nil)
