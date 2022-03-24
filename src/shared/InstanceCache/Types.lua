@@ -21,4 +21,4 @@ export type InstanceCacheParams = {
 	parent: Instance?,
 }
 
-return {}
+return nil

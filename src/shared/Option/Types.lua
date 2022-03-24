@@ -14,4 +14,4 @@ export type Option = {
 
 export type OptionMatches = { onSome: (v: any) -> (), onNone: () -> () }
 
-return {}
+return nil

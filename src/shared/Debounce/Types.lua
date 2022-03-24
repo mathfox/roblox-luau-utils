@@ -10,4 +10,4 @@ export type Debounce = {
 	destroy: (self: Debounce) -> (),
 }
 
-return {}
+return nil

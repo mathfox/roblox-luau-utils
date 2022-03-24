@@ -4,4 +4,4 @@ export type TableTask = { Destroy: FunctionTask, [any]: any } | { destroy: Funct
 
 export type MaidTask = RBXScriptConnection | FunctionTask | TableTask | thread
 
-return {}
+return nil

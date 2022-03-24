@@ -1,9 +1,9 @@
 export type Queue = {
-	enqueue: (...any) -> (),
-	dequeue: () -> ...any,
-	getFront: () -> ...any,
-	getBack: () -> ...any,
-	getLength: () -> number,
+	enqueue: (self: Queue, ...any) -> (),
+	dequeue: (self: Queue) -> ...any,
+	getFront: (self: Queue) -> ...any,
+	getBack: (self: Queue) -> ...any,
+	getLength: (self: Queue) -> number,
 }
 
-return {}
+return nil

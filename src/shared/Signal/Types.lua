@@ -17,4 +17,4 @@ export type Connection = {
 	disconnect: (self: Connection) -> (),
 }
 
-return {}
+return nil

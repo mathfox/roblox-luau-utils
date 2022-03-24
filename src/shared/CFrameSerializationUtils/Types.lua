@@ -1,3 +1,3 @@
 export type SerializedCFrame = { number }
 
-return {}
+return nil

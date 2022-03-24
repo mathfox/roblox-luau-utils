@@ -7,4 +7,4 @@ export type Friend = {
 
 export type FriendsList = { Friend }
 
-return {}
+return nil

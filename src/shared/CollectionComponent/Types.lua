@@ -32,4 +32,4 @@ export type CollectionComponentExtension = {
 	stopped: (CollectionComponentInstance) -> (),
 }
 
-return {}
+return nil

@@ -1,3 +1,3 @@
 export type Symbol = userdata
 
-return {}
+return nil

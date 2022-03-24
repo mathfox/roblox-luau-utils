@@ -4,29 +4,20 @@
       "$className": "DataModel",
       "ReplicatedStorage": {
          "$className": "ReplicatedStorage",
-         "Shared": {
-            "$path": "src/shared",
-            "Promise": {
-               "$path": "submodules/roblox-lua-promise/lib"
-            },
-            "Enumerator": {
-               "$path": "submodules/enumerator/src"
-            }
+         "$path": "src/shared",
+         "Promise": {
+            "$path": "submodules/roblox-lua-promise/lib"
          }
       },
       "ServerStorage": {
          "$className": "ServerStorage",
-         "Server": {
-            "$path": "src/server"
-         }
+         "$path": "src/server"
       },
       "StarterPlayer": {
          "$className": "StarterPlayer",
          "StarterPlayerScripts": {
             "$className": "StarterPlayerScripts",
-            "Client": {
-               "$path": "src/client"
-            }
+            "$path": "src/client"
          }
       }
    }
