@@ -8,6 +8,9 @@
 
 local Types = require(script.Types)
 
+type OptionMatches = Types.OptionMatches
+type Option = Types.Option
+
 --[[
 	Represents an optional value in Lua. This is useful to avoid `nil` bugs, which can
 	go silently undetected within code and cause hidden or hard-to-find bugs.
@@ -16,7 +19,7 @@ local Option = {}
 Option.prototype = {}
 Option.__index = Option.prototype
 
-local function createOption(value): Types.Option
+function Option._new(value): Option
 	return setmetatable({
 		_v = value,
 		_s = value ~= nil,
@@ -24,15 +27,15 @@ local function createOption(value): Types.Option
 end
 
 -- Creates an Option instance with the given value. Throws an error if the given value is `nil`.
-function Option.some(value): Types.Option
+function Option.some(value)
 	assert(value ~= nil, "Option.some() value cannot be nil")
 
-	return createOption(value)
+	return Option._new(value)
 end
 
 -- Safely wraps the given value as an `Option`. If the value is `nil`, returns `Option.none`, otherwise returns a new `Option`.
 function Option.wrap(value)
-	return if value == nil then Option.none else createOption(value)
+	return if value == nil then Option.none else Option._new(value)
 end
 
 function Option.is(object)
@@ -40,11 +43,11 @@ function Option.is(object)
 end
 
 -- Throws an error if `object` is not an `Option`.
-function Option.assert(object): Types.Option
-	return if Option.is(object) then object else error("provided object was not an Option", 2)
+function Option.assert(object)
+	return if Option.is(object) then object :: Option else error("provided object was not an Option", 2)
 end
 
-function Option.prototype:match(matches: Types.OptionMatches)
+function Option.prototype:match(matches: OptionMatches)
 	local onSome = matches.some
 	local onNone = matches.none
 
@@ -79,29 +82,29 @@ end
 function Option.prototype:unwrap(default)
 	return if default == nil
 		then self:expect(function()
-			return "can't unwrap Option.none"
+			return "can not unwrap Option.none"
 		end)
 		else if self._s then self._v elseif type(default) == "function" then default() else default
 end
 
 -- Returns `Option` if the calling option has a `value`, otherwise returns `Option.none`.
-function Option.prototype:intersect(option: Types.Option)
+function Option.prototype:intersect(option: Option)
 	return if self._s then option else Option.none
 end
 
 -- If caller has a `value`, returns itself. Otherwise, returns `Option`
-function Option.prototype:union(option: Types.Option)
-	return if self._s then self :: Types.Option else option
+function Option.prototype:union(option: Option)
+	return if self._s then self :: Option else option
 end
 
 -- Extending the `Option.none` will always result into returning `Option.none`.
-function Option.prototype:extend(modifier: (any) -> Types.Option)
+function Option.prototype:extend(modifier: (any) -> Option)
 	return if self._s then Option.assert(modifier(self._v)) else Option.none
 end
 
 -- Returns `self` if this option has a value and the predicate returns `true`. Otherwise, returns `Option.none`.
 function Option.prototype:filter(predicate: (any) -> boolean)
-	return if not self._s or not predicate(self._v) then Option.none else self :: Types.Option
+	return if not self._s or not predicate(self._v) then Option.none else self :: Option
 end
 
 -- Returns `true` if this option contains `value`.
@@ -115,13 +118,18 @@ end
 
 function Option:__eq(object)
 	return if Option.is(object)
-		then if self._s and (object :: Types.Option):isSome()
-			then self._v == (object :: Types.Option):unwrap()
-			else not self._s and (object :: Types.Option):isNone()
+		then if self._s and (object :: Option):isSome()
+			then self._v == (object :: Option):unwrap()
+			else not self._s and (object :: Option):isNone()
 		else false
 end
 
 -- Represents no value `Option`.
-Option.none = createOption()
+Option.none = Option._new()
 
-return Option
+return Option :: {
+	is: (object: any) -> boolean,
+	some: (value: any) -> Option,
+	wrap: (value: any) -> Option,
+	assert: (object: any) -> Option,
+}
