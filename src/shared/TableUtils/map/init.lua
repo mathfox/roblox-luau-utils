@@ -1,7 +1,5 @@
-local Types = require(script.Parent.Types)
-
-local function map(tbl: Types.GenericTable, func: (v: any, k: any, tbl: Types.GenericTable) -> any)
-	local new: Types.GenericTable = table.create(#tbl)
+local function map<K, V>(tbl: { [K]: V }, func: (v: V, k: K, tbl: { [K]: V }) -> any)
+	local new: { [K]: V } = table.create(#tbl)
 
 	for k, v in pairs(tbl) do
 		new[k] = func(v, k, tbl)

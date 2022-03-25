@@ -1,7 +1,5 @@
-local Types = require(script.Parent.Types)
-
-local function override(tbl: Types.GenericTable, overridingTbl: Types.GenericTable)
-	local new = table.clone(tbl)
+local function override<K, V>(tbl: { [K]: V }, overridingTbl: { [K]: V })
+	local new: { [K]: V } = table.clone(tbl)
 
 	for k, v in pairs(overridingTbl) do
 		new[k] = if type(v) == "table"

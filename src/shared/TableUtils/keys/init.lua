@@ -1,7 +1,5 @@
-local Types = require(script.Parent.Types)
-
-local function keys(tbl: Types.GenericTable)
-	local new: Types.GenericTable = table.create(#tbl)
+local function keys<K>(tbl: { [K]: any })
+	local new: { K } = table.create(#tbl)
 
 	for k in pairs(tbl) do
 		table.insert(new, k)

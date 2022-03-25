@@ -1,6 +1,4 @@
-local Types = require(script.Parent.Types)
-
-local function find(tbl: Types.GenericTable, predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean)
+local function find<K, V>(tbl: { [K]: V }, predicate: (v: V, k: K, tbl: { [K]: V }) -> boolean)
 	for k, v in pairs(tbl) do
 		if predicate(v, k, tbl) then
 			return v, k

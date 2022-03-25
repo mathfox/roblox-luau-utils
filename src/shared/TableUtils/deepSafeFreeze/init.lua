@@ -1,7 +1,6 @@
 local safeFreeze = require(script.Parent.safeFreeze)
-local Types = require(script.Parent.Types)
 
-local function deepSafeFreeze(tbl: Types.GenericTable)
+local function deepSafeFreeze(tbl: { [any]: any })
 	safeFreeze(tbl)
 
 	for _, v in pairs(tbl) do

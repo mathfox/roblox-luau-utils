@@ -1,6 +1,4 @@
-local Types = require(script.Parent.Types)
-
-local function safeFreeze(tbl: Types.GenericTable)
+local function safeFreeze(tbl: { [any]: any })
 	if not table.isfrozen(tbl) then
 		table.freeze(tbl)
 	end

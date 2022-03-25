@@ -2,7 +2,6 @@ local TableUtils = {
 	length = require(script.length),
 
 	copy = require(script.copy),
-	copyShallow = require(script.copyShallow),
 
 	map = require(script.map),
 	filter = require(script.filter),

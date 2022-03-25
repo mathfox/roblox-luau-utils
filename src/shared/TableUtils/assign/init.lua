@@ -1,7 +1,5 @@
-local Types = require(script.Parent.Types)
-
-local function assign(tbl: Types.GenericTable, ...: Types.GenericTable)
-	local new: Types.GenericTable = table.clone(tbl)
+local function assign<K, V>(tbl: { [K]: V }, ...: { [K]: V })
+	local new: { [K]: V } = table.clone(tbl)
 
 	for _, t in ipairs({ ... }) do
 		for k, v in pairs(t) do

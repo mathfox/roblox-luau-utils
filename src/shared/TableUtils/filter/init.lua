@@ -1,7 +1,5 @@
-local Types = require(script.Parent.Types)
-
-local function filter(tbl: Types.GenericTable, predicate: (v: any, k: any, tbl: Types.GenericTable) -> boolean)
-	local new: Types.GenericTable = table.create(#tbl)
+local function filter<K, V>(tbl: { [K]: V }, predicate: (v: V, k: K, tbl: { [K]: V }) -> boolean)
+	local new: { [K]: V } = table.create(#tbl)
 
 	if #tbl > 0 then
 		for i, v in ipairs(tbl) do

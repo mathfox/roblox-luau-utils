@@ -1,6 +1,4 @@
-local Types = require(script.Parent.Types)
-
-local function length(tbl: Types.GenericTable)
+local function length(tbl: { [any]: any })
 	local l = 0
 
 	for _ in pairs(tbl) do
