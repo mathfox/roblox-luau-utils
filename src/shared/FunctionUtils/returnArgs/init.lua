@@ -1,4 +1,4 @@
-local function returnArgs(...: any)
+local function returnArgs(...)
 	local args = table.pack(...)
 
 	return function()

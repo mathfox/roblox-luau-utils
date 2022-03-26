@@ -1,5 +1,8 @@
 local Types = require(script.Types)
 
+type Connection = Types.Connection
+type Signal = Types.Signal
+
 local freeRunnerThread: thread? = nil
 local runEventHandlerInFreeThread = nil
 
@@ -21,19 +24,19 @@ end
 
 local Connection = {}
 Connection.prototype = {}
-Connection.prototype.Connected = true
+Connection.prototype.connected = true
 Connection.__index = Connection.prototype
 
-function Connection.new(signal: Types.Signal, fn: (...any) -> ...any): Types.Connection
+function Connection.new(signal: Signal, fn: (...any) -> ...any): Connection
 	return setmetatable({
 		_signal = signal,
 		_fn = fn,
 	}, Connection)
 end
 
-function Connection.prototype:Disconnect()
-	if self.Connected then
-		self.Connected = false
+function Connection.prototype:disconnect()
+	if self.connected then
+		self.connected = false
 
 		if self._signal._last == self then
 			self._signal._last = self._next
@@ -51,13 +54,11 @@ function Connection.prototype:Disconnect()
 	end
 end
 
-Connection.prototype.disconnect = Connection.prototype.Disconnect
-
 local Signal = {}
 Signal.prototype = {}
 Signal.__index = Signal.prototype
 
-function Signal.prototype:Connect(fn: (...any) -> ...any): Types.Connection
+function Signal.prototype:connect(fn: (...any) -> ...any)
 	local connection = Connection.new(self, fn)
 
 	if self._last then
@@ -69,11 +70,11 @@ function Signal.prototype:Connect(fn: (...any) -> ...any): Types.Connection
 	return connection
 end
 
-function Signal.prototype:Fire(...)
+function Signal.prototype:fire(...)
 	local connection = self._last
 
 	while connection do
-		if connection.Connected then
+		if connection.connected then
 			if not freeRunnerThread then
 				freeRunnerThread = coroutine.create(runEventHandlerInFreeThread)
 			end
@@ -85,12 +86,12 @@ function Signal.prototype:Fire(...)
 	end
 end
 
-function Signal.prototype:Wait(): ...any
+function Signal.prototype:wait(): ...any
 	local waitingCoroutine = coroutine.running()
 
 	local connection = nil
-	connection = self:Connect(function(...: any)
-		connection:Disconnect()
+	connection = self:connect(function(...)
+		connection:disconnect()
 
 		task.spawn(waitingCoroutine, ...)
 	end)
@@ -98,11 +99,11 @@ function Signal.prototype:Wait(): ...any
 	return coroutine.yield()
 end
 
-function Signal.prototype:Destroy()
+function Signal.prototype:destroy()
 	local last = self._last
 
 	while last do
-		last.Connected = false
+		last.connected = false
 		last = last._next
 	end
 
@@ -113,13 +114,11 @@ function Signal.is(object)
 	return type(object) == "table" and getmetatable(object) == Signal
 end
 
-function Signal.new(): Types.Signal
+function Signal.new(): Signal
 	return setmetatable({}, Signal)
 end
 
-Signal.prototype.fire = Signal.prototype.Fire
-Signal.prototype.connect = Signal.prototype.Connect
-Signal.prototype.wait = Signal.prototype.Wait
-Signal.prototype.destroy = Signal.prototype.Destroy
-
-return Signal
+return Signal :: {
+	is: (object: any) -> boolean,
+	new: () -> Signal,
+}

@@ -1,17 +1,11 @@
---[[
-    original: https://gist.github.com/EgoMoose/2fd62ee98754380f6d839267ffe4f588
---]]
+-- original: https://gist.github.com/EgoMoose/2fd62ee98754380f6d839267ffe4f588
 
 local BLOCK = { 0, 1, 2, 3, 4, 5, 6, 7 }
 local WEDGE = { 0, 1, 3, 4, 5, 7 }
 local CORNER_WEDGE = { 0, 1, 4, 5, 6 }
 
--- Class
-
 local ViewportModelClass = {}
 ViewportModelClass.__index = ViewportModelClass
-
--- Private
 
 local function getIndices(part)
 	if part:IsA("WedgePart") then
@@ -62,8 +56,6 @@ local function viewProjectionEdgeHits(cloud, axis, depth, tanFov2)
 	return max, min
 end
 
--- Public Constructors
-
 function ViewportModelClass.new(vpf, camera)
 	local self = setmetatable({}, ViewportModelClass)
 
@@ -82,8 +74,6 @@ function ViewportModelClass.new(vpf, camera)
 
 	return self
 end
-
--- Public Methods
 
 -- Used to set the model that is being focused on
 -- should be used for new models and/or a change in the current model
@@ -163,7 +153,5 @@ function ViewportModelClass:GetMinimumFitCFrame(orientation)
 
 	return orientation * CFrame.new((hMax + hMin) / 2, (vMax + vMin) / 2, furthest + distance)
 end
-
---
 
 return ViewportModelClass

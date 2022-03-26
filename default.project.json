@@ -5,9 +5,6 @@
       "ReplicatedStorage": {
          "$className": "ReplicatedStorage",
          "$path": "src/shared",
-         "Promise": {
-            "$path": "submodules/roblox-lua-promise/lib"
-         },
          "Enumerator": {
             "$path": "submodules/enumerator/src"
          }

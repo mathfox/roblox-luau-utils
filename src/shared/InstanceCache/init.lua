@@ -12,12 +12,12 @@ function InstanceCache.new(params: Types.InstanceCacheParams): Types.InstanceCac
 		parent = params.parent,
 	}, InstanceCache)
 
-	self:Expand(params.amount.initial)
+	self:expand(params.amount.initial)
 
 	return self
 end
 
-function InstanceCache.prototype:GetInstance()
+function InstanceCache.prototype:getInstance()
 	local available = self._available
 
 	if #available == 0 then
@@ -32,7 +32,7 @@ function InstanceCache.prototype:GetInstance()
 	return instance
 end
 
-function InstanceCache.prototype:ReturnInstance(instance: Instance)
+function InstanceCache.prototype:returnInstance(instance: Instance)
 	local inUse = self._inUse
 
 	local index = table.find(inUse, instance)
@@ -44,7 +44,7 @@ function InstanceCache.prototype:ReturnInstance(instance: Instance)
 	table.insert(self._available, instance)
 end
 
-function InstanceCache.prototype:SetParent(parent: Instance?)
+function InstanceCache.prototype:setParent(parent: Instance?)
 	self.parent = parent
 
 	for _, instance in ipairs(self._available) do
@@ -52,7 +52,7 @@ function InstanceCache.prototype:SetParent(parent: Instance?)
 	end
 end
 
-function InstanceCache.prototype:Expand(amount: number)
+function InstanceCache.prototype:expand(amount: number)
 	local parent = self.parent
 
 	for _ = 1, amount or self._params.amount.expansion do
@@ -63,7 +63,7 @@ function InstanceCache.prototype:Expand(amount: number)
 	end
 end
 
-function InstanceCache.prototype:Destroy()
+function InstanceCache.prototype:destroy()
 	for _, field in ipairs({ "_inUse", "_available" }) do
 		for _, instance in ipairs(self[field]) do
 			instance:Destroy()
@@ -72,11 +72,5 @@ function InstanceCache.prototype:Destroy()
 		table.clear(self[field])
 	end
 end
-
-InstanceCache.prototype.getInstance = InstanceCache.prototype.GetInstance
-InstanceCache.prototype.returnInstance = InstanceCache.prototype.ReturnInstance
-InstanceCache.prototype.setParent = InstanceCache.prototype.SetParent
-InstanceCache.prototype.expand = InstanceCache.prototype.Expand
-InstanceCache.prototype.destroy = InstanceCache.prototype.Destroy
 
 return InstanceCache

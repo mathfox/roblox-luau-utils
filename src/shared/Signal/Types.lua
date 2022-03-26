@@ -1,9 +1,4 @@
 export type Signal = {
-	Connect: (self: Signal, fn: (...any) -> ...any) -> Connection,
-	Fire: (self: Signal, ...any) -> (),
-	Wait: (self: Signal) -> ...any,
-	Destroy: (self: Signal) -> (),
-
 	connect: (self: Signal, fn: (...any) -> ...any) -> Connection,
 	fire: (self: Signal, ...any) -> (),
 	wait: (self: Signal) -> ...any,
@@ -11,9 +6,7 @@ export type Signal = {
 }
 
 export type Connection = {
-	Connected: boolean,
-
-	Disconnect: (self: Connection) -> (),
+	connected: boolean,
 	disconnect: (self: Connection) -> (),
 }
 
