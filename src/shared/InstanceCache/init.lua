@@ -45,7 +45,7 @@ function InstanceCache.prototype:returnInstance(instance: Instance)
 		table.remove(
 			self._inUse,
 			table.find(self._inUse, instance)
-				or error("Attempted to return Instance which was not retrieved using 'getInstance'.", 2)
+				or error("attempted to return Instance which was not retrieved using 'getInstance'", 2)
 		)
 	)
 end

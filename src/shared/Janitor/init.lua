@@ -22,11 +22,11 @@ function Janitor.new()
 	return setmetatable({}, Janitor)
 end
 
-function Janitor.is(object: any): boolean
+function Janitor.is(object)
 	return type(object) == "table" and getmetatable(object) == Janitor
 end
 
-function Janitor:add(object: any, methodNameOrTrue: string | boolean, index: any): any
+function Janitor:add(object: any, methodNameOrTrue: true | boolean, index)
 	if index then
 		self:remove(index)
 
