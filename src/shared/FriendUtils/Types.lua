@@ -5,6 +5,4 @@ export type Friend = {
 	IsOnline: boolean,
 }
 
-export type FriendsList = { Friend }
-
 return nil
