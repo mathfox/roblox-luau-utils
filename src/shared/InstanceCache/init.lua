@@ -12,6 +12,10 @@ InstanceCache.prototype = {} :: InstanceCache<Instance> & {
 }
 InstanceCache.__index = InstanceCache.prototype
 
+function InstanceCache.is(object)
+	return type(object) == "table" and getmetatable(object) == InstanceCache
+end
+
 function InstanceCache.new<I>(params: InstanceCacheParams<I>): InstanceCache<I>
 	local self = setmetatable({
 		_available = {},
@@ -77,4 +81,7 @@ function InstanceCache.prototype:destroy()
 	table.clear(self)
 end
 
-return InstanceCache
+return InstanceCache :: {
+	is: (object: any) -> boolean,
+	new: <I>(InstanceCacheParams<I>) -> InstanceCache<I>,
+}
