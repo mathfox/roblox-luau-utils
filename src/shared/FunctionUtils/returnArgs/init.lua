@@ -1,8 +1,7 @@
-local function returnArgs(...)
-	local args = table.pack(...)
-
-	return function()
-		return table.unpack(args, 1, args.n)
+local function returnArgs<T...>(...: T...): () -> T...
+	local length, args = select("#", ...), { ... }
+	return function(): T...
+		return unpack(args, 1, length)
 	end
 end
 
