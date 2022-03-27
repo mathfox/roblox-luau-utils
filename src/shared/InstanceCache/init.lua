@@ -1,10 +1,18 @@
 local Types = require(script.Types)
 
+type InstanceCacheParams<I> = Types.InstanceCacheParams<I>
+type InstanceCache<I> = Types.InstanceCache<I>
+
 local InstanceCache = {}
-InstanceCache.prototype = {}
+InstanceCache.prototype = {} :: InstanceCache<Instance> & {
+	_available: { Instance },
+	_inUse: { Instance },
+	_params: InstanceCacheParams<Instance>,
+	parent: Instance?,
+}
 InstanceCache.__index = InstanceCache.prototype
 
-function InstanceCache.new(params: Types.InstanceCacheParams): Types.InstanceCache
+function InstanceCache.new<I>(params: InstanceCacheParams<I>): InstanceCache<I>
 	local self = setmetatable({
 		_available = {},
 		_inUse = {},
@@ -18,30 +26,24 @@ function InstanceCache.new(params: Types.InstanceCacheParams): Types.InstanceCac
 end
 
 function InstanceCache.prototype:getInstance()
-	local available = self._available
-
-	if #available == 0 then
-		self:Expand()
+	if #self._available == 0 then
+		self:expand(self._params.amount.expansion)
 	end
 
-	local instance: Instance = available[#available]
-
-	table.remove(available, #available)
+	local instance: Instance = table.remove(self._available, #self._available)
 	table.insert(self._inUse, instance)
-
 	return instance
 end
 
 function InstanceCache.prototype:returnInstance(instance: Instance)
-	local inUse = self._inUse
-
-	local index = table.find(inUse, instance)
-	if not index then
-		error("Attempted to return Instance which was never used.", 2)
-	end
-
-	table.remove(inUse, index)
-	table.insert(self._available, instance)
+	table.insert(
+		self._available,
+		table.remove(
+			self._inUse,
+			table.find(self._inUse, instance)
+				or error("Attempted to return Instance which was not retrieved using 'getInstance'.", 2)
+		)
+	)
 end
 
 function InstanceCache.prototype:setParent(parent: Instance?)
@@ -53,24 +55,26 @@ function InstanceCache.prototype:setParent(parent: Instance?)
 end
 
 function InstanceCache.prototype:expand(amount: number)
-	local parent = self.parent
-
-	for _ = 1, amount or self._params.amount.expansion do
-		local clone = self._params.template:Clone()
-		clone.Parent = parent
-
+	for _ = 1, amount do
+		local clone = self._params.instance:Clone()
+		clone.Parent = self.parent
 		table.insert(self._available, clone)
 	end
 end
 
 function InstanceCache.prototype:destroy()
-	for _, field in ipairs({ "_inUse", "_available" }) do
-		for _, instance in ipairs(self[field]) do
-			instance:Destroy()
-		end
-
-		table.clear(self[field])
+	for _, instance in ipairs(self._available) do
+		instance:Destroy()
 	end
+
+	for _, instance in ipairs(self._inUse) do
+		instance:Destroy()
+	end
+
+	setmetatable(self, nil)
+
+	-- allow gc
+	table.clear(self)
 end
 
 return InstanceCache

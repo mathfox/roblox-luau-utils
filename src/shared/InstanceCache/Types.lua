@@ -1,22 +1,16 @@
-export type InstanceCache = {
-	params: InstanceCacheParams,
+export type InstanceCache<I> = {
+	params: InstanceCacheParams<I>,
 	parent: Instance?,
 
-	GetInstance: (self: InstanceCache) -> Instance,
-	ReturnInstance: (self: InstanceCache, instance: Instance) -> (),
-	SetParent: (self: InstanceCache, parent: Instance?) -> (),
-	Expand: (self: InstanceCache, amount: number) -> (),
-	Destroy: (self: InstanceCache) -> (),
-
-	getInstance: (self: InstanceCache) -> Instance,
-	returnInstance: (self: InstanceCache, instance: Instance) -> (),
-	setParent: (self: InstanceCache, parent: Instance?) -> (),
-	expand: (self: InstanceCache, amount: number) -> (),
-	destroy: (self: InstanceCache) -> (),
+	getInstance: (self: InstanceCache<I>) -> I,
+	returnInstance: (self: InstanceCache<I>, instance: I) -> (),
+	setParent: (self: InstanceCache<I>, parent: Instance?) -> (),
+	expand: (self: InstanceCache<I>, amount: number) -> (),
+	destroy: (self: InstanceCache<I>) -> (),
 }
 
-export type InstanceCacheParams = {
-	template: Instance,
+export type InstanceCacheParams<I> = {
+	instance: I,
 	amount: { initial: number, expansion: number },
 	parent: Instance?,
 }
