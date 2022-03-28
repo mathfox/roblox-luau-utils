@@ -1,36 +1,34 @@
+local PromiseTypes = require(script.Parent.Promise.Types)
 local Promise = require(script.Parent.Promise)
 local Symbol = require(script.Parent.Symbol)
+local Types = require(script.Types)
 
 local LinkToInstanceIndex = Symbol.named("LinkToInstanceIndex")
 local IndicesReference = Symbol.named("IndicesReference")
 
-local WARNING_METHOD_NOT_FOUND = "Object %s doesn't have method %s, are you sure you want to add it? Traceback: %s"
-
-local DefaultMethodNamesOrMethods = {
-	["function"] = true,
+local DEFAULT_METHOD_NAMES = {
 	RBXScriptConnection = "Disconnect",
+	["function"] = true,
 }
 
-local function isObjectCallable(object)
-	return type(object) == "function" or (type(object) == "table" and type(getmetatable(object).__call) == "function")
-end
+type Promise<V...> = PromiseTypes.Promise<V...>
+type Janitor = Types.Janitor
 
 local Janitor = {}
-Janitor.__index = Janitor
-
-function Janitor.new()
-	return setmetatable({}, Janitor)
-end
+Janitor.prototype = {} :: Janitor
+Janitor.__index = Janitor.prototype
 
 function Janitor.is(object)
 	return type(object) == "table" and getmetatable(object) == Janitor
 end
 
-function Janitor:add(object: any, methodNameOrTrue: true | boolean, index)
-	if index then
-		self:remove(index)
+function Janitor.new(): Janitor
+	return setmetatable({}, Janitor)
+end
 
-		local this = self[IndicesReference]
+function Janitor.prototype:add<V>(object: V, methodNameOrTrue: string | true, index): V
+	if index then
+		local this = self:remove(index)[IndicesReference]
 		if not this then
 			this = {}
 			self[IndicesReference] = this
@@ -39,20 +37,14 @@ function Janitor:add(object: any, methodNameOrTrue: true | boolean, index)
 		this[index] = object
 	end
 
-	methodNameOrTrue = methodNameOrTrue or DefaultMethodNamesOrMethods[typeof(object)] or "Destroy"
-
-	if not isObjectCallable(object) and not object[methodNameOrTrue] then
-		warn(WARNING_METHOD_NOT_FOUND:format(tostring(object), tostring(methodNameOrTrue), debug.traceback(nil, 2)))
-	end
-
-	self[object] = methodNameOrTrue
+	self[object] = if methodNameOrTrue then methodNameOrTrue else DEFAULT_METHOD_NAMES[typeof(object)] or "Destroy"
 
 	return object
 end
 
-function Janitor:addPromise(promise)
+function Janitor.prototype:addPromise(promise: Promise<...any>): (false | userdata)
 	if promise:getStatus() ~= Promise.Status.Started then
-		return promise
+		return false
 	end
 
 	local proxy = newproxy(false)
@@ -62,10 +54,15 @@ function Janitor:addPromise(promise)
 		self:remove(proxy)
 	end)
 
-	return promise
+	return proxy
 end
 
-function Janitor:remove(index: any)
+function Janitor.prototype:get(index)
+	local this = self[IndicesReference]
+	return if this then this[index] else nil
+end
+
+function Janitor.prototype:remove(index)
 	local this = self[IndicesReference]
 
 	if this then
@@ -94,11 +91,6 @@ function Janitor:remove(index: any)
 	return self
 end
 
-function Janitor:get(index: any): any
-	local this = self[IndicesReference]
-	return if this then this[index] else nil
-end
-
 local function getNextTask(self)
 	return function()
 		for object, methodName in pairs(self) do
@@ -109,7 +101,7 @@ local function getNextTask(self)
 	end
 end
 
-function Janitor:cleanup()
+function Janitor.prototype:cleanup()
 	local getNext = getNextTask(self)
 	local object, methodName = getNext()
 
@@ -134,15 +126,15 @@ function Janitor:cleanup()
 	end
 end
 
-function Janitor:destroy()
+Janitor.__call = Janitor.prototype.cleanup
+
+function Janitor.prototype:destroy()
 	self:cleanup()
 	table.clear(self)
 	setmetatable(self, nil)
 end
 
-Janitor.__call = Janitor.cleanup
-
-function Janitor:linkToInstance(object: Instance, allowMultiple: boolean?)
+function Janitor.prototype:linkToInstance(object: Instance, allowMultiple: true | nil)
 	local isNilParented = object.Parent == nil
 	local isConnected = true
 
@@ -163,27 +155,26 @@ function Janitor:linkToInstance(object: Instance, allowMultiple: boolean?)
 
 	local ancestryConnection = object.AncestryChanged:Connect(onAncestryChanged)
 
-	local linkConnection = {}
-
-	function linkConnection:disconnect()
-		ancestryConnection:Disconnect()
-	end
-
 	if isNilParented then
 		onAncestryChanged(nil, object.Parent)
 	end
 
-	return self:add(linkConnection, "disconnect", if allowMultiple then newproxy(false) else LinkToInstanceIndex)
+	return self:add(function()
+		ancestryConnection:Disconnect()
+	end, true, if allowMultiple then newproxy(false) else LinkToInstanceIndex)
 end
 
-function Janitor:linkToInstances(...: Instance)
+function Janitor.prototype:linkToInstances(...: Instance)
 	local linkJanitor = Janitor.new()
 
 	for _, object in ipairs({ ... }) do
-		linkJanitor:add(self:linkToInstance(object, true), "disconnect")
+		linkJanitor:add(self:linkToInstance(object, true), true)
 	end
 
 	return linkJanitor
 end
 
-return Janitor
+return Janitor :: {
+	is: (object: any) -> boolean,
+	new: () -> Janitor,
+}
