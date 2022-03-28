@@ -1,20 +1,26 @@
-local Enumerator = require(script.Parent.Enumerator)
 local Types = require(script.Types)
 
+type Debounce = Types.Debounce
+
 local Debounce = {}
-Debounce.Type = Enumerator("DebounceType", { "Once", "Time" })
-Debounce.prototype = {}
+Debounce.Type = { Once = "Once", Time = "Time" }
+Debounce.prototype = {} :: Debounce & {
+	_successFunction: (...any) -> (...any),
+	_failFunction: ((...any) -> ...any)?,
+	_debounceTime: number?,
+	_lastInvokeTime: number,
+}
 Debounce.__index = Debounce.prototype
 
 function Debounce:__call(...)
-	return self:Invoke(...)
+	return self:invoke(...)
 end
 
 function Debounce.is(object)
 	return type(object) == "table" and getmetatable(object) == Debounce
 end
 
-function Debounce.once(successFunction: (...any) -> ...any, failFunction: ((...any) -> ...any)?): Types.Debounce
+function Debounce.once(successFunction: (...any) -> ...any, failFunction: ((...any) -> ...any)?): Debounce
 	return setmetatable({
 		type = Debounce.Type.Once,
 		_successFunction = successFunction,
@@ -26,7 +32,7 @@ function Debounce.time(
 	debounceTime: number,
 	successFunction: (...any) -> ...any,
 	failFunction: ((...any) -> ...any)?
-): Types.Debounce
+): Debounce
 	return setmetatable({
 		type = Debounce.Type.Time,
 		_debounceTime = debounceTime,
@@ -35,10 +41,10 @@ function Debounce.time(
 	}, Debounce)
 end
 
-function Debounce.prototype:Invoke(...)
+function Debounce.prototype:invoke(...)
 	if self.type == Debounce.Type.Once then
 		if self._lastInvokeTime then
-			return self._failFunction and self._failFunction(...)
+			return if self._failFunction then self._failFunction(...) else nil
 		end
 
 		self._lastInvokeTime = os.clock()
@@ -46,8 +52,8 @@ function Debounce.prototype:Invoke(...)
 		return self._successFunction(...)
 	elseif self.type == Debounce.Type.Time then
 		local invokeTime, lastInvokeTime = os.clock(), self._lastInvokeTime
-		if lastInvokeTime and (invokeTime - lastInvokeTime < self._debounceTime) then
-			return self._failFunction and self._failFunction(...)
+		if lastInvokeTime and (invokeTime - lastInvokeTime < self._debounceTime :: number) then
+			return if self._failFunction then self._failFunction(...) else nil
 		end
 
 		self._lastInvokeTime = invokeTime
@@ -56,7 +62,7 @@ function Debounce.prototype:Invoke(...)
 	end
 end
 
-function Debounce.prototype:Unbounce()
+function Debounce.prototype:unbounce()
 	if self.type == Debounce.Type.Once then
 		self._lastInvokeTime = nil
 	elseif self.type == Debounce.Type.Time then
@@ -64,12 +70,17 @@ function Debounce.prototype:Unbounce()
 	end
 end
 
-function Debounce.prototype:Destroy()
+function Debounce.prototype:destroy()
 	self._lastInvokeTime = nil
 end
 
-Debounce.prototype.invoke = Debounce.prototype.Invoke
-Debounce.prototype.destroy = Debounce.prototype.Destroy
-Debounce.prototype.unbounce = Debounce.prototype.Unbounce
-
-return Debounce
+return Debounce :: {
+	Type: { Once: string, Time: string },
+	is: (object: any) -> boolean,
+	once: (successFunction: (...any) -> ...any, failFunction: ((...any) -> ...any)?) -> Debounce,
+	time: (
+		debounceTime: number,
+		successFunction: (...any) -> ...any,
+		failFunction: ((...any) -> ...any)?
+	) -> Debounce,
+}

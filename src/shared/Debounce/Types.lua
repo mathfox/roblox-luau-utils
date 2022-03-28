@@ -1,10 +1,5 @@
 export type Debounce = {
-	type: { Once: userdata, Time: userdata },
-
-	Invoke: (self: Debounce, ...any) -> ...any,
-	Unbounce: (self: Debounce) -> (),
-	Destroy: (self: Debounce) -> (),
-
+	type: string,
 	invoke: (self: Debounce, ...any) -> ...any,
 	unbounce: (self: Debounce) -> (),
 	destroy: (self: Debounce) -> (),
