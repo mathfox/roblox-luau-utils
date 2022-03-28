@@ -16,7 +16,10 @@ type Option = Types.Option
 	go silently undetected within code and cause hidden or hard-to-find bugs.
 ]]
 local Option = {}
-Option.prototype = {}
+Option.prototype = {} :: Option & {
+	_v: any,
+	_s: boolean,
+}
 Option.__index = Option.prototype
 
 function Option._new(value): Option
@@ -26,9 +29,15 @@ function Option._new(value): Option
 	}, Option)
 end
 
--- Creates an Option instance with the given value. Throws an error if the given value is `nil`.
+function Option.is(object)
+	return type(object) == "table" and getmetatable(object) == Option
+end
+
+-- Creates an `Option` instance with the given `value`. Throws an error if the given value is `nil`.
 function Option.some(value)
-	assert(value ~= nil, "Option.some() value cannot be nil")
+	if value == nil then
+		error("Option.some() value cannot be nil", 2)
+	end
 
 	return Option._new(value)
 end
@@ -38,32 +47,22 @@ function Option.wrap(value)
 	return if value == nil then Option.none else Option._new(value)
 end
 
-function Option.is(object)
-	return type(object) == "table" and getmetatable(object) == Option
-end
-
 -- Throws an error if `object` is not an `Option`.
 function Option.assert(object)
 	return if Option.is(object) then object :: Option else error("provided object was not an Option", 2)
 end
 
 function Option.prototype:match(matches: OptionMatches)
-	local onSome = matches.some
-	local onNone = matches.none
-
-	assert(type(onSome) == "function", "missing 'some' match")
-	assert(type(onNone) == "function", "missing 'none' match")
-
-	return if self._s then onSome(self._v) else onNone()
+	return if self._s then matches.onSome(self._v) else matches.onNone()
 end
 
 -- Returns `true` if the option contains any `value`.
-function Option.prototype:isSome(): boolean
+function Option.prototype:isSome()
 	return self._s
 end
 
 -- Returns `true` if the option is `Option.none`.
-function Option.prototype:isNone(): boolean
+function Option.prototype:isNone()
 	return not self._s
 end
 
@@ -82,7 +81,7 @@ end
 function Option.prototype:unwrap(default)
 	return if default == nil
 		then self:expect(function()
-			return "can not unwrap Option.none"
+			return "cannot unwrap Option.none"
 		end)
 		else if self._s then self._v elseif type(default) == "function" then default() else default
 end
@@ -132,4 +131,5 @@ return Option :: {
 	some: (value: any) -> Option,
 	wrap: (value: any) -> Option,
 	assert: (object: any) -> Option,
+	none: Option,
 }

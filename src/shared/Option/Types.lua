@@ -12,6 +12,6 @@ export type Option = {
 	contains: (self: Option, value: any) -> boolean,
 }
 
-export type OptionMatches = { onSome: (v: any) -> (), onNone: () -> () }
+export type OptionMatches = { onSome: (value: any) -> (), onNone: () -> () }
 
 return nil
