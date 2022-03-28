@@ -7,7 +7,6 @@ local InstanceCache = {}
 InstanceCache.prototype = {} :: InstanceCache<Instance> & {
 	_available: { Instance },
 	_inUse: { Instance },
-	_params: InstanceCacheParams<Instance>,
 	parent: Instance?,
 }
 InstanceCache.__index = InstanceCache.prototype
@@ -18,10 +17,10 @@ end
 
 function InstanceCache.new<I>(params: InstanceCacheParams<I>): InstanceCache<I>
 	local self = setmetatable({
+		params = params,
+		parent = params.parent,
 		_available = {},
 		_inUse = {},
-		_params = params,
-		parent = params.parent,
 	}, InstanceCache)
 
 	self:expand(params.amount.initial)
@@ -31,7 +30,7 @@ end
 
 function InstanceCache.prototype:getInstance()
 	if #self._available == 0 then
-		self:expand(self._params.amount.expansion)
+		self:expand(self.params.amount.expansion)
 	end
 
 	local instance: Instance = table.remove(self._available, #self._available)
@@ -60,7 +59,7 @@ end
 
 function InstanceCache.prototype:expand(amount: number)
 	for _ = 1, amount do
-		local clone = self._params.instance:Clone()
+		local clone = self.params.instance:Clone()
 		clone.Parent = self.parent
 		table.insert(self._available, clone)
 	end
@@ -83,5 +82,5 @@ end
 
 return InstanceCache :: {
 	is: (object: any) -> boolean,
-	new: <I>(InstanceCacheParams<I>) -> InstanceCache<I>,
+	new: <I>(params: InstanceCacheParams<I>) -> InstanceCache<I>,
 }

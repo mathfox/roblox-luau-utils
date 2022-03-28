@@ -11,9 +11,7 @@ export type CollectionComponent = {
 	Started: Types.Signal,
 	Stopped: Types.Signal,
 
-	FromInstance: (self: CollectionComponent, instance: Instance) -> CollectionComponentInstance?,
 	fromInstance: (self: CollectionComponent, instance: Instance) -> CollectionComponentInstance?,
-	Destroy: (self: CollectionComponent) -> (),
 	destroy: (self: CollectionComponent) -> (),
 }
 
