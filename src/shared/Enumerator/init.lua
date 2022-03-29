@@ -1,9 +1,9 @@
 local Types = require(script.Types)
 
-type EnumeratorItem<V, K> = Types.EnumeratorItem<V, K>
-type Enumerator<V, K> = Types.Enumerator<V, K>
+type EnumeratorItem<V> = Types.EnumeratorItem<V>
+type Enumerator<V> = Types.Enumerator<V>
 
-local function Enumerator<V, K>(enumName: string, enumValues: { [K]: V }): Enumerator<V, K>
+local function Enumerator<V>(enumName: string, enumValues: { V } | { [string]: V }): Enumerator<V>
 	local enumerator = newproxy(true)
 	local internal = {}
 
@@ -11,11 +11,11 @@ local function Enumerator<V, K>(enumName: string, enumValues: { [K]: V }): Enume
 	local valuesToEnumeratorItems = {}
 	local totalEnums = 0
 
-	function internal.fromRawValue(rawValue): EnumeratorItem<V, K>?
+	function internal.fromRawValue(rawValue): EnumeratorItem<V>?
 		return valuesToEnumeratorItems[rawValue]
 	end
 
-	function internal.isEnumeratorItem(value: any)
+	function internal.isEnumeratorItem(value)
 		if typeof(value) ~= "userdata" then
 			return false
 		end
@@ -29,7 +29,7 @@ local function Enumerator<V, K>(enumName: string, enumValues: { [K]: V }): Enume
 		return false
 	end
 
-	function internal.getEnumeratorItems(): { EnumeratorItem<V, K> }
+	function internal.getEnumeratorItems(): { EnumeratorItem<V> }
 		local enumeratorItems = table.create(totalEnums)
 		local length = 0
 

@@ -1,9 +1,9 @@
-export type EnumeratorItem<V, K> = { name: K, type: Enumerator<V, K>, value: V }
+export type EnumeratorItem<V> = { name: string, type: Enumerator<V>, value: V }
 
-export type Enumerator<V, K> = {
-	fromRawValue: (rawValue: V) -> EnumeratorItem<V, K>?,
+export type Enumerator<V> = {
+	fromRawValue: (rawValue: V) -> EnumeratorItem<V>?,
 	isEnumeratorItem: (value: any) -> boolean,
-	getEnumeratorItems: () -> { EnumeratorItem<V, K> },
+	getEnumeratorItems: () -> { EnumeratorItem<V> },
 }
 
 return nil
