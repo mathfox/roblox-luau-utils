@@ -1503,7 +1503,7 @@ function Promise.fromEvent<R...>(
 		local shouldDisconnect = false
 
 		local function disconnect()
-			connection:Disconnect()
+			(connection.Disconnect or connection.disconnect)(connection)
 			connection = nil
 		end
 
@@ -1511,7 +1511,7 @@ function Promise.fromEvent<R...>(
 		-- Connect returns, connection will still be nil. This happens with events that queue up
 		-- events when there's nothing connected, such as RemoteEvents
 
-		connection = event:Connect(function(...)
+		connection = (event.Connect or event.connect)(event, function(...)
 			if not predicate or predicate(...) then
 				resolve(...)
 
