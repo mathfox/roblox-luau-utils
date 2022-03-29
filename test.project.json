@@ -5,10 +5,7 @@
       "ReplicatedStorage": {
          "$className": "ReplicatedStorage",
          "Shared": {
-            "$path": "src/shared",
-            "Enumerator": {
-               "$path": "submodules/enumerator/src"
-            }
+            "$path": "src/shared"
          },
          "TestEZ": {
             "$path": "submodules/testez/src"

@@ -1,6 +1,3 @@
 [submodule "submodules/testez"]
 	path = submodules/testez
 	url = https://github.com/Roblox/testez
-[submodule "submodules/enumerator"]
-	path = submodules/enumerator
-	url = https://github.com/howmanysmall/enumerator

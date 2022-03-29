@@ -4,10 +4,7 @@
       "$className": "DataModel",
       "ReplicatedStorage": {
          "$className": "ReplicatedStorage",
-         "$path": "src/shared",
-         "Enumerator": {
-            "$path": "submodules/enumerator/src"
-         }
+         "$path": "src/shared"
       },
       "ServerStorage": {
          "$className": "ServerStorage",
