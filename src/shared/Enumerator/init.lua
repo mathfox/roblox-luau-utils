@@ -15,7 +15,7 @@ local function Enumerator<V, K>(enumName: string, enumValues: { [K]: V }): Enume
 		return valuesToEnumeratorItems[rawValue]
 	end
 
-	function internal.isEnumValue(value: EnumeratorItem<V, K>)
+	function internal.isEnumeratorItem(value: any)
 		if typeof(value) ~= "userdata" then
 			return false
 		end
@@ -84,7 +84,10 @@ local function Enumerator<V, K>(enumName: string, enumValues: { [K]: V }): Enume
 	end
 
 	local metatable = getmetatable(enumerator)
-	metatable.__index = internal
+
+	function metatable:__index(index)
+		return internal[index] or keysToEnumeratorItems[index]
+	end
 
 	function metatable:__tostring()
 		return enumName
