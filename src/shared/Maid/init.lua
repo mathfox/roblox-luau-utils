@@ -94,12 +94,14 @@ function Maid:destroy()
 	local tasks = self._tasks
 
 	for index, oldTask in pairs(tasks) do
-		if oldTask.Disconnect then
-			tasks[index] = nil
-			oldTask:Disconnect()
-		elseif oldTask.disconnect then
-			tasks[index] = nil
-			oldTask:disconnect()
+		if typeof(oldTask) == "RBXScriptConnection" or type(oldTask) == "table" then
+			if oldTask.Disconnect then
+				tasks[index] = nil
+				oldTask:Disconnect()
+			elseif oldTask.disconnect then
+				tasks[index] = nil
+				oldTask:disconnect()
+			end
 		end
 	end
 
