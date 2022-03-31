@@ -83,7 +83,7 @@ do
 		return success, { ... }, select("#", ...)
 	end
 
-	function runExecutor(traceback: string, executor: Executor, ...)
+	function runExecutor(traceback: string, executor: Executor<...any>, ...)
 		return packResult(xpcall(executor, function(err)
 			return Error.new({
 				error = err,
@@ -124,7 +124,7 @@ Promise.prototype = {} :: Promise & {
 	_parent: Promise<...any>?,
 	_consumers: { [Promise<...any>]: boolean },
 
-	_new: (traceback: string, executor: Executor, parent: Promise?) -> Promise,
+	_new: <V...>(traceback: string, executor: Executor<V...>, parent: Promise?) -> Promise<V...>,
 }
 Promise.__index = Promise.prototype
 
@@ -1582,7 +1582,7 @@ return Promise :: {
 		predicate: (R...) -> boolean
 	) -> Promise<R...>,
 	is: (object: any) -> boolean,
-	new: <V...>(executor: Executor<V..., ...any>) -> Promise<V...>,
+	new: <V...>(executor: Executor<V...>) -> Promise<V...>,
 	onUnhandledRejection: () -> (),
 	promisify: <V...>(callback: (V...) -> ...any) -> (V...) -> Promise<V...>,
 	race: <V...>(promises: { Promise<V...> }) -> Promise<V...>,
