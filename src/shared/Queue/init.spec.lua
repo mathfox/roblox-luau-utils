@@ -1,11 +1,9 @@
 return function()
 	local Queue = require(script.Parent)
 
-	describe("new", function()
-		local new = Queue.new
-
+	describe("Queue.new", function()
 		it("should support varangs queue", function()
-			local queue = new()
+			local queue = Queue.new()
 
 			queue:enqueue("index1", "value1", {
 				index1 = "value1",
@@ -25,9 +23,5 @@ return function()
 			expect(value2).to.be.equal("value2")
 			expect(tbl2.index2).to.be.equal("value2")
 		end)
-	end)
-
-	describe("is", function()
-		local is = Queue.is
 	end)
 end

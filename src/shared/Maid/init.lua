@@ -15,10 +15,10 @@ function Maid.is(object)
 	return type(object) == "table" and getmetatable(object) == Maid
 end
 
-function Maid.new(): Maid
+function Maid.new()
 	return setmetatable({
 		_tasks = {},
-	}, Maid)
+	}, Maid) :: Maid
 end
 
 function Maid:__index(index)
