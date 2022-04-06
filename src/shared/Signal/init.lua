@@ -89,7 +89,7 @@ end
 function Signal.prototype:wait(): ...any
 	local waitingCoroutine = coroutine.running()
 
-	local connection = nil
+	local connection: Connection = nil
 	connection = self:connect(function(...)
 		connection:disconnect()
 
