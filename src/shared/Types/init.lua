@@ -59,4 +59,15 @@ export type Option<T> = {
 	contains: <U>(self: Option<T>, x: U) -> boolean,
 }
 
+export type Signal<T...> = {
+	connect: (self: Signal<T...>, fn: (T...) -> ()) -> Connection,
+	fire: (self: Signal<T...>, T...) -> (),
+	wait: (self: Signal<T...>) -> T...,
+	destroy: (self: Signal<T...>) -> (),
+}
+export type Connection = {
+	connected: boolean,
+	disconnect: (self: Connection) -> (),
+}
+
 return nil

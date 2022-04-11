@@ -1,13 +1,13 @@
-local Types = require(script.Types)
+local Types = require(script.Parent.Types)
 
 type Connection = Types.Connection
-type Signal = Types.Signal
+type Signal<T...> = Types.Signal<T...>
 
-local freeRunnerThread: thread? = nil
+local freeRunnerThread = nil
 local runEventHandlerInFreeThread = nil
 
 do
-	local function acquireRunnerThreadAndCallEventHandler(fn: (...any) -> ...any, ...)
+	local function acquireRunnerThreadAndCallEventHandler(fn, ...)
 		local acquiredRunnerThread = freeRunnerThread
 		freeRunnerThread = nil
 		fn(...)
@@ -23,18 +23,10 @@ do
 end
 
 local Connection = {}
-Connection.prototype = {}
-Connection.prototype.connected = true
-Connection.__index = Connection.prototype
+Connection.connected = true
+Connection.__index = Connection
 
-function Connection.new(signal: Signal, fn: (...any) -> ...any): Connection
-	return setmetatable({
-		_signal = signal,
-		_fn = fn,
-	}, Connection)
-end
-
-function Connection.prototype:disconnect()
+function Connection:disconnect()
 	if self.connected then
 		self.connected = false
 
@@ -55,10 +47,9 @@ function Connection.prototype:disconnect()
 end
 
 local Signal = {}
-Signal.prototype = {}
-Signal.__index = Signal.prototype
+Signal.__index = Signal
 
-function Signal.prototype:connect(fn: (...any) -> ...any)
+function Signal:connect(fn)
 	local connection = Connection.new(self, fn)
 
 	if self._last then
@@ -70,7 +61,7 @@ function Signal.prototype:connect(fn: (...any) -> ...any)
 	return connection
 end
 
-function Signal.prototype:fire(...)
+function Signal:fire(...)
 	local connection = self._last
 
 	while connection do
@@ -86,7 +77,7 @@ function Signal.prototype:fire(...)
 	end
 end
 
-function Signal.prototype:wait(): ...any
+function Signal:wait()
 	local waitingCoroutine = coroutine.running()
 
 	local connection: Connection = nil
@@ -99,7 +90,7 @@ function Signal.prototype:wait(): ...any
 	return coroutine.yield()
 end
 
-function Signal.prototype:destroy()
+function Signal:destroy()
 	local last = self._last
 
 	while last do
@@ -110,15 +101,14 @@ function Signal.prototype:destroy()
 	self._last = nil
 end
 
-function Signal.is(object)
-	return type(object) == "table" and getmetatable(object) == Signal
-end
-
-function Signal.new(): Signal
-	return setmetatable({}, Signal)
-end
-
-return Signal :: {
-	is: (object: any) -> boolean,
+return {
+	is = function(v)
+		return type(v) == "table" and getmetatable(v) == Signal
+	end,
+	new = function()
+		return setmetatable({}, Signal)
+	end,
+} :: {
+	is: (any) -> boolean,
 	new: () -> Signal,
 }
