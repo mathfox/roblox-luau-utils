@@ -4,7 +4,6 @@ local function every<K, V>(tbl: { [K]: V }, predicate: (v: V, k: K, tbl: { [K]: 
 			return false
 		end
 	end
-
 	return true
 end
 

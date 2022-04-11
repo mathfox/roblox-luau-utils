@@ -1,6 +1,8 @@
-local Types = require(script.Parent.Types)
+local Types = require(script.Parent.Parent.Types)
 
-local function serializeCFrame(cframe: CFrame): Types.SerializedCFrame
+type SerializedCFrame = Types.SerializedCFrame
+
+local function serializeCFrame(cframe: CFrame): SerializedCFrame
 	return { cframe:GetComponents() }
 end
 

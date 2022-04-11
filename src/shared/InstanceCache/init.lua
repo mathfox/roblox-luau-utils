@@ -1,44 +1,22 @@
-local Types = require(script.Types)
+local Types = require(script.Parent.Types)
 
-type InstanceCacheParams<I> = Types.InstanceCacheParams<I>
-type InstanceCache<I> = Types.InstanceCache<I>
+type InstanceCacheParams<T> = Types.InstanceCacheParams<T>
+type InstanceCache<T> = Types.InstanceCache<T>
 
 local InstanceCache = {}
-InstanceCache.prototype = {} :: InstanceCache<Instance> & {
-	_available: { Instance },
-	_inUse: { Instance },
-	parent: Instance?,
-}
-InstanceCache.__index = InstanceCache.prototype
+InstanceCache.__index = InstanceCache
 
-function InstanceCache.is(object)
-	return type(object) == "table" and getmetatable(object) == InstanceCache
-end
-
-function InstanceCache.new<I>(params: InstanceCacheParams<I>): InstanceCache<I>
-	local self = setmetatable({
-		params = params,
-		parent = params.parent,
-		_available = {},
-		_inUse = {},
-	}, InstanceCache)
-
-	self:expand(params.amount.initial)
-
-	return self
-end
-
-function InstanceCache.prototype:getInstance()
+function InstanceCache:getInstance()
 	if #self._available == 0 then
 		self:expand(self.params.amount.expansion)
 	end
 
-	local instance: Instance = table.remove(self._available, #self._available)
+	local instance = table.remove(self._available, #self._available)
 	table.insert(self._inUse, instance)
 	return instance
 end
 
-function InstanceCache.prototype:returnInstance(instance: Instance)
+function InstanceCache:returnInstance(instance: Instance)
 	table.insert(
 		self._available,
 		table.remove(
@@ -49,7 +27,7 @@ function InstanceCache.prototype:returnInstance(instance: Instance)
 	)
 end
 
-function InstanceCache.prototype:setParent(parent: Instance?)
+function InstanceCache:setParent(parent: Instance?)
 	self.parent = parent
 
 	for _, instance in ipairs(self._available) do
@@ -57,7 +35,7 @@ function InstanceCache.prototype:setParent(parent: Instance?)
 	end
 end
 
-function InstanceCache.prototype:expand(amount: number)
+function InstanceCache:expand(amount: number)
 	for _ = 1, amount do
 		local clone = self.params.instance:Clone()
 		clone.Parent = self.parent
@@ -65,7 +43,7 @@ function InstanceCache.prototype:expand(amount: number)
 	end
 end
 
-function InstanceCache.prototype:destroy()
+function InstanceCache:destroy()
 	for _, instance in ipairs(self._available) do
 		instance:Destroy()
 	end
@@ -80,7 +58,23 @@ function InstanceCache.prototype:destroy()
 	table.clear(self)
 end
 
-return InstanceCache :: {
-	is: (object: any) -> boolean,
+return {
+	is = function(v)
+		return type(v) == "table" and getmetatable(v) == InstanceCache
+	end,
+	new = function(params)
+		local self = setmetatable({
+			params = params,
+			parent = params.parent,
+			_available = {},
+			_inUse = {},
+		}, InstanceCache)
+
+		self:expand(params.amount.initial)
+
+		return self
+	end,
+} :: {
+	is: (v: any) -> boolean,
 	new: <I>(params: InstanceCacheParams<I>) -> InstanceCache<I>,
 }

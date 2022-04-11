@@ -1,0 +1,5 @@
+# These are the locations of your .spec files (descendants are searched too)
+roots = ["ReplicatedStorage", "ServerStorage"]
+
+[extraOptions]
+# Optionally, an extraOptions table can be passed to TestBootstrap

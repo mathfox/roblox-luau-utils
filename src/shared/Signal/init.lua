@@ -109,6 +109,6 @@ return {
 		return setmetatable({}, Signal)
 	end,
 } :: {
-	is: (any) -> boolean,
+	is: (v: any) -> boolean,
 	new: () -> Signal,
 }

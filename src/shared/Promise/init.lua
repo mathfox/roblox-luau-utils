@@ -2,12 +2,19 @@
 
 local MODE_KEY_METATABLE = { __mode = "k" }
 
-local Types = require(script.Types)
+local Types = require(script.Parent.Types)
 
-type CancellationHook = Types.CancellationHook
 type Executor<V...> = Types.Executor<V...>
 type Promise<V...> = Types.Promise<V...>
-type Error = Types.Error
+type Error = {
+	error: string,
+	trace: string?,
+	context: string,
+	kind: string,
+	parent: Error?,
+	createdTick: number,
+	createdTrace: string,
+}
 
 --[=[
 	An object to represent runtime errors that occur during execution.
@@ -107,25 +114,25 @@ local Promise = {
 	_unhandledRejectionCallbacks = {},
 }
 Promise.prototype = {} :: Promise & {
-	_source: string,
+		_source: string,
 
-	-- The executor thread.
-	_thread: thread?,
+		-- The executor thread.
+		_thread: thread?,
 
-	-- A table containing a list of all results, whether success or failure. Only valid if _status is set to something besides Started.
-	_values: { any }?,
+		-- A table containing a list of all results, whether success or failure. Only valid if _status is set to something besides Started.
+		_values: { any }?,
 
-	_valuesLength: number,
-	_unhandledRejection: boolean,
+		_valuesLength: number,
+		_unhandledRejection: boolean,
 
-	-- The function to run when/if this Promise is cancelled.
-	_cancellationHook: CancellationHook?,
+		-- The function to run when/if this Promise is cancelled.
+		_cancellationHook: (() -> ())?,
 
-	_parent: Promise<...any>?,
-	_consumers: { [Promise<...any>]: boolean },
+		_parent: Promise<...any>?,
+		_consumers: { [Promise<...any>]: boolean },
 
-	_new: <V...>(traceback: string, executor: Executor<V...>, parent: Promise?) -> Promise<V...>,
-}
+		_new: <V...>(traceback: string, executor: Executor<V...>, parent: Promise?) -> Promise<V...>,
+	}
 Promise.__index = Promise.prototype
 
 function Promise:__tostring()
@@ -172,7 +179,7 @@ function Promise._new<V...>(traceback: string, executor: Executor<V...>, parent:
 		self:_reject(...)
 	end
 
-	local function onCancel(cancellationHook: CancellationHook?)
+	local function onCancel(cancellationHook: (() -> ())?)
 		if cancellationHook then
 			if self._status == Promise.Status.Cancelled then
 				cancellationHook()

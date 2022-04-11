@@ -9,7 +9,7 @@ local cloneRaycastParams = require(script.Parent.RaycastParamsUtils.cloneRaycast
 local getPositionAtTime = require(script.Parent.Vector3Utils.getPositionAtTime)
 local getVelocityAtTime = require(script.Parent.Vector3Utils.getVelocityAtTime)
 local Signal = require(script.Parent.Signal)
-local Types = require(script.Types)
+local Types = require(script.Parent.Types)
 
 local HighFidelityBehavior = {
 	Default = 1,

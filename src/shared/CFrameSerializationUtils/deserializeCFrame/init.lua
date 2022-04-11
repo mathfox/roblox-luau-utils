@@ -1,6 +1,8 @@
-local Types = require(script.Parent.Types)
+local Types = require(script.Parent.Parent.Types)
 
-local function deserializeCFrame(serializedCFrame: Types.SerializedCFrame)
+type SerializedCFrame = Types.SerializedCFrame
+
+local function deserializeCFrame(serializedCFrame: SerializedCFrame)
 	return CFrame.new(unpack(serializedCFrame))
 end
 

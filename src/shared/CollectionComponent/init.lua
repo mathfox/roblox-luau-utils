@@ -5,7 +5,7 @@ local RunService = game:GetService("RunService")
 local Signal = require(script.Parent.Signal)
 local Maid = require(script.Parent.Maid)
 
-local Types = require(script.Types)
+local Types = require(script.Parent.Types)
 
 local DEFAULT_ANCESTORS = { workspace, game:GetService("Players") }
 

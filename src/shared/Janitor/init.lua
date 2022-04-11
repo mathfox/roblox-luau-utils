@@ -1,7 +1,6 @@
-local PromiseTypes = require(script.Parent.Promise.Types)
 local Promise = require(script.Parent.Promise)
 local Symbol = require(script.Parent.Symbol)
-local Types = require(script.Types)
+local Types = require(script.Parent.Types)
 
 local LinkToInstanceIndex = Symbol.named("LinkToInstanceIndex")
 local IndicesReference = Symbol.named("IndicesReference")
@@ -11,7 +10,7 @@ local DEFAULT_METHOD_NAMES = {
 	["function"] = true,
 }
 
-type Promise<V...> = PromiseTypes.Promise<V...>
+type Promise<V...> = Types.Promise<V...>
 type Janitor = Types.Janitor
 
 local Janitor = {}

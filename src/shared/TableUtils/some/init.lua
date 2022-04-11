@@ -4,7 +4,6 @@ local function some<K, V>(tbl: { [K]: V }, predicate: (v: V, k: K, tbl: { [K]: V
 			return true
 		end
 	end
-
 	return false
 end
 

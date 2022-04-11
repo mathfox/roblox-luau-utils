@@ -1,4 +1,4 @@
-local Types = require(script.Types)
+local Types = require(script.Parent.Types)
 
 type EnumeratorItem<V> = Types.EnumeratorItem<V>
 type Enumerator<V> = Types.Enumerator<V>
