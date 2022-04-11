@@ -17,12 +17,6 @@
             "$path": "tests/runner.server.lua"
          }
       },
-      "ServerStorage": {
-         "$className": "ServerStorage",
-         "Server": {
-            "$path": "src/server"
-         }
-      },
       "StarterPlayer": {
          "$className": "StarterPlayer",
          "StarterPlayerScripts": {
