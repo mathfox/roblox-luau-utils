@@ -4,27 +4,12 @@
       "$className": "DataModel",
       "ReplicatedStorage": {
          "$className": "ReplicatedStorage",
-         "Shared": {
-            "$path": "src/shared"
-         },
-         "TestEZ": {
-            "$path": "submodules/testez/src"
-         }
-      },
-      "ServerScriptService": {
-         "$className": "ServerScriptService",
-         "TestsRunner": {
-            "$path": "tests/runner.server.lua"
-         }
+         "$path": "src/shared"
       },
       "StarterPlayer": {
          "$className": "StarterPlayer",
-         "StarterPlayerScripts": {
-            "$className": "StarterPlayerScripts",
-            "Client": {
-               "$path": "src/client"
-            }
-         }
+         "$path": "src/client",
+         "$ignoreUnknownInstances": true
       }
    }
 }
