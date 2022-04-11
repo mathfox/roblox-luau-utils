@@ -1,6 +1,8 @@
 export type Dictionary<T> = { [string]: T }
 export type Array<T> = { T }
 
+export type Symbol = {}
+
 -- reference: https://doc.rust-lang.org/std/result/enum.Result.html#
 export type Ok<T> = T
 export type Err<E> = E

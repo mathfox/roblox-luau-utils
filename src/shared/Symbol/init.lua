@@ -4,7 +4,7 @@
 	the name of the symbol is shown.
 ]]
 
-local Types = require(script.Types)
+local Types = require(script.Parent.Types)
 
 type Symbol = Types.Symbol
 
@@ -13,10 +13,8 @@ local Symbol = {}
 function Symbol.named(name: string): Symbol
 	local self = newproxy(true)
 
-	local wrappedName = ("Symbol(%s)"):format(name)
-
 	getmetatable(self).__tostring = function()
-		return wrappedName
+		return "Symbol<" .. name .. ">"
 	end
 
 	return self
@@ -26,10 +24,13 @@ function Symbol.unnamed(): Symbol
 	local self = newproxy(true)
 
 	getmetatable(self).__tostring = function()
-		return "Symbol(Unnamed)"
+		return "Symbol<_>"
 	end
 
 	return self
 end
 
-return Symbol
+return Symbol :: {
+	named: (name: string) -> Symbol,
+	unnamed: () -> Symbol,
+}
