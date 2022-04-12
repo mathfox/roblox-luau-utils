@@ -7,13 +7,11 @@
       "$className": "DataModel",
       "ReplicatedStorage": {
          "$className": "ReplicatedStorage",
-         "Shared": {
-            "$path": "src/shared"
-         }
+         "$path": "src/shared"
       },
       "StarterPlayer": {
          "$className": "StarterPlayer",
-         "Client": {
+         "StarterPlayerScripts": {
             "$path": "src/client"
          }
       }
