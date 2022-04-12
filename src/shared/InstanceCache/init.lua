@@ -75,6 +75,6 @@ return {
 		return self
 	end,
 } :: {
-	is: (v: any) -> boolean,
+	is: (object: any) -> boolean,
 	new: <I>(params: InstanceCacheParams<I>) -> InstanceCache<I>,
 }

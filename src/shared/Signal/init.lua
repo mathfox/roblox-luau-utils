@@ -1,13 +1,13 @@
 local Types = require(script.Parent.Types)
 
-type Connection = Types.Connection
 type Signal<T...> = Types.Signal<T...>
+type Connection = Types.Connection
 
 local freeRunnerThread = nil
 local runEventHandlerInFreeThread = nil
 
 do
-	local function acquireRunnerThreadAndCallEventHandler(fn, ...)
+	local function acquireRunnerThreadAndCallEventHandler(fn: (...any) -> (), ...)
 		local acquiredRunnerThread = freeRunnerThread
 		freeRunnerThread = nil
 		fn(...)
@@ -25,6 +25,10 @@ end
 local Connection = {}
 Connection.connected = true
 Connection.__index = Connection
+
+function Connection:__tostring()
+	return "Connection"
+end
 
 function Connection:disconnect()
 	if self.connected then
@@ -49,13 +53,16 @@ end
 local Signal = {}
 Signal.__index = Signal
 
-function Signal:connect(fn)
+function Signal:__tostring()
+	return "Signal"
+end
+
+function Signal:connect(fn: (...any) -> ())
 	local connection = Connection.new(self, fn)
 
 	if self._last then
 		connection._next = self._last
 	end
-
 	self._last = connection
 
 	return connection
@@ -69,7 +76,6 @@ function Signal:fire(...)
 			if not freeRunnerThread then
 				freeRunnerThread = coroutine.create(runEventHandlerInFreeThread)
 			end
-
 			task.spawn(freeRunnerThread, connection._fn, ...)
 		end
 
@@ -77,7 +83,7 @@ function Signal:fire(...)
 	end
 end
 
-function Signal:wait()
+function Signal:wait(): ...any
 	local waitingCoroutine = coroutine.running()
 
 	local connection: Connection = nil
@@ -102,13 +108,13 @@ function Signal:destroy()
 end
 
 return {
-	is = function(v)
-		return type(v) == "table" and getmetatable(v) == Signal
+	is = function(object)
+		return type(object) == "table" and getmetatable(object) == Signal
 	end,
 	new = function()
 		return setmetatable({}, Signal)
 	end,
 } :: {
-	is: (v: any) -> boolean,
-	new: () -> Signal,
+	is: (object: any) -> boolean,
+	new: <T...>() -> Signal<T...>,
 }

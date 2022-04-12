@@ -1,14 +1,15 @@
 local Promise = require(script.Parent.Parent.Promise)
+local Types = require(script.Parent.Parent.Types)
 
 local promiseSoundLoaded = require(script.Parent.promiseSoundLoaded)
 
-local function promiseAllSoundsLoaded(sounds: { Sound })
-	local promises = {}
+type Promise<T...> = Types.Promise<T...>
 
+local function promiseAllSoundsLoaded(sounds: { Sound }): Promise<{ Sound }>
+	local promises = {}
 	for _, sound in ipairs(sounds) do
 		table.insert(promises, promiseSoundLoaded(sound))
 	end
-
 	return Promise.all(promises)
 end
 

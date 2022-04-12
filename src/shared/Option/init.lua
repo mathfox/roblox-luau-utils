@@ -145,11 +145,12 @@ function Some:__eq(v)
 	return type(v) == "table" and getmetatable(v) == Some and v == self._v
 end
 
-function Some.new(v)
-	return setmetatable({ _v = v }, Some)
-end
-
-return { Some = Some.new, None = setmetatable({}, None) } :: {
+return {
+	Some = function(v)
+		return setmetatable({ _v = v }, Some)
+	end,
+	None = setmetatable({}, None),
+} :: {
 	None: Option<nil>,
 	Some: <T>(T) -> Option<T>,
 }

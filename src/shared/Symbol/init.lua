@@ -8,29 +8,22 @@ local Types = require(script.Parent.Types)
 
 type Symbol = Types.Symbol
 
-local Symbol = {}
-
-function Symbol.named(name: string): Symbol
-	local self = newproxy(true)
-
-	getmetatable(self).__tostring = function()
-		return "Symbol<" .. name .. ">"
-	end
-
-	return self
-end
-
-function Symbol.unnamed(): Symbol
-	local self = newproxy(true)
-
-	getmetatable(self).__tostring = function()
-		return "Symbol<_>"
-	end
-
-	return self
-end
-
-return Symbol :: {
+return {
+	named = function(name: string): Symbol
+		local self = newproxy(true)
+		getmetatable(self).__tostring = function()
+			return "Symbol<" .. name .. ">"
+		end
+		return self
+	end,
+	unnamed = function(): Symbol
+		local self = newproxy(true)
+		getmetatable(self).__tostring = function()
+			return "Symbol<_>"
+		end
+		return self
+	end,
+} :: {
 	named: (name: string) -> Symbol,
 	unnamed: () -> Symbol,
 }

@@ -7,25 +7,18 @@ local IndicesReference = Symbol.named("IndicesReference")
 
 local DEFAULT_METHOD_NAMES = {
 	RBXScriptConnection = "Disconnect",
+	Instance = "Destroy",
 	["function"] = true,
 }
 
 type Promise<V...> = Types.Promise<V...>
 type Janitor = Types.Janitor
+type Symbol = Types.Symbol
 
 local Janitor = {}
-Janitor.prototype = {} :: Janitor
-Janitor.__index = Janitor.prototype
+Janitor.__index = Janitor
 
-function Janitor.is(object)
-	return type(object) == "table" and getmetatable(object) == Janitor
-end
-
-function Janitor.new(): Janitor
-	return setmetatable({}, Janitor)
-end
-
-function Janitor.prototype:add<V>(object: V, methodNameOrTrue: string | true, index): V
+function Janitor:add<V>(object: V, methodName: string?, index): V
 	if index then
 		local this = self:remove(index)[IndicesReference]
 		if not this then
@@ -36,14 +29,14 @@ function Janitor.prototype:add<V>(object: V, methodNameOrTrue: string | true, in
 		this[index] = object
 	end
 
-	self[object] = if methodNameOrTrue then methodNameOrTrue else DEFAULT_METHOD_NAMES[typeof(object)] or "Destroy"
+	self[object] = if methodName then methodName else DEFAULT_METHOD_NAMES[typeof(object)]
 
 	return object
 end
 
-function Janitor.prototype:addPromise(promise: Promise<...any>): (false | userdata)
+function Janitor:addPromise(promise: Promise<...any>): Symbol
 	if promise:getStatus() ~= Promise.Status.Started then
-		return false
+		error("provided Promise must have Started status!", 2)
 	end
 
 	local proxy = newproxy(false)
@@ -56,12 +49,12 @@ function Janitor.prototype:addPromise(promise: Promise<...any>): (false | userda
 	return proxy
 end
 
-function Janitor.prototype:get(index)
+function Janitor:get(index)
 	local this = self[IndicesReference]
 	return if this then this[index] else nil
 end
 
-function Janitor.prototype:remove(index)
+function Janitor:remove(index)
 	local this = self[IndicesReference]
 
 	if this then
@@ -100,7 +93,7 @@ local function getNextTask(self)
 	end
 end
 
-function Janitor.prototype:cleanup()
+function Janitor:cleanup()
 	local getNext = getNextTask(self)
 	local object, methodName = getNext()
 
@@ -125,15 +118,15 @@ function Janitor.prototype:cleanup()
 	end
 end
 
-Janitor.__call = Janitor.prototype.cleanup
+Janitor.__call = Janitor.cleanup
 
-function Janitor.prototype:destroy()
+function Janitor:destroy()
 	self:cleanup()
-	table.clear(self)
 	setmetatable(self, nil)
+	table.clear(self)
 end
 
-function Janitor.prototype:linkToInstance(object: Instance, allowMultiple: true | nil)
+function Janitor:linkToInstance(object: Instance, allowMultiple: true | nil)
 	local isNilParented = object.Parent == nil
 	local isConnected = true
 
@@ -163,7 +156,7 @@ function Janitor.prototype:linkToInstance(object: Instance, allowMultiple: true 
 	end, true, if allowMultiple then newproxy(false) else LinkToInstanceIndex)
 end
 
-function Janitor.prototype:linkToInstances(...: Instance)
+function Janitor:linkToInstances(...: Instance)
 	local linkJanitor = Janitor.new()
 
 	for _, object in ipairs({ ... }) do
@@ -173,7 +166,14 @@ function Janitor.prototype:linkToInstances(...: Instance)
 	return linkJanitor
 end
 
-return Janitor :: {
+return {
+	is = function(object)
+		return type(object) == "table" and getmetatable(object) == Janitor
+	end,
+	new = function()
+		return setmetatable({}, Janitor)
+	end,
+} :: {
 	is: (object: any) -> boolean,
 	new: () -> Janitor,
 }

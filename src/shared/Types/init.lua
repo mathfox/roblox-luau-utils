@@ -59,15 +59,15 @@ export type Option<T> = {
 	contains: <U>(self: Option<T>, x: U) -> boolean,
 }
 
+export type Connection = {
+	connected: boolean,
+	disconnect: (self: Connection) -> (),
+}
 export type Signal<T...> = {
 	connect: (self: Signal<T...>, fn: (T...) -> ()) -> Connection,
 	fire: (self: Signal<T...>, T...) -> (),
 	wait: (self: Signal<T...>) -> T...,
 	destroy: (self: Signal<T...>) -> (),
-}
-export type Connection = {
-	connected: boolean,
-	disconnect: (self: Connection) -> (),
 }
 
 export type InstanceCache<T> = {
@@ -128,41 +128,31 @@ export type Executor<V...> = (
 	reject: (...any) -> (),
 	onCancel: (cancellationHook: (() -> ())?) -> boolean
 ) -> ()
-export type Promise<V...> = {
+export type Promise<T...> = {
 	andThen: <R...>(
-		self: Promise<V...>,
-		successHandler: (V...) -> R...,
+		self: Promise<T...>,
+		successHandler: (T...) -> R...,
 		failureHandler: (...any) -> R...
 	) -> Promise<R...>,
-	andThenCall: <T..., R...>(self: Promise<V...>, callback: (T...) -> R..., T...) -> Promise<R...>,
-	andThenReturn: <R...>(self: Promise<V...>, R...) -> Promise<R...>,
-	await: (self: Promise<V...>) -> (boolean, V...),
-	awaitStatus: (self: Promise<V...>) -> (string, V...),
-	cancel: (self: Promise<V...>) -> (),
-	catch: (self: Promise<V...>, failureHandler: <R...>(...any) -> R...) -> Promise<R...>,
-	expect: (self: Promise<V...>) -> V...,
-	finally: (self: Promise<V...>, finallyHandler: (status: string) -> ...any) -> Promise<V...>,
-	finallyCall: <R...>(self: Promise<V...>, callback: (R...) -> ...any, R...) -> Promise<V...>,
-	finallyReturn: <R...>(self: Promise<V...>, R...) -> Promise<V...>,
-	getStatus: (self: Promise<V...>) -> number,
-	now: (self: Promise<V...>, rejectionValue: any) -> Promise<V...>,
-	tap: (self: Promise<V...>, tapHandler: (...any) -> ...any) -> Promise<V...>,
-	timeout: (self: Promise<V...>, seconds: number, rejectionValue: any) -> Promise<V...>,
-}
-
-export type FunctionTask = (...any) -> ...any
-export type TableTask = { destroy: FunctionTask, [any]: any }
-export type MaidTask = RBXScriptConnection | FunctionTask | TableTask
-export type Maid = {
-	giveTask: (self: Maid, newTask: MaidTask) -> string,
-	finalizeTask: (self: Maid, taskId: string) -> (),
-	givePromise: (self: Maid, Promise<...any>) -> (false, string),
-	destroy: (self: Maid) -> (),
+	andThenCall: <V..., R...>(self: Promise<T...>, callback: (V...) -> R..., V...) -> Promise<R...>,
+	andThenReturn: <R...>(self: Promise<T...>, R...) -> Promise<R...>,
+	await: (self: Promise<T...>) -> (boolean, T...),
+	awaitStatus: (self: Promise<T...>) -> (string, T...),
+	cancel: (self: Promise<T...>) -> (),
+	catch: (self: Promise<T...>, failureHandler: <R...>(...any) -> R...) -> Promise<R...>,
+	expect: (self: Promise<T...>) -> T...,
+	finally: (self: Promise<T...>, finallyHandler: (status: string) -> ...any) -> Promise<T...>,
+	finallyCall: <R...>(self: Promise<T...>, callback: (R...) -> ...any, R...) -> Promise<T...>,
+	finallyReturn: <R...>(self: Promise<T...>, R...) -> Promise<T...>,
+	getStatus: (self: Promise<T...>) -> number,
+	now: (self: Promise<T...>, rejectionValue: any) -> Promise<T...>,
+	tap: (self: Promise<T...>, tapHandler: (...any) -> ...any) -> Promise<T...>,
+	timeout: (self: Promise<T...>, seconds: number, rejectionValue: any) -> Promise<T...>,
 }
 
 export type Janitor = {
-	add: <V>(self: Janitor, object: V, methodNameOrTrue: string | true, index: any) -> V,
-	addPromise: (self: Janitor, promise: Promise<...any>) -> (false, userdata),
+	add: <V>(self: Janitor, object: V, methodName: string?, index: any) -> V,
+	addPromise: (self: Janitor, promise: Promise<...any>) -> Symbol,
 	get: (self: Janitor, index: any) -> any,
 	remove: (self: Janitor, index: any) -> Janitor,
 	linkToInstance: (self: Janitor, object: Instance, allowMultiple: true | nil) -> (),

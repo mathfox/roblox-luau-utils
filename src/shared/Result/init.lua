@@ -127,18 +127,19 @@ function Result:containsErr(f)
 end
 
 Ok.__index = Result
-
-function Ok.new(v)
-	return setmetatable({ _v = v }, Ok)
-end
-
 Err.__index = Result
 
-function Err.new(v)
-	return setmetatable({ _v = v }, Err)
-end
-
-return { Ok = Ok.new, Err = Err.new } :: {
+return {
+	Ok = function(v)
+		return setmetatable({ _v = v }, Ok)
+	end,
+	Err = function(v)
+		return setmetatable({ _v = v }, Err)
+	end,
+	_ok = Ok,
+	_err = Err,
+	_result = Result,
+} :: {
 	Ok: <T>(T) -> Ok<T>,
 	Err: <E>(E) -> Err<E>,
 }
