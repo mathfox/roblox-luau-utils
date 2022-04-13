@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 
-local Types = require(script.Parent.Types)
+local Types = require(script.Parent.Parent.Types)
 
 type Friend = Types.Friend
 

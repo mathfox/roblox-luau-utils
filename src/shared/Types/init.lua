@@ -230,4 +230,11 @@ export type Queue<V...> = {
 	getLength: (self: Queue<V...>) -> number,
 }
 
+export type Friend = {
+	Id: number,
+	Username: string,
+	DisplayName: string,
+	IsOnline: boolean,
+}
+
 return nil
