@@ -5,7 +5,7 @@ local function match(object)
 		local runningThread = coroutine.running()
 		local wasMatchResultCalled = false
 
-		local function matchResult<T, E>(matches: { Ok: (T) -> (), Err: (E) -> () })
+		local function matchResult(matches: { Ok: (any) -> (), Err: (any) -> () })
 			if wasMatchResultCalled then
 				error("match function should only be called once", 2)
 			end
