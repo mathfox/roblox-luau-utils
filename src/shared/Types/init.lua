@@ -237,4 +237,6 @@ export type Friend = {
 	IsOnline: boolean,
 }
 
+export type Record<Keys, Type> = { [Keys]: Type }
+
 return nil
