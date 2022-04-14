@@ -1,4 +1,4 @@
-export type Dictionary<T> = { [string]: T }
+export type Record<Keys, Type> = { [Keys]: Type }
 export type Array<T> = { T }
 
 export type Symbol = {}
@@ -236,7 +236,5 @@ export type Friend = {
 	DisplayName: string,
 	IsOnline: boolean,
 }
-
-export type Record<Keys, Type> = { [Keys]: Type }
 
 return nil
