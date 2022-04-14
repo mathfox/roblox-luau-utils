@@ -58,7 +58,7 @@ function Signal:__tostring()
 end
 
 function Signal:connect(fn: (...any) -> ())
-	local connection = Connection.new(self, fn)
+	local connection = setmetatable({ _signal = self, _fn = fn }, Connection)
 
 	if self._last then
 		connection._next = self._last
