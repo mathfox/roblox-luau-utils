@@ -4,4 +4,6 @@ local Vector3Utils = {
 	getVelocityAtTime = require(script.getVelocityAtTime),
 }
 
+table.freeze(Vector3Utils)
+
 return Vector3Utils

@@ -3,4 +3,6 @@ local SoundUtils = {
 	promiseSoundLoaded = require(script.promiseSoundLoaded),
 }
 
+table.freeze(SoundUtils)
+
 return SoundUtils

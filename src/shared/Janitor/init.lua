@@ -166,14 +166,19 @@ function Janitor:linkToInstances(...: Instance)
 	return linkJanitor
 end
 
-return {
+local JanitorExport = {
 	is = function(object)
 		return type(object) == "table" and getmetatable(object) == Janitor
 	end,
-	new = function()
+
+	new = function(): Janitor
 		return setmetatable({}, Janitor)
 	end,
-} :: {
+}
+
+table.freeze(JanitorExport)
+
+return JanitorExport :: {
 	is: (object: any) -> boolean,
 	new: () -> Janitor,
 }

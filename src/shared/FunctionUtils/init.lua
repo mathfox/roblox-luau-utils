@@ -4,4 +4,6 @@ local FunctionUtils = {
 	void = require(script.void),
 }
 
+table.freeze(FunctionUtils)
+
 return FunctionUtils

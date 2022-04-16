@@ -3,4 +3,6 @@ local FriendUtils = {
 	getFriendsList = require(script.getFriendsList),
 }
 
+table.freeze(FriendUtils)
+
 return FriendUtils

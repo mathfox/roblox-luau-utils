@@ -3,4 +3,6 @@ local RandomUtils = {
 	getRandomInt = require(script.getRandomInt),
 }
 
+table.freeze(RandomUtils)
+
 return RandomUtils

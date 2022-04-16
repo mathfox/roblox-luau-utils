@@ -8,7 +8,7 @@ local Types = require(script.Parent.Types)
 
 type Symbol = Types.Symbol
 
-local Symbol = {
+local SymbolExport = {
 	named = function(name: string): Symbol
 		local self = newproxy(true)
 		getmetatable(self).__tostring = function()
@@ -26,9 +26,9 @@ local Symbol = {
 	end,
 }
 
-table.freeze(Symbol)
+table.freeze(SymbolExport)
 
-return Symbol :: {
+return SymbolExport :: {
 	named: (name: string) -> Symbol,
 	unnamed: () -> Symbol,
 }

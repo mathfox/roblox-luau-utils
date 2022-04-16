@@ -22,4 +22,6 @@ local InstanceUtils = {
 	getPVInstanceMass = require(script.getPVInstanceMass),
 }
 
+table.freeze(InstanceUtils)
+
 return InstanceUtils

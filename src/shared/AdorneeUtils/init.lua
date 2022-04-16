@@ -10,4 +10,6 @@ local AdorneeUtils = {
 	isPartOfAdornee = require(script.isPartOfAdornee),
 }
 
+table.freeze(AdorneeUtils)
+
 return AdorneeUtils

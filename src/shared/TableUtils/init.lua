@@ -1,29 +1,23 @@
 local TableUtils = {
-	length = require(script.length),
-
-	copy = require(script.copy),
-
-	map = require(script.map),
-	filter = require(script.filter),
-
 	assign = require(script.assign),
-	extend = require(script.extend),
-	override = require(script.override),
-
-	reverse = require(script.reverse),
-	shuffle = require(script.shuffle),
-
-	keys = require(script.keys),
-	values = require(script.values),
-
-	find = require(script.find),
-	every = require(script.every),
-	some = require(script.some),
-
-	random = require(script.random),
-
-	safeFreeze = require(script.safeFreeze),
+	copy = require(script.copy),
 	deepSafeFreeze = require(script.deepSafeFreeze),
+	every = require(script.every),
+	extend = require(script.extend),
+	filter = require(script.filter),
+	find = require(script.find),
+	keys = require(script.keys),
+	length = require(script.length),
+	map = require(script.map),
+	override = require(script.override),
+	random = require(script.random),
+	reverse = require(script.reverse),
+	safeFreeze = require(script.safeFreeze),
+	shuffle = require(script.shuffle),
+	some = require(script.some),
+	values = require(script.values),
 }
+
+table.freeze(TableUtils)
 
 return TableUtils

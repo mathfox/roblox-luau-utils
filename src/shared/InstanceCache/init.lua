@@ -6,7 +6,7 @@ type InstanceCache<T> = Types.InstanceCache<T>
 local InstanceCache = {}
 InstanceCache.__index = InstanceCache
 
-function InstanceCache:getInstance()
+function InstanceCache:getInstance(): Instance
 	if #self._available == 0 then
 		self:expand(self.params.amount.expansion)
 	end
@@ -58,7 +58,7 @@ function InstanceCache:destroy()
 	table.clear(self)
 end
 
-return {
+local InstanceCacheExport = {
 	is = function(v)
 		return type(v) == "table" and getmetatable(v) == InstanceCache
 	end,
@@ -74,7 +74,11 @@ return {
 
 		return self
 	end,
-} :: {
+}
+
+table.freeze(InstanceCacheExport)
+
+return InstanceCacheExport :: {
 	is: (object: any) -> boolean,
 	new: <I>(params: InstanceCacheParams<I>) -> InstanceCache<I>,
 }

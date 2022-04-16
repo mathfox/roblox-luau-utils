@@ -129,17 +129,23 @@ end
 Ok.__index = Result
 Err.__index = Result
 
-return {
+local ResultExport = {
 	Ok = function(v)
 		return setmetatable({ _v = v }, Ok)
 	end,
+
 	Err = function(v)
 		return setmetatable({ _v = v }, Err)
 	end,
+
 	_ok = Ok,
 	_err = Err,
 	_result = Result,
-} :: {
+}
+
+table.freeze(ResultExport)
+
+return ResultExport :: {
 	Ok: <T>(T) -> Ok<T>,
 	Err: <E>(E) -> Err<E>,
 }

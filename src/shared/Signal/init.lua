@@ -107,14 +107,19 @@ function Signal:destroy()
 	self._last = nil
 end
 
-return {
+local SignalExport = {
 	is = function(object)
 		return type(object) == "table" and getmetatable(object) == Signal
 	end,
+
 	new = function()
 		return setmetatable({}, Signal)
 	end,
-} :: {
+}
+
+table.freeze(SignalExport)
+
+return SignalExport :: {
 	is: (object: any) -> boolean,
 	new: <T...>() -> Signal<T...>,
 }

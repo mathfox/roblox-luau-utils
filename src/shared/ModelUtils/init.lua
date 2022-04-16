@@ -1,6 +1,8 @@
 local ModelUtils = {
+   scaleModel = require(script.scaleModel),
 	scaleMotor6DModel = require(script.scaleMotor6DModel),
-	scaleModel = require(script.scaleModel),
 }
+
+table.freeze(ModelUtils)
 
 return ModelUtils

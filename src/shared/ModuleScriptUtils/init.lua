@@ -1,8 +1,10 @@
 local ModuleScriptUtils = {
-	loadDescendantsFilter = require(script.loadDescendantsFilter),
+	loadChildren = require(script.loadChildren),
 	loadChildrenFilter = require(script.loadChildrenFilter),
 	loadDescendants = require(script.loadDescendants),
-	loadChildren = require(script.loadChildren),
+	loadDescendantsFilter = require(script.loadDescendantsFilter),
 }
+
+table.freeze(ModuleScriptUtils)
 
 return ModuleScriptUtils

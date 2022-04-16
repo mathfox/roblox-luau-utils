@@ -7,4 +7,6 @@ local CharacterUtils = {
 	getPlayerRootPart = require(script.getPlayerRootPart),
 }
 
+table.freeze(CharacterUtils)
+
 return CharacterUtils

@@ -4,4 +4,6 @@ local CollectionServiceUtils = {
 	hasTags = require(script.hasTags),
 }
 
+table.freeze(CollectionServiceUtils)
+
 return CollectionServiceUtils

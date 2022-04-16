@@ -4,4 +4,6 @@ local CFrameSerializationUtils = {
 	serializeCFrame = require(script.serializeCFrame),
 }
 
+table.freeze(CFrameSerializationUtils)
+
 return CFrameSerializationUtils

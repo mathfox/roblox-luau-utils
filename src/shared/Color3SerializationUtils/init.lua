@@ -4,4 +4,6 @@ local Color3SerializationUtils = {
 	serializeColor3 = require(script.serializeColor3),
 }
 
+table.freeze(Color3SerializationUtils)
+
 return Color3SerializationUtils

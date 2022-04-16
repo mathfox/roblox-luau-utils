@@ -3,4 +3,6 @@ local NumberSequenceUtils = {
 	evaluateNumberSequence = require(script.evaluateNumberSequence),
 }
 
+table.freeze(NumberSequenceUtils)
+
 return NumberSequenceUtils
