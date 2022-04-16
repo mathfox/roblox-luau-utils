@@ -1,4 +1,4 @@
-local function filter<K, V>(tbl: { [K]: V }, predicate: (v: V, k: K, tbl: { [K]: V }) -> boolean): { [K]: V }
+local function filter<K, V>(tbl: { [K]: V }, predicate: (V, K, { [K]: V }) -> boolean): { [K]: V }
 	local new = table.create(#tbl)
 	if #tbl > 0 then
 		for i, v in ipairs(tbl) do

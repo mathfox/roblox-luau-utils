@@ -1,11 +1,10 @@
 local function assign<K, V>(tbl: { [K]: V }, ...: { [K]: V }): { [K]: V }
-	local new = table.clone(tbl)
 	for _, t in ipairs({ ... }) do
 		for k, v in pairs(t) do
-			new[k] = v
+			tbl[k] = v
 		end
 	end
-	return new
+	return tbl
 end
 
 return assign

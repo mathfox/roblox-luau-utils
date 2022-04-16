@@ -8,7 +8,7 @@ local Types = require(script.Parent.Types)
 
 type Symbol = Types.Symbol
 
-return {
+local Symbol = {
 	named = function(name: string): Symbol
 		local self = newproxy(true)
 		getmetatable(self).__tostring = function()
@@ -16,6 +16,7 @@ return {
 		end
 		return self
 	end,
+
 	unnamed = function(): Symbol
 		local self = newproxy(true)
 		getmetatable(self).__tostring = function()
@@ -23,7 +24,11 @@ return {
 		end
 		return self
 	end,
-} :: {
+}
+
+table.freeze(Symbol)
+
+return Symbol :: {
 	named: (name: string) -> Symbol,
 	unnamed: () -> Symbol,
 }
