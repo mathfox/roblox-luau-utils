@@ -1,10 +1,10 @@
 -- reference: https://doc.rust-lang.org/std/result/enum.Result.html#
 local Types = require(script.Parent.Types)
 
-type Option<T> = Types.Option<T>
-type Ok<T> = Types.Ok<T>
-type Err<E> = Types.Err<E>
 type Result<T, E> = Types.Result<T, E>
+type Option<T> = Types.Option<T>
+type Err<E> = Types.Err<E>
+type Ok<T> = Types.Ok<T>
 
 local Ok = {}
 local Err = {}
@@ -14,15 +14,19 @@ function Result:isOk()
 	return getmetatable(self) == Ok
 end
 
-function Result:isOkWith(f)
-	return getmetatable(self) == Ok and f(self._v)
+function Result:isOkWith(f: (any) -> boolean)
+	local bool = f(self._v)
+	if type(bool) ~= "boolean" then
+		error(("f function should return a boolean, got (%s) instead"):format(typeof(bool)), 2)
+	end
+	return getmetatable(self) == Ok and bool
 end
 
 function Result:isErr()
 	return getmetatable(self) == Err
 end
 
-function Result:isErrWith(f)
+function Result:isErrWith(f: (any) -> boolean)
 	return getmetatable(self) == Err and f(self._v)
 end
 
@@ -39,7 +43,7 @@ function Result:err()
 end
 
 function Result:map(op)
-	return if getmetatable(self) == Ok then setmetatable({ _v = op(self._v) }, Ok) else self
+	return if getmetatable(self) == Ok then table.freeze(setmetatable({ _v = op(self._v) }, Ok)) else self
 end
 
 function Result:mapOr(default, f)
@@ -51,7 +55,7 @@ function Result:mapOrElse(default, f)
 end
 
 function Result:mapErr(op)
-	return if getmetatable(self) == Err then setmetatable({ _v = op(self._v) }, Err) else self
+	return if getmetatable(self) == Err then table.freeze(setmetatable({ _v = op(self._v) }, Err)) else self
 end
 
 function Result:inspect(f)
@@ -126,16 +130,31 @@ function Result:containsErr(f)
 	return getmetatable(self) == Err and self._v == f
 end
 
+table.freeze(Result)
+
 Ok.__index = Result
+
+function Ok:__tostring()
+	return "Ok<" .. typeof(self._v) .. ">"
+end
+
 Err.__index = Result
+
+function Err:__tostring()
+	return "Err<" .. typeof(self._v) .. ">"
+end
+
+-- make sure no more edits could be applied
+table.freeze(Ok)
+table.freeze(Err)
 
 local ResultExport = {
 	Ok = function(v)
-		return setmetatable({ _v = v }, Ok)
+		return table.freeze(setmetatable({ _v = v }, Ok))
 	end,
 
 	Err = function(v)
-		return setmetatable({ _v = v }, Err)
+		return table.freeze(setmetatable({ _v = v }, Err))
 	end,
 
 	_ok = Ok,

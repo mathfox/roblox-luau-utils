@@ -114,25 +114,25 @@ local Promise = {
 	_unhandledRejectionCallbacks = {},
 }
 Promise.prototype = {} :: Promise & {
-		_source: string,
+	_source: string,
 
-		-- The executor thread.
-		_thread: thread?,
+	-- The executor thread.
+	_thread: thread?,
 
-		-- A table containing a list of all results, whether success or failure. Only valid if _status is set to something besides Started.
-		_values: { any }?,
+	-- A table containing a list of all results, whether success or failure. Only valid if _status is set to something besides Started.
+	_values: { any }?,
 
-		_valuesLength: number,
-		_unhandledRejection: boolean,
+	_valuesLength: number,
+	_unhandledRejection: boolean,
 
-		-- The function to run when/if this Promise is cancelled.
-		_cancellationHook: (() -> ())?,
+	-- The function to run when/if this Promise is cancelled.
+	_cancellationHook: (() -> ())?,
 
-		_parent: Promise<...any>?,
-		_consumers: { [Promise<...any>]: boolean },
+	_parent: Promise<...any>?,
+	_consumers: { [Promise<...any>]: boolean },
 
-		_new: <V...>(traceback: string, executor: Executor<V...>, parent: Promise?) -> Promise<V...>,
-	}
+	_new: <V...>(traceback: string, executor: Executor<V...>, parent: Promise?) -> Promise<V...>,
+}
 Promise.__index = Promise.prototype
 
 function Promise:__tostring()

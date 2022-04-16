@@ -145,12 +145,21 @@ function Some:__eq(v)
 	return type(v) == "table" and getmetatable(v) == Some and v == self._v
 end
 
-return {
-	Some = function(v)
+local OptionExport = {
+	Some = function<T>(v: T): Option<T>
 		return setmetatable({ _v = v }, Some)
 	end,
-	None = setmetatable({}, None),
-} :: {
+
+	None = setmetatable({}, None) :: Option<nil>,
+
+	_option = Option,
+	_some = Some,
+	_none = None,
+}
+
+table.freeze(OptionExport)
+
+return OptionExport :: {
 	None: Option<nil>,
 	Some: <T>(T) -> Option<T>,
 }
