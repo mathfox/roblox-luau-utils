@@ -14,8 +14,8 @@ function Result:isOk()
 	return getmetatable(self) == Ok
 end
 
-function Result:isOkWith(f: (any) -> boolean)
-	local bool = f(self._v)
+function Result:isOkWith<T>(f: (T) -> boolean)
+	local bool = f(self._v :: T)
 	if type(bool) ~= "boolean" then
 		error(("f function should return a boolean, got (%s) instead"):format(typeof(bool)), 2)
 	end
@@ -26,51 +26,63 @@ function Result:isErr()
 	return getmetatable(self) == Err
 end
 
-function Result:isErrWith(f: (any) -> boolean)
-	return getmetatable(self) == Err and f(self._v)
+function Result:isErrWith<E>(f: (E) -> boolean)
+	local bool = f(self._v :: E)
+	if type(bool) ~= "boolean" then
+		error(("f function should return a boolean, got (%s) instead"):format(typeof(bool)), 2)
+	end
+	return getmetatable(self) == Err and bool
 end
 
-function Result:ok()
+function Result:ok<T>()
 	return if getmetatable(self) == Ok
-		then require(script.Parent.Option).Some(self._v)
+		then require(script.Parent.Option).Some(self._v :: T) :: Option<T>
 		else require(script.Parent.Option).None
 end
 
-function Result:err()
+function Result:err<T>()
 	return if getmetatable(self) == Err
-		then require(script.Parent.Option).Some(self._v)
+		then require(script.Parent.Option).Some(self._v :: T) :: Option<T>
 		else require(script.Parent.Option).None
 end
 
-function Result:map(op)
-	return if getmetatable(self) == Ok then table.freeze(setmetatable({ _v = op(self._v) }, Ok)) else self
+function Result:map<T, E, U>(op: (T) -> U)
+	return if getmetatable(self) == Ok
+		then table.freeze(setmetatable({ _v = op(self._v :: T) }, Ok)) :: Result<U, E>
+		else self :: Result<T, E>
 end
 
-function Result:mapOr(default, f)
-	return if getmetatable(self) == Err then default else f(self._v)
+function Result:mapOr<T, U>(default: U, f: (T) -> U)
+	return if getmetatable(self) == Err then default else f(self._v :: T)
 end
 
-function Result:mapOrElse(default, f)
-	return if getmetatable(self) == Err then default(self._v) else f(self._v)
+function Result:mapOrElse<T, E, U>(default: (E) -> U, f: (T) -> U)
+	return if getmetatable(self) == Err then default(self._v :: E) else f(self._v :: T)
 end
 
-function Result:mapErr(op)
-	return if getmetatable(self) == Err then table.freeze(setmetatable({ _v = op(self._v) }, Err)) else self
+function Result:mapErr<T, E, F>(op: (E) -> F)
+	return if getmetatable(self) == Err
+		then table.freeze(setmetatable({ _v = op(self._v :: E) }, Err)) :: Result<T, F>
+		else self :: Result<T, E>
 end
 
-function Result:inspect(f)
+function Result:inspect<T>(f: (T) -> ())
 	if getmetatable(self) == Ok then
-		f(self._v)
+		if select("#", f(self._v :: T)) > 0 then
+			error("f function passed to inspect should return ()", 2)
+		end
 	end
 end
 
-function Result:inspectErr(f)
+function Result:inspectErr<E>(f: (E) -> ())
 	if getmetatable(self) == Err then
-		f(self._v)
+		if select("#", f(self._v :: E)) > 0 then
+			error("f function passed to inspectErr should return ()", 2)
+		end
 	end
 end
 
-function Result:expect(msg)
+function Result:expect(msg: string)
 	if getmetatable(self) == Err then
 		error(msg, 2)
 	end
@@ -84,7 +96,7 @@ function Result:unwrap()
 	return self._v
 end
 
-function Result:expectErr(msg)
+function Result:expectErr(msg: string)
 	if getmetatable(self) == Ok then
 		error(msg, 2)
 	end
@@ -98,28 +110,28 @@ function Result:unwrapErr()
 	return self._v
 end
 
-Result["and"] = function(self, res)
+Result["and"] = function<T, E, U>(self: Result<T, E>, res: Result<U, E>)
 	return if getmetatable(self) == Ok then res else self
 end
 
-function Result:andThen(op)
-	return if getmetatable(self) == Ok then op(self._v) else self
+function Result:andThen<T, E, U>(op: (T) -> Result<U, E>)
+	return if getmetatable(self) == Ok then op(self._v :: T) else self :: Result<T, E>
 end
 
-Result["or"] = function(self, res)
+Result["or"] = function<T, E, F>(self: Result<T, E>, res: Result<T, F>)
 	return if getmetatable(self) == Err then res else self
 end
 
-function Result:orElse(op)
-	return if getmetatable(self) == Err then op(self._v) else self
+function Result:orElse<T, E, F>(op: (E) -> Result<T, F>)
+	return if getmetatable(self) == Err then op(self._v :: E) else self :: Result<T, E>
 end
 
-function Result:unwrapOr(default)
-	return if getmetatable(self) == Ok then self._v else default
+function Result:unwrapOr<T>(default: T)
+	return if getmetatable(self) == Ok then self._v :: T else default
 end
 
-function Result:unwrapOrElse(op)
-	return if getmetatable(self) == Ok then self._v else op(self._v)
+function Result:unwrapOrElse<T, E>(op: (E) -> T)
+	return if getmetatable(self) == Ok then self._v :: T else op(self._v :: T)
 end
 
 function Result:contains(x)

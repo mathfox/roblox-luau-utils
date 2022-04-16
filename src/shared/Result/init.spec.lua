@@ -76,6 +76,12 @@ return function()
 			expect(function()
 				Result.Ok(0):isOkWith(function() end)
 			end).to.throw()
+
+			expect(function()
+				Result.Ok(0):isOkWith(function()
+					return {}
+				end)
+			end).to.throw()
 		end)
 	end)
 end
