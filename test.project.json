@@ -15,6 +15,10 @@
          "$className": "ServerScriptService",
          "$path": "tests"
       },
+      "ServerStorage": {
+         "$className": "ServerStorage",
+         "$path": "src/server"
+      },
       "StarterPlayer": {
          "$className": "StarterPlayer",
          "Client": {
