@@ -1,4 +1,4 @@
-export type Record<Keys, Type> = { [Keys]: Type }
+export type Record<K, V> = { [K]: V }
 export type Array<T> = { T }
 
 export type Symbol = {}
