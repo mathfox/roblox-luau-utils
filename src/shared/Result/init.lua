@@ -69,7 +69,7 @@ end
 function Result:inspect<T>(f: (T) -> ())
 	if getmetatable(self) == Ok then
 		if select("#", f(self._v :: T)) > 0 then
-			error("f function passed to inspect should return ()", 2)
+			error("f function passed to the `inspect` method should return ()", 2)
 		end
 	end
 end
@@ -77,7 +77,7 @@ end
 function Result:inspectErr<E>(f: (E) -> ())
 	if getmetatable(self) == Err then
 		if select("#", f(self._v :: E)) > 0 then
-			error("f function passed to inspectErr should return ()", 2)
+			error("f function passed to the `inspectErr` method should return ()", 2)
 		end
 	end
 end
