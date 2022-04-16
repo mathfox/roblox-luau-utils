@@ -237,6 +237,6 @@ export type Friend = {
 	IsOnline: boolean,
 }
 
-export type PackedArgs = { n: number, [number]: any }
+export type PackedValues = { n: number, [number]: any }
 
 return nil
