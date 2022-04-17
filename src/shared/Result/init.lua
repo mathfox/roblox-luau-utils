@@ -47,26 +47,43 @@ function Result:err<T>()
 end
 
 function Result:map<T, E, U>(op: (T) -> U)
+	if type(op) ~= "function" then
+		error(("'op' (#1 argument) must be a function, but (%s) provided instead"):format(typeof(op)), 2)
+	end
 	return if getmetatable(self) == Ok
 		then table.freeze(setmetatable({ _v = op(self._v :: T) }, Ok)) :: Result<U, E>
 		else self :: Result<T, E>
 end
 
 function Result:mapOr<T, U>(default: U, f: (T) -> U)
+	if type(f) ~= "function" then
+		error(("'f' (#2 argument) must be a function, got (%s) instead"):format(typeof(f)), 2)
+	end
 	return if getmetatable(self) == Err then default else f(self._v :: T)
 end
 
 function Result:mapOrElse<T, E, U>(default: (E) -> U, f: (T) -> U)
+	if type(default) ~= "function" then
+		error(("'default' (#1 argument) must be a function, got (%s) instead"):format(typeof(default)), 2)
+	elseif type(f) ~= "function" then
+		error(("'f' (#2 argument) must be a function, got (%s) instead"):format(typeof(f)), 2)
+	end
 	return if getmetatable(self) == Err then default(self._v :: E) else f(self._v :: T)
 end
 
 function Result:mapErr<T, E, F>(op: (E) -> F)
+	if type(op) ~= "function" then
+		error(("'op' (#1 argument) must be a function, got (%s) instead"):format(typeof(op)), 2)
+	end
 	return if getmetatable(self) == Err
 		then table.freeze(setmetatable({ _v = op(self._v :: E) }, Err)) :: Result<T, F>
 		else self :: Result<T, E>
 end
 
 function Result:inspect<T>(f: (T) -> ())
+	if type(f) ~= "function" then
+		error(("'f' (#1 argument) must be a function, got (%s) instead"):format(typeof(f)), 2)
+	end
 	if getmetatable(self) == Ok then
 		if select("#", f(self._v :: T)) > 0 then
 			error("f function passed to the `inspect` method should return ()", 2)
@@ -75,6 +92,9 @@ function Result:inspect<T>(f: (T) -> ())
 end
 
 function Result:inspectErr<E>(f: (E) -> ())
+	if type(f) ~= "function" then
+		error(("'f' (#1 argument) must be a function, got (%s) instead"):format(typeof(f)), 2)
+	end
 	if getmetatable(self) == Err then
 		if select("#", f(self._v :: E)) > 0 then
 			error("f function passed to the `inspectErr` method should return ()", 2)
@@ -150,10 +170,18 @@ function Ok:__tostring()
 	return "Ok<" .. typeof(self._v) .. ">"
 end
 
+function Ok:__eq(value)
+	return type(value) == "table" and getmetatable(value) == Ok and value._v == self._v
+end
+
 Err.__index = Result
 
 function Err:__tostring()
 	return "Err<" .. typeof(self._v) .. ">"
+end
+
+function Err:__eq(value)
+	return type(value) == "table" and getmetatable(value) == Err and value._v == self._v
 end
 
 -- make sure no more edits could be applied
@@ -177,6 +205,6 @@ local ResultExport = {
 table.freeze(ResultExport)
 
 return ResultExport :: {
-	Ok: <T>(T) -> Ok<T>,
-	Err: <E>(E) -> Err<E>,
+	Ok: <T>(T) -> Result<T, nil>,
+	Err: <E>(E) -> Result<nil, E>,
 }
