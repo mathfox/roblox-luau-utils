@@ -361,17 +361,17 @@ function Result:unwrapErr(...)
 	return self._v
 end
 
-Result["and"] = function<T, E, U>(self: Result<T, E>, res: Result<U, E>, ...)
+function Result:andRes<T, E, U>(res: Result<U, E>, ...)
 	if select("#", ...) > 0 then
 		error(
-			('"and" method expects exactly one Result, got (%s) as well'):format(valuesOutputHelper(table.pack(...))),
+			('"andRes" method expects exactly one Result, got (%s) as well'):format(valuesOutputHelper(table.pack(...))),
 			2
 		)
 	elseif type(res) ~= "table" or getmetatable(res).__index ~= Result then
 		error(('"res" (#1 argument) must be a Result, got ("%s": %s) instead'):format(tostring(res), typeof(res)), 2)
 	end
 
-	return if getmetatable(self) == Ok then res else self
+	return if getmetatable(self) == Ok then res else self :: Result<T, E>
 end
 
 function Result:andThen<T, E, U>(op: (T) -> Result<U, E>, ...)
@@ -412,17 +412,17 @@ function Result:andThen<T, E, U>(op: (T) -> Result<U, E>, ...)
 	return values[1] :: Result<U, E>
 end
 
-Result["or"] = function<T, E, F>(self: Result<T, E>, res: Result<T, F>, ...)
+function Result:orRes<T, E, F>(res: Result<T, F>, ...)
 	if select("#", ...) > 0 then
 		error(
-			('"or" method expects exactly one Result, got (%s) as well'):format(valuesOutputHelper(table.pack(...))),
+			('"orRes" method expects exactly one Result, got (%s) as well'):format(valuesOutputHelper(table.pack(...))),
 			2
 		)
 	elseif type(res) ~= "table" or getmetatable(res).__index ~= Result then
 		error(('"res" (#1 argument) must be a Result, got ("%s": %s) instead'):format(tostring(res), typeof(res)), 2)
 	end
 
-	return if getmetatable(self) == Err then res else self
+	return if getmetatable(self) == Err then res else self :: Result<T, E>
 end
 
 function Result:orElse<T, E, F>(op: (E) -> Result<T, F>, ...)
@@ -463,8 +463,8 @@ function Result:orElse<T, E, F>(op: (E) -> Result<T, F>, ...)
 	return values[1] :: Result<T, F>
 end
 
-function Result:unwrapOr<T>(default: T, ...)
-	if select("#", ...) > 0 then
+function Result:unwrapOr<T>(...)
+	if select("#", ...) ~= 1 then
 		error(
 			('"unwrapOr" method expects exactly one value, got (%s) as well'):format(
 				valuesOutputHelper(table.pack(...))
@@ -473,7 +473,7 @@ function Result:unwrapOr<T>(default: T, ...)
 		)
 	end
 
-	return if getmetatable(self) == Ok then self._v :: T else default
+	return if getmetatable(self) == Ok then self._v :: T else (...) :: T
 end
 
 function Result:unwrapOrElse<T, E>(op: (E) -> T, ...)
@@ -506,30 +506,30 @@ function Result:unwrapOrElse<T, E>(op: (E) -> T, ...)
 	return values[1] :: T
 end
 
-function Result:contains(x, ...)
-	if select("#", ...) > 0 then
+function Result:contains(...)
+	if select("#", ...) ~= 1 then
 		error(
-			('"contains" method expects exactly one value, got (%s) as well'):format(
+			('"contains" method expects exactly one value, got (%s) instead'):format(
 				valuesOutputHelper(table.pack(...))
 			),
 			2
 		)
 	end
 
-	return getmetatable(self) == Ok and self._v == x
+	return getmetatable(self) == Ok and self._v == (...)
 end
 
-function Result:containsErr(f, ...)
-	if select("#", ...) > 0 then
+function Result:containsErr(...)
+	if select("#", ...) ~= 1 then
 		error(
-			('"containsErr" method expects exactly one value, got (%s) as well'):format(
+			('"containsErr" method expects exactly one value, got (%s) instead'):format(
 				valuesOutputHelper(table.pack(...))
 			),
 			2
 		)
 	end
 
-	return getmetatable(self) == Err and self._v == f
+	return getmetatable(self) == Err and self._v == (...)
 end
 
 table.freeze(Result)
