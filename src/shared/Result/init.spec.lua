@@ -1,74 +1,57 @@
 return function()
+	local returnArgs = require(script.Parent.Parent.FunctionUtils.returnArgs)
+	local void = require(script.Parent.Parent.FunctionUtils.void)
 	local Result = require(script.Parent)
+
+	local RETURN_TRUE = returnArgs(true)
+	local RETURN_TRUE_AND_NIL = returnArgs(true, nil)
+	local RETURN_FALSE = returnArgs(false)
+	local RETURN_FALSE_AND_NIL = returnArgs(false, nil)
+	local RETURN_NIL_AND_NIL = returnArgs(nil, nil)
+	local RETURN_TABLE = returnArgs({})
+	local RETURN_NIL = returnArgs(nil)
+	local function UNREACHABLE() end
 
 	it("should throw an error to modify the exported table", function()
 		expect(function()
-			Result.NEW_FIELD = {}
+			getmetatable(Result).__index = {}
 		end).to.throw()
 
 		expect(function()
 			setmetatable(Result, {})
-		end)
-	end)
+		end).to.throw()
 
-	it("should thrown an error on attempt to modify the metatable of Ok", function()
 		expect(function()
-			getmetatable(Result.Ok(0)).__index = {}
+			Result.NEW_FIELD = {}
 		end).to.throw()
 	end)
 
-	it("should throw an error on attempt to modify the metatable of Ok", function()
+	it("should throw an error on attempt to modify Ok", function()
 		expect(function()
-			getmetatable(Result.Err(0)).__index = {}
+			getmetatable(Result.Ok()).__index = {}
+		end).to.throw()
+
+		expect(function()
+			setmetatable(Result.Ok(), {})
+		end).to.throw()
+
+		expect(function()
+			Result.Ok().NEW_FIELD = {}
 		end).to.throw()
 	end)
 
-	it("should throw an error on attempt to modify the Result object", function()
+	it("should throw an error on attempt to modify Err", function()
 		expect(function()
-			Result.Ok(0).NEW_FIELD = {}
+			getmetatable(Result.Err()).__index = {}
 		end).to.throw()
 
 		expect(function()
-			Result.Err(0).NEW_FIELD = {}
+			setmetatable(Result.Err(), {})
 		end).to.throw()
 
 		expect(function()
-			setmetatable(Result.Ok(0), {})
+			Result.Err().NEW_FIELD = {}
 		end).to.throw()
-
-		expect(function()
-			setmetatable(Result.Err(0), {})
-		end).to.throw()
-
-		expect(function()
-			Result.Ok(0):map(function(num)
-				return num + 1
-			end).NEW_FIELD = {}
-		end).to.throw()
-
-		expect(function()
-			Result.Err(0):mapErr(function(num)
-				return num + 1
-			end).NEW_FIELD = {}
-		end).to.throw()
-
-		expect(function()
-			setmetatable(
-				Result.Ok(0):map(function(num)
-					return num + 1
-				end),
-				{}
-			)
-		end).to.throw()
-
-		expect(function()
-			setmetatable(
-				Result.Err(0):mapErr(function(num)
-					return num + 1
-				end),
-				{}
-			)
-		end)
 	end)
 
 	describe("Ok", function()
@@ -109,59 +92,108 @@ return function()
 		it("should recognize Ok", function()
 			expect(function()
 				assert(Result.Ok():isOk() == true)
-				assert(Result.Ok(0):isOk() == true)
-				assert(Result.Ok({}):isOk() == true)
 			end).never.to.throw()
 		end)
 
 		it("should recognize Err", function()
 			expect(function()
 				assert(Result.Err():isOk() == false)
-				assert(Result.Err(0):isOk() == false)
-				assert(Result.Err({}):isOk() == false)
 			end).never.to.throw()
+		end)
+
+		it("should throw an error if any argument provided", function()
+			expect(function()
+				Result.Ok():isOk(nil, nil)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():isOk(nil, nil)
+			end).to.throw()
 		end)
 	end)
 
-	describe(":isOkWith()", function()
-		it("should throw an error if returned value is not a boolean", function()
-			expect(function()
-				Result.Ok(0):isOkWith(function() end)
-			end).to.throw()
-
-			expect(function()
-				Result.Ok(0):isOkWith(function()
-					return {}
-				end)
-			end).to.throw()
-
-			expect(function()
-				Result.Ok():isOkWith(function()
-					return 0
-				end)
-			end).to.throw()
-		end)
-
+	describe(":isOkAnd()", function()
 		it("should recognize Ok", function()
 			expect(function()
-				assert(Result.Ok():isOkWith(function()
-					return false
-				end) == false)
-				assert(Result.Ok():isOkWith(function()
-					return true
-				end) == true)
+				assert(Result.Ok():isOkAnd(RETURN_FALSE) == false)
+				assert(Result.Ok():isOkAnd(RETURN_TRUE) == true)
 			end).never.to.throw()
 		end)
 
 		it("should recognize Err", function()
 			expect(function()
-				assert(Result.Err():isOkWith(function()
-					return false
-				end) == false)
-				assert(Result.Err():isOkWith(function()
-					return true
-				end) == false)
+				assert(Result.Err():isOkAnd(RETURN_FALSE) == false)
+				assert(Result.Err():isOkAnd(RETURN_TRUE) == false)
 			end).never.to.throw()
+		end)
+
+		it("should throw an error if extra arguments provided", function()
+			expect(function()
+				Result.Ok():isOkAnd(RETURN_TRUE, nil, nil)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():isOkAnd(RETURN_TRUE, nil, nil)
+			end).to.throw()
+		end)
+
+		it("should throw an error if 'f' is not a function", function()
+			expect(function()
+				Result.Ok():isOkAnd()
+			end).to.throw()
+
+			expect(function()
+				Result.Ok():isOkAnd({})
+			end).to.throw()
+
+			expect(function()
+				Result.Err():isOkAnd()
+			end).to.throw()
+
+			expect(function()
+				Result.Err():isOkAnd({})
+			end).to.throw()
+		end)
+
+		it("should not call 'f' function when Result is Err", function()
+			expect(function()
+				Result.Err():isOkAnd(error)
+			end).never.to.throw()
+		end)
+
+		it("should provide a valid value to 'f' function", function()
+			expect(function()
+				Result.Ok(0):isOkAnd(function(v)
+					assert(v == 0)
+					return true
+				end)
+			end).never.to.throw()
+		end)
+
+		it("should throw an error if no values returned from 'f' function", function()
+			expect(function()
+				Result.Ok():isOkAnd(void)
+			end).to.throw()
+		end)
+
+		it("should throw an error if multiple values returned from 'f' function", function()
+			expect(function()
+				Result.Ok():isOkAnd(RETURN_TRUE_AND_NIL)
+			end).to.throw()
+
+			expect(function()
+				Result.Ok():isOkAnd(RETURN_FALSE_AND_NIL)
+			end).to.throw()
+		end)
+
+		it("should throw an error if value returned from 'f' function is not a boolean", function()
+			expect(function()
+				Result.Ok():isOkAnd(RETURN_TABLE)
+			end).to.throw()
+
+			expect(function()
+				Result.Ok():isOkAnd(RETURN_NIL)
+			end).to.throw()
 		end)
 	end)
 
@@ -177,41 +209,83 @@ return function()
 				assert(Result.Ok():isErr() == false)
 			end).never.to.throw()
 		end)
-	end)
 
-	describe(":isErrWith()", function()
-		it("should throw an error if returned value is not a boolean", function()
+		it("should throw an error if any arguments provided", function()
 			expect(function()
-				Result.Ok():isErrWith(function() end)
+				Result.Ok():isErr(nil, nil)
 			end).to.throw()
 
 			expect(function()
-				Result.Err():isErrWith(function()
-					return {}
-				end)
+				Result.Err():isErr(nil, nil)
 			end).to.throw()
 		end)
+	end)
 
+	describe(":isErrAnd()", function()
 		it("should recognize Err", function()
 			expect(function()
-				assert(Result.Err():isErrWith(function()
-					return true
-				end) == true)
-				assert(Result.Err():isErrWith(function()
-					return false
-				end) == false)
+				assert(Result.Err():isErrAnd(RETURN_TRUE) == true)
+				assert(Result.Err():isErrAnd(RETURN_FALSE) == false)
 			end).never.to.throw()
 		end)
 
 		it("should recognize Ok", function()
 			expect(function()
-				assert(Result.Ok():isErrWith(function()
-					return true
-				end) == false)
-				assert(Result.Ok():isErrWith(function()
-					return false
-				end) == false)
+				assert(Result.Ok():isErrAnd(RETURN_TRUE) == false)
+				assert(Result.Ok():isErrAnd(RETURN_FALSE) == false)
 			end).never.to.throw()
+		end)
+
+		it("should throw an error if extra arguments provided", function()
+			expect(function()
+				Result.Ok():isErrAnd(RETURN_TRUE, nil, nil)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():isErrAnd(RETURN_TRUE, nil, nil)
+			end).to.throw()
+		end)
+
+		it("should throw an error if 'f' is not a function", function()
+			expect(function()
+				Result.Ok():isErrAnd({})
+			end).to.throw()
+
+			expect(function()
+				Result.Err():isErrAnd({})
+			end).to.throw()
+		end)
+
+		it("should not call 'f' function when Result is Ok", function()
+			expect(function()
+				Result.Ok():isErrAnd(error)
+			end).never.to.throw()
+		end)
+
+		it("should throw an error if 'f' function returned no values", function()
+			expect(function()
+				Result.Err():isErrAnd(void)
+			end).to.throw()
+		end)
+
+		it("should throw an error if 'f' function returned multiple values", function()
+			expect(function()
+				Result.Err():isErrAnd(RETURN_TRUE_AND_NIL)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():isErrAnd(RETURN_FALSE_AND_NIL)
+			end).to.throw()
+		end)
+
+		it("should throw an error if value returned from 'f' function is not a boolean", function()
+			expect(function()
+				Result.Err():isErrAnd(RETURN_TABLE)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():isErrAnd(RETURN_NIL)
+			end).to.throw()
 		end)
 	end)
 
@@ -224,27 +298,27 @@ return function()
 	end)
 
 	describe(":map()", function()
-		it("should properly map Ok to another Ok", function()
+		it("should map Ok to another Ok", function()
 			expect(function()
-				assert(Result.Ok():map(function() end):isOk() == true)
-				assert(Result.Ok()
-					:map(function()
-						return 0
-					end)
-					:isOkWith(function(v)
-						return v == 0
-					end) == true)
+				assert(Result.Ok():map(RETURN_TRUE) == Result.Ok(true))
+				assert(Result.Ok(true):map(RETURN_NIL) == Result.Ok())
 			end).never.to.throw()
 		end)
 
-		it("should not map Err to another Result", function()
+		it("should not map Err", function()
 			expect(function()
-				local err = Result.Err()
-				assert(err:map(function() end) == err)
-				assert(err:map(function()
-					return "newErr"
-				end) == err)
+				Result.Err():map(error)
 			end).never.to.throw()
+		end)
+
+		it("should throw an error if extra arguments provided", function()
+			expect(function()
+				Result.Ok():map(RETURN_NIL, nil, nil)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():map(RETURN_NIL, nil, nil)
+			end).to.throw()
 		end)
 
 		it("should throw an error if no `op` function provided", function()
@@ -253,85 +327,218 @@ return function()
 			end).to.throw()
 
 			expect(function()
-				Result.Err():map()
+				Result.Ok():map({})
 			end).to.throw()
 
 			expect(function()
-				Result.Ok():map({})
+				Result.Err():map()
 			end).to.throw()
 
 			expect(function()
 				Result.Err():map({})
 			end).to.throw()
 		end)
-	end)
 
-	describe(":mapOr()", function()
-		it("should use default in case Result in Err", function()
+		it("should not call 'op' function when called on Err", function()
 			expect(function()
-				assert(Result.Err():mapOr(0, function() end) == 0)
-				assert(Result.Err(200):mapOr(nil, function() end) == nil)
+				Result.Err():map(error)
 			end).never.to.throw()
 		end)
 
-		it("should throw an error in case 'f' function is not provided", function()
+		it("should throw an error when multiple values returned from 'op' function", function()
 			expect(function()
-				Result.Ok():mapOr()
+				Result.Ok():map(RETURN_NIL_AND_NIL)
 			end).to.throw()
+		end)
 
+		it("should not throw an error when single value returned from 'op' function", function()
 			expect(function()
-				Result.Ok():mapOr("key")
-			end).to.throw()
-
-			expect(function()
-				Result.Ok():mapOr(nil, function() end)
+				Result.Ok():map(RETURN_TRUE)
+				Result.Ok():map(RETURN_FALSE)
+				Result.Ok():map(RETURN_NIL)
+				Result.Ok():map(RETURN_TABLE)
 			end).never.to.throw()
+		end)
+	end)
 
+	describe(":mapOr()", function()
+		it("should map Err to 'default' value", function()
 			expect(function()
-				Result.Err():mapOr()
+				assert(Result.Err():mapOr(0, UNREACHABLE) == 0)
+				assert(Result.Err(200):mapOr(nil, UNREACHABLE) == nil)
+			end).never.to.throw()
+		end)
+
+		it("should map Ok to value returned from 'f' function", function()
+			expect(function()
+				assert(Result.Ok():mapOr(nil, RETURN_TRUE) == true)
+			end).never.to.throw()
+		end)
+
+		it("should throw an error when extra argument provided", function()
+			expect(function()
+				Result.Ok():mapOr(nil, RETURN_TRUE, nil)
 			end).to.throw()
 
 			expect(function()
-				Result.Err():mapOr(1000)
+				Result.Ok():mapOr(nil, RETURN_TRUE, {})
 			end).to.throw()
 
 			expect(function()
-				Result.Err():mapOr(nil, function() end)
+				Result.Err():mapOr(nil, UNREACHABLE, nil)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():mapOr(nil, UNREACHABLE, nil)
+			end).to.throw()
+		end)
+
+		it("should throw an error when no 'f' function provided", function()
+			expect(function()
+				Result.Ok():mapOr(nil, nil)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():mapOr(nil, nil)
+			end).to.throw()
+		end)
+
+		it("should throw an error when no values returned from 'f' function", function()
+			expect(function()
+				Result.Ok():mapOr(nil, void)
+			end).to.throw()
+		end)
+
+		it("should throw an error when multiple values returned from 'f' function", function()
+			expect(function()
+				Result.Ok():mapOr(nil, RETURN_NIL_AND_NIL)
+			end).to.throw()
+		end)
+
+		it("should not throw an error when single value returned from 'f' function", function()
+			expect(function()
+				assert(Result.Ok():mapOr(nil, RETURN_TRUE) == true)
+				assert(Result.Ok():mapOr(nil, RETURN_FALSE) == false)
+			end).never.to.throw()
+		end)
+
+		it("should not call 'f' function when called on Err", function()
+			expect(function()
+				assert(Result.Err():mapOr(true, error) == true)
+				assert(Result.Err():mapOr(nil, error) == nil)
 			end).never.to.throw()
 		end)
 	end)
 
 	describe(":mapOrElse()", function()
+		it("should map Err to value returned from 'default' function", function()
+			expect(function()
+				assert(Result.Err():mapOrElse(RETURN_TRUE, UNREACHABLE) == true)
+				assert(Result.Err():mapOrElse(RETURN_NIL, UNREACHABLE) == nil)
+			end).never.to.throw()
+		end)
+
+		it("should map Ok to value returned from 'f' function", function()
+			expect(function()
+				assert(Result.Ok():mapOrElse(error, RETURN_TRUE) == true)
+				assert(Result.Ok():mapOrElse(error, RETURN_NIL) == nil)
+			end).never.to.throw()
+		end)
+
+		it("should throw an error when extra arguments provided", function()
+			expect(function()
+				Result.Ok():mapOrElse(UNREACHABLE, RETURN_TRUE, nil, nil)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():mapOrElse(RETURN_TRUE, UNREACHABLE, nil, nil)
+			end).to.throw()
+		end)
+
 		it("should throw an error in case 'default' function is not provided", function()
 			expect(function()
-				Result.Ok():mapOrElse()
+				Result.Ok():mapOrElse(nil, RETURN_NIL)
 			end).to.throw()
 
 			expect(function()
-				Result.Ok():mapOrElse(nil, function() end)
-			end).to.throw()
-
-			expect(function()
-				Result.Err():mapOrElse()
-			end).to.throw()
-
-			expect(function()
-				Result.Err():mapOrElse(nil, function() end)
+				Result.Err():mapOrElse(nil, void)
 			end).to.throw()
 		end)
 
 		it("should throw an error in case 'f' function is not provided", function()
 			expect(function()
-				Result.Ok():mapOrElse(function() end)
+				Result.Ok():mapOrElse(void, nil)
 			end).to.throw()
 
 			expect(function()
-				Result.Err():mapOrElse(function() end)
+				Result.Err():mapOrElse(RETURN_NIL, nil)
 			end).to.throw()
+		end)
+
+		it("should throw an error when no values returned from 'default' function", function()
+			expect(function()
+				Result.Err():mapOrElse(void, UNREACHABLE)
+			end).to.throw()
+		end)
+
+		it("should throw an error when multiple values returned from 'default' function", function()
+			expect(function()
+				Result.Err():mapOrElse(RETURN_NIL_AND_NIL, UNREACHABLE)
+			end).to.throw()
+		end)
+
+		it("should not throw an error when single value returned from 'default' function", function()
+			expect(function()
+				Result.Err():mapOrElse(RETURN_TRUE, UNREACHABLE)
+				Result.Err():mapOrElse(RETURN_NIL, UNREACHABLE)
+			end).never.to.throw()
+		end)
+
+		it("should throw an error when no values returned from 'f' function", function()
+			expect(function()
+				Result.Ok():mapOrElse(UNREACHABLE, void)
+			end).to.throw()
+		end)
+
+		it("should throw an error when multiple values returned from 'f' function", function()
+			expect(function()
+				Result.Ok():mapOrElse(UNREACHABLE, RETURN_NIL_AND_NIL)
+			end).to.throw()
+		end)
+
+		it("should not throw an error when single value returned from 'f' function", function()
+			expect(function()
+				Result.Ok():mapOrElse(UNREACHABLE, RETURN_TRUE)
+				Result.Ok():mapOrElse(UNREACHABLE, RETURN_NIL)
+			end).never.to.throw()
 		end)
 	end)
 
 	describe(":mapErr()", function()
+		it("should map Err to another Err", function()
+			expect(function()
+				assert(Result.Err():mapErr(function()
+					return 0
+				end) == Result.Err(0))
+			end).never.to.throw()
+		end)
+
+		it("should not map Ok", function()
+			expect(function()
+				assert(Result.Ok():mapErr(RETURN_TRUE) == Result.Ok())
+			end).never.to.throw()
+		end)
+
+		it("should throw an error when extra arguments provided", function()
+			expect(function()
+				Result.Ok():mapErr(UNREACHABLE, nil, nil)
+			end).to.throw()
+
+			expect(function()
+				Result.Err():mapErr(RETURN_TRUE, nil, nil)
+			end).to.throw()
+		end)
+
 		it("should throw an error then no 'op' function provided", function()
 			expect(function()
 				Result.Ok():mapErr()
@@ -350,36 +557,38 @@ return function()
 			end).to.throw()
 		end)
 
-		it("should properly map Err to another Err", function()
+		it("should throw an error when no values returned from 'op' function", function()
 			expect(function()
-				assert(Result.Err():mapErr(function()
-					return 0
-				end) == Result.Err(0))
-			end).never.to.throw()
+				Result.Err():mapErr(void)
+			end).to.throw()
 		end)
 
-		it("should not map Ok to Err", function()
+		it("should throw an error when multiple values returned from 'op' function", function()
 			expect(function()
-				local ok = Result.Ok()
-				assert(ok:mapErr(function()
-					return 0
-				end) == ok)
+				Result.Err():mapErr(RETURN_NIL_AND_NIL)
+			end).to.throw()
+		end)
+
+		it("should not throw an error when single value returned from 'op' function", function()
+			expect(function()
+				Result.Err():mapErr(RETURN_NIL)
+				Result.Err():mapErr(RETURN_TRUE)
 			end).never.to.throw()
 		end)
 	end)
 
 	describe(":inspect()", function()
-		it("should not throw an error when called on Err", function()
+		it("should throw an error when extra arguments provided", function()
 			expect(function()
-				Result.Err():inspect(print)
-			end).to.never.throw()
+				Result.Ok():inspect(void, nil, nil)
+			end).to.throw()
 
 			expect(function()
-				Result.Err():inspect(function() end)
-			end).to.never.throw()
+				Result.Err():inspect(void, nil, nil)
+			end).to.throw()
 		end)
 
-		it("should throw an error when no function provided", function()
+		it("should throw an error when no 'f' function provided", function()
 			expect(function()
 				Result.Ok():inspect()
 			end).to.throw()
@@ -387,33 +596,49 @@ return function()
 			expect(function()
 				Result.Ok():inspect({})
 			end).to.throw()
-		end)
 
-		it("should throw an error when inspect function returned atlease one value", function()
 			expect(function()
-				Result.Ok():inspect(function()
-					return 0
-				end)
+				Result.Err():inspect()
 			end).to.throw()
 
 			expect(function()
-				Result.Ok():inspect(print)
+				Result.Err():inspect({})
+			end).to.throw()
+		end)
+
+		it("should throw an error when inspect function returned atleast one value", function()
+			expect(function()
+				Result.Ok():inspect(RETURN_NIL)
+			end).to.throw()
+
+			expect(function()
+				Result.Ok():inspect(RETURN_TRUE)
+			end).to.throw()
+
+			expect(function()
+				Result.Ok():inspect(RETURN_NIL_AND_NIL)
+			end).to.throw()
+		end)
+
+		it("should not call 'f' function when called on Err", function()
+			expect(function()
+				Result.Err():inspect(error)
 			end).never.to.throw()
 		end)
 	end)
 
 	describe(":inspectErr()", function()
-		it("should not throw an error when called on Ok", function()
+		it("should throw an error when extra arguments provided", function()
 			expect(function()
-				Result.Ok():inspectErr(print)
-			end).never.to.throw()
+				Result.Ok():inspectErr(void, nil, nil)
+			end).to.throw()
 
 			expect(function()
-				Result.Ok():inspectErr(function() end)
-			end).never.to.throw()
+				Result.Err():inspectErr(void, nil, nil)
+			end).to.throw()
 		end)
 
-		it("should throw an error when no function provided", function()
+		it("should throw an error when no 'f' function provided", function()
 			expect(function()
 				Result.Ok():inspectErr()
 			end).to.throw()
@@ -431,24 +656,32 @@ return function()
 			end).to.throw()
 		end)
 
-		it("should throw an error if atleas one value returned from function", function()
+		it("should throw an error if atleast one value returned from 'f' function", function()
 			expect(function()
-				Result.Err():inspectErr(function()
-					return 0
-				end)
+				Result.Err():inspectErr(RETURN_NIL)
 			end).to.throw()
 
 			expect(function()
-				Result.Err():inspectErr(function()
-					return 1, 2, 3
-				end)
+				Result.Err():inspectErr(RETURN_TRUE)
 			end).to.throw()
 
 			expect(function()
-				Result.Err():inspectErr(function()
-					return
-				end)
+				Result.Err():inspectErr(RETURN_NIL_AND_NIL)
+			end).to.throw()
+		end)
+
+		it("should not call 'f' function when called on Ok", function()
+			expect(function()
+				Result.Ok():inspectErr(error)
 			end).never.to.throw()
 		end)
+	end)
+
+	describe(":expect()", function()
+		return
+	end)
+
+	describe(":unwrap()", function()
+		return
 	end)
 end

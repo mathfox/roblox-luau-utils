@@ -8,9 +8,9 @@ export type Ok<T> = T
 export type Err<E> = E
 export type Result<T, E> = {
 	isOk: (self: Result<T, E>) -> boolean,
-	isOkWith: (self: Result<T, E>, f: (T) -> boolean) -> boolean,
+	isOkAnd: (self: Result<T, E>, f: (T) -> boolean) -> boolean,
 	isErr: (self: Result<T, E>) -> boolean,
-	isErrWith: (self: Result<T, E>, f: (E) -> boolean) -> boolean,
+	isErrAnd: (self: Result<T, E>, f: (E) -> boolean) -> boolean,
 	ok: (self: Result<T, E>) -> Option<T>,
 	err: (self: Result<T, E>) -> Option<E>,
 	map: <U>(self: Result<T, E>, op: (T) -> U) -> Result<U, E>,

@@ -3,8 +3,7 @@ local function loadChildren(parent: Instance)
 
 	for _, child in ipairs(parent:GetChildren()) do
 		if child:IsA("ModuleScript") then
-			local m = require(child)
-			table.insert(modules, m)
+			table.insert(modules, require(child))
 		end
 	end
 
