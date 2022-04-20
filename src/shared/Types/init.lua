@@ -4,8 +4,8 @@ export type Array<T> = { T }
 export type Symbol = {}
 
 -- reference: https://doc.rust-lang.org/std/result/enum.Result.html#
-export type Ok<T> = T
-export type Err<E> = E
+export type Ok<T> = Result<T, nil>
+export type Err<E> = Result<nil, E>
 export type Result<T, E> = {
 	isOk: (self: Result<T, E>) -> boolean,
 	isOkAnd: (self: Result<T, E>, f: (T) -> boolean) -> boolean,
@@ -34,6 +34,8 @@ export type Result<T, E> = {
 }
 
 -- reference: https://doc.rust-lang.org/std/option/enum.Option.html
+export type Some<T> = Option<T>
+export type None = Option<nil>
 export type Option<T> = {
 	isSome: (self: Option<T>) -> boolean,
 	isSomeWith: (self: Option<T>, f: (T) -> boolean) -> boolean,

@@ -2,6 +2,8 @@
 local Types = require(script.Parent.Types)
 
 type Option<T> = Types.Option<T>
+type Some<T> = Types.Some<T>
+type None = Types.None
 
 local None = {}
 local Some = {}
@@ -147,10 +149,10 @@ end
 
 local OptionExport = {
 	Some = function<T>(v: T): Option<T>
-		return setmetatable({ _v = v }, Some)
+		return table.freeze(setmetatable({ _v = v }, Some))
 	end,
 
-	None = setmetatable({}, None) :: Option<nil>,
+	None = table.freeze(setmetatable({}, None)) :: Option<nil>,
 
 	_option = Option,
 	_some = Some,
@@ -160,6 +162,6 @@ local OptionExport = {
 table.freeze(OptionExport)
 
 return OptionExport :: {
-	None: Option<nil>,
-	Some: <T>(T) -> Option<T>,
+	None: None,
+	Some: <T>(T) -> Some<T>,
 }

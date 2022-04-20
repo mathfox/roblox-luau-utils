@@ -1,6 +1,6 @@
 return function()
 	local returnArgs = require(script.Parent.Parent.FunctionUtils.returnArgs)
-	local void = require(script.Parent.Parent.FunctionUtils.void)
+	local void = require(script.Parent.Parent.void)
 	local Result = require(script.Parent)
 
 	local RETURN_TRUE = returnArgs(true)

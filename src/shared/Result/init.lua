@@ -112,9 +112,9 @@ function Result:ok<T>()
 		else require(script.Parent.Option).None
 end
 
-function Result:err<T>()
+function Result:err<E>()
 	return if getmetatable(self) == Err
-		then require(script.Parent.Option).Some(self._v :: T) :: Option<T>
+		then require(script.Parent.Option).Some(self._v :: E) :: Option<E>
 		else require(script.Parent.Option).None
 end
 
