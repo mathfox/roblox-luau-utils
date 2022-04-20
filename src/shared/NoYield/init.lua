@@ -10,9 +10,7 @@
 local function resultHandler(message: string, co: thread, ok: boolean, ...)
 	if not ok then
 		error(debug.traceback(co, (...)), 2)
-	end
-
-	if coroutine.status(co) ~= "dead" then
+	elseif coroutine.status(co) ~= "dead" then
 		error(debug.traceback(co, message), 2)
 	end
 
