@@ -1,24 +1,68 @@
 return function()
-	local assign = require(script.Parent)
+	local None = require(script.Parent.Parent.Parent.None)
 
-	it("should support arrays", function()
-		expect(function()
-			local array1 = { 1, 2, 3, 4, 5 }
-			local array2 = { 2, 4, 6, 8, 10 }
+	local assign = require(script.Parent.Parent.Parent.TableUtils.assign)
 
-			local array3 = assign(array1, array2)
-			assert(array3[1] == array2[1])
+	it("should accept zero additional tables", function()
+		local input = {}
+		local result = assign(input)
 
-			local array4 = assign(array2, array1)
-			assert(array4[1] == array1[1])
-
-			assert(assign(array3, array4)[1] == array4[1])
-		end).never.to.throw()
+		expect(input).to.equal(result)
 	end)
 
-	it("should keep values from the latest table", function()
-		expect(function()
-			assert(assign({ 1 }, { 2 }, { 3 })[1] == 3)
-		end).never.to.throw()
+	it("should merge multiple tables onto the given target table", function()
+		local target = {
+			a = 5,
+			b = 6,
+		}
+
+		local source1 = {
+			b = 7,
+			c = 8,
+		}
+
+		local source2 = {
+			b = 8,
+		}
+
+		assign(target, source1, source2)
+
+		expect(target.a).to.equal(5)
+		expect(target.b).to.equal(source2.b)
+		expect(target.c).to.equal(source1.c)
+	end)
+
+	it("should remove keys if specified as None", function()
+		local target = {
+			foo = 2,
+			bar = 3,
+		}
+
+		local source = {
+			foo = None,
+		}
+
+		assign(target, source)
+
+		expect(target.foo).to.equal(nil)
+		expect(target.bar).to.equal(3)
+	end)
+
+	it("should re-add keys if specified after None", function()
+		local target = {
+			foo = 2,
+		}
+
+		local source1 = {
+			foo = None,
+		}
+
+		local source2 = {
+			foo = 3,
+		}
+
+		assign(target, source1, source2)
+
+		expect(target.foo).to.equal(source2.foo)
 	end)
 end

@@ -1,10 +1,21 @@
-local function assign<K, V>(tbl: { [K]: V }, ...: { [K]: V }): { [K]: V }
-	for _, t in ipairs({ ... }) do
-		for k, v in pairs(t) do
-			tbl[k] = v
+local Option = require(script.Parent.Parent.Option)
+
+--[[
+	Merges values from zero or more tables onto a target table.
+   If a value is set to None, it will instead be removed from the table.
+]]
+local function assign<K, V>(target: { [K]: V }, ...: { [K]: V }): { [K]: V }
+	for index = 1, select("#", ...) do
+		local source = select(index, ...)
+
+		if source then
+			for key, value in pairs(source) do
+				target[key] = if value == Option.None then nil else value
+			end
 		end
 	end
-	return tbl
+
+	return target
 end
 
 return assign
