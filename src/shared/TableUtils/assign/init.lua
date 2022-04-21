@@ -1,4 +1,4 @@
-local Option = require(script.Parent.Parent.Option)
+local None = require(script.Parent.Parent.None)
 
 --[[
 	Merges values from zero or more tables onto a target table.
@@ -10,7 +10,7 @@ local function assign<K, V>(target: { [K]: V }, ...: { [K]: V }): { [K]: V }
 
 		if source then
 			for key, value in pairs(source) do
-				target[key] = if value == Option.None then nil else value
+				target[key] = if value == None then nil else value
 			end
 		end
 	end

@@ -1,4 +1,4 @@
-return function(initialState, handlers)
+local function createReducer(initialState, handlers)
 	return function(state, action)
 		if state == nil then
 			state = initialState
@@ -13,3 +13,5 @@ return function(initialState, handlers)
 		return state
 	end
 end
+
+return createReducer

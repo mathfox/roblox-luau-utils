@@ -1,3 +1,4 @@
+-- reference: https://create.roblox.com/docs/reference/engine/datatypes/Color3
 local Color3SerializationUtils = {
 	isSerializedColor3 = require(script.isSerializedColor3),
 	deserializeColor3 = require(script.deserializeColor3),

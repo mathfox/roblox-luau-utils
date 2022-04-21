@@ -1,5 +1,5 @@
+
 local loggerMiddleware = require(script.loggerMiddleware)
-local thunkMiddleware = require(script.thunkMiddleware)
 
 local Rodux = {
 	Store = require(script.Store),
@@ -7,7 +7,7 @@ local Rodux = {
 	combineReducers = require(script.combineReducers),
 	makeActionCreator = require(script.makeActionCreator),
 	loggerMiddleware = loggerMiddleware.middleware,
-	thunkMiddleware = thunkMiddleware,
+	thunkMiddleware = require(script.thunkMiddleware),
 }
 
 table.freeze(Rodux)

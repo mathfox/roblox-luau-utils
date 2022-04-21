@@ -4,6 +4,7 @@
 	This middleware consumes the function; middleware further down the chain
 	will not receive it.
 ]]
+
 local function tracebackReporter(message)
 	return debug.traceback(message)
 end

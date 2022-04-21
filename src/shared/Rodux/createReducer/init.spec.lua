@@ -1,5 +1,5 @@
 return function()
-	local createReducer = require(script.Parent.createReducer)
+	local createReducer = require(script.Parent)
 
 	it("should handle actions", function()
 		local reducer = createReducer({

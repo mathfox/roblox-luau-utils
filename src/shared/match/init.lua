@@ -7,7 +7,7 @@ type Option<T> = Types.Option<T>
 type MatchableObject = Result<any, any> | Option<any>
 
 local function match(object: MatchableObject)
-	if getmetatable(object).__index == Result._result then
+	if Result.is(object) then
 		local runningThread = coroutine.running()
 		local wasMatchResultCalled = false
 

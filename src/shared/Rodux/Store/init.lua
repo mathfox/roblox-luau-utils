@@ -1,7 +1,7 @@
 local RunService = game:GetService("RunService")
 
-local Signal = require(script.Parent.Signal)
 local NoYield = require(script.Parent.Parent.NoYield)
+local Signal = require(script.Parent.Signal)
 
 local ACTION_LOG_LENGTH = 3
 
@@ -41,6 +41,7 @@ Store.__index = Store
 function Store.new(reducer, initialState, middlewares, errorReporter)
 	assert(typeof(reducer) == "function", "Bad argument #1 to Store.new, expected function.")
 	assert(middlewares == nil or typeof(middlewares) == "table", "Bad argument #3 to Store.new, expected nil or table.")
+
 	if middlewares ~= nil then
 		for i = 1, #middlewares, 1 do
 			assert(
@@ -55,10 +56,12 @@ function Store.new(reducer, initialState, middlewares, errorReporter)
 	self._errorReporter = errorReporter or rethrowErrorReporter
 	self._isDispatching = false
 	self._reducer = reducer
+
 	local initAction = {
 		type = "@@INIT",
 	}
 	self._actionLog = { initAction }
+
 	local ok, result = xpcall(function()
 		self._state = reducer(initialState, initAction)
 	end, tracebackReporter)
@@ -69,6 +72,7 @@ function Store.new(reducer, initialState, middlewares, errorReporter)
 		})
 		self._state = initialState
 	end
+
 	self._lastState = self._state
 
 	self._mutatedSinceFlush = false
@@ -194,7 +198,7 @@ function Store:flush()
 	local ok, errorResult = xpcall(function()
 		-- If a changed listener yields, *very* surprising bugs can ensue.
 		-- Because of that, changed listeners cannot yield.
-		NoYield(function()
+		NoYield("attempted to yield inside changed event", function()
 			self.changed:fire(state, self._lastState)
 		end)
 	end, tracebackReporter)

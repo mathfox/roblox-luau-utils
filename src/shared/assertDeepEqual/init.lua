@@ -2,8 +2,6 @@
 	A utility used to assert that two objects are value-equal recursively. It
 	outputs fairly nicely formatted messages to help diagnose why two objects
 	would be different.
-
-	This should only be used in tests.
 ]]
 
 local function deepEqual(a, b)

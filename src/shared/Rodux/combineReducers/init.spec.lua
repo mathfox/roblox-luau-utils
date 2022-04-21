@@ -1,5 +1,5 @@
 return function()
-	local combineReducers = require(script.Parent.combineReducers)
+	local combineReducers = require(script.Parent)
 
 	it("should invoke each sub-reducer for every action", function()
 		local aCount = 0

@@ -1,5 +1,5 @@
 return function()
-	local Store = require(script.Parent.Store)
+	local Store = require(script.Parent)
 
 	describe("new", function()
 		it("should instantiate with a reducer", function()

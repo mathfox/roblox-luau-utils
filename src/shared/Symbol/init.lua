@@ -6,7 +6,7 @@
 
 local Types = require(script.Parent.Types)
 
-type Symbol = Types.Symbol
+export type Symbol = Types.Symbol
 
 local SymbolExport = {
 	named = function(name: string): Symbol

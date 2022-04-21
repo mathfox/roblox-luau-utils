@@ -1,5 +1,5 @@
 return function()
-	local makeActionCreator = require(script.Parent.makeActionCreator)
+	local makeActionCreator = require(script.Parent)
 
 	it("should set the name of the actionCreator creator", function()
 		local FooAction = makeActionCreator("foo", function()

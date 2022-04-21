@@ -1,6 +1,6 @@
 return function()
-	local Store = require(script.Parent.Store)
-	local thunkMiddleware = require(script.Parent.thunkMiddleware)
+	local Store = require(script.Parent.Parent.Store)
+	local thunkMiddleware = require(script.Parent)
 
 	it("should dispatch thunks", function()
 		local function reducer(state, action)

@@ -1,9 +1,9 @@
 local Types = require(script.Parent.Types)
 
-type Signal<T...> = Types.Signal<T...>
-type Connection = Types.Connection
+export type Signal<T...> = Types.Signal<T...>
+export type Connection = Types.Connection
 
-local freeRunnerThread = nil
+local freeRunnerThread: thread? = nil
 local runEventHandlerInFreeThread = nil
 
 do
@@ -58,7 +58,7 @@ function Signal:__tostring()
 end
 
 function Signal:connect(fn: (...any) -> ())
-	local connection = setmetatable({ _signal = self, _fn = fn }, Connection)
+	local connection: Connection = setmetatable({ _signal = self, _fn = fn }, Connection)
 
 	if self._last then
 		connection._next = self._last
@@ -113,7 +113,7 @@ local SignalExport = {
 	end,
 
 	new = function()
-		return setmetatable({}, Signal)
+		return setmetatable({}, Signal) :: Signal<...any>
 	end,
 }
 
