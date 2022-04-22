@@ -91,11 +91,11 @@ export type InstanceCacheParams<T> = {
 export type SerializedColor3 = { number }
 export type SerializedCFrame = { number }
 
-export type EnumeratorItem<V> = { name: string, type: Enumerator<V>, value: V }
-export type Enumerator<V> = {
-	fromRawValue: (rawValue: V) -> EnumeratorItem<V>?,
+export type EnumeratorItem<T> = { name: string, value: T, type: Enumerator<T> }
+export type Enumerator<T> = {
+	fromRawValue: (rawValue: T) -> EnumeratorItem<T>?,
 	isEnumeratorItem: (value: any) -> boolean,
-	getEnumeratorItems: () -> { EnumeratorItem<V> },
+	getEnumeratorItems: () -> { EnumeratorItem<T> },
 }
 
 export type CollectionComponentDescription = {
@@ -240,5 +240,18 @@ export type Friend = {
 }
 
 export type PackedValues = { n: number, [number]: any }
+
+export type RoduxStore = {
+	getState: (self: RoduxStore) -> {},
+	dispatch: (self: RoduxStore, action: RoduxAction) -> (),
+	flush: (self: RoduxStore) -> (),
+	destruct: (self: RoduxStore) -> (),
+}
+
+export type RoduxAction = { type: string, [any]: any }
+export type RoduxStoreState = {}
+
+export type RoduxReducer = (state: RoduxStoreState, action: RoduxAction) -> RoduxStoreState
+export type RoduxReducerHandler = (state: RoduxStoreState, action: RoduxAction) -> ()
 
 return nil
