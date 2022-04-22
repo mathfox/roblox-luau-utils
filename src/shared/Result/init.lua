@@ -3,11 +3,11 @@
 local Types = require(script.Parent.Types)
 
 type PackedValues = Types.PackedValues
-type Result<T, E> = Types.Result<T, E>
+export type Result<T, E> = Types.Result<T, E>
+export type Err<E> = Types.Err<E>
+export type Ok<T> = Types.Ok<T>
 type Array<T> = Types.Array<T>
 type Some<T> = Types.Some<T>
-type Err<E> = Types.Err<E>
-type Ok<T> = Types.Ok<T>
 
 local VALUE_TO_TYPE_STRING = '"%s": %s'
 
