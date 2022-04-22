@@ -55,9 +55,7 @@ local function assertDeepEqual(a, b)
 	if not success then
 		local innerMessage = innerMessageTemplate:gsub("{1}", "first"):gsub("{2}", "second")
 
-		local message = ("Values were not deep-equal.\n%s"):format(innerMessage)
-
-		error(message, 2)
+		error(("Values were not deep-equal.\n%s"):format(innerMessage), 2)
 	end
 end
 
