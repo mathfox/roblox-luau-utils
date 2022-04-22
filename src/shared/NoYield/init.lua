@@ -7,7 +7,7 @@
 	given function will be returned.
 ]]
 
-local function resultHandler(message: string, co: thread, ok: boolean, ...)
+local function resultHandler<T...>(message: string, co: thread, ok: boolean, ...: T...)
 	if not ok then
 		error(debug.traceback(co, (...)), 2)
 	elseif coroutine.status(co) ~= "dead" then
@@ -17,7 +17,7 @@ local function resultHandler(message: string, co: thread, ok: boolean, ...)
 	return ...
 end
 
-local function NoYield(message: string, callback, ...)
+local function NoYield<T...>(message: string, callback, ...: T...)
 	local co = coroutine.create(callback)
 
 	return resultHandler(message, co, coroutine.resume(co, ...))
