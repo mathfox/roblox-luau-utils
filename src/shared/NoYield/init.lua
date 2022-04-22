@@ -17,7 +17,27 @@ local function resultHandler<T...>(message: string, co: thread, ok: boolean, ...
 	return ...
 end
 
-local function NoYield<T...>(message: string, callback, ...: T...)
+local function NoYield<T...>(message: string, callback: (T...) -> ...any, ...: T...)
+	if type(message) ~= "string" then
+		error(
+			('"message" (#1 argument) must be a string, got ("%s": %s) instead'):format(
+				tostring(message),
+				typeof(message)
+			),
+			2
+		)
+	elseif message == "" then
+		error('"message" (#1 argument) must be a non-empty string', 2)
+	elseif type(callback) ~= "function" then
+		error(
+			('"callback" (#2 argument) must be a function, got ("%s": %s) instead'):format(
+				tostring(callback),
+				typeof(callback)
+			),
+			2
+		)
+	end
+
 	local co = coroutine.create(callback)
 
 	return resultHandler(message, co, coroutine.resume(co, ...))
