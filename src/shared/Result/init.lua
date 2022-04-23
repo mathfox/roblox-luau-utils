@@ -40,9 +40,17 @@ end
 
 function Result:isOkAnd<T>(f: (T) -> boolean, ...)
 	if select("#", ...) > 0 then
-		error(('"isOkAnd" method expects exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"isOkAnd" method expects exactly one function of type (T) -> boolean, got (%s) as well'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(f) ~= "function" then
-		error(('"f" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(f)), 2)
+		error(
+			('"f" (#1 argument) must be a function of type (T) -> boolean, got (%s) instead'):format(outputHelper(f)),
+			2
+		)
 	end
 
 	if getmetatable(self) == Err then
@@ -75,9 +83,17 @@ end
 
 function Result:isErrAnd<E>(f: (E) -> boolean, ...)
 	if select("#", ...) > 0 then
-		error(('"isErrAnd" method expects exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"isErrAnd" method expects exactly one function of type (E) -> boolean, got (%s) as well'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(f) ~= "function" then
-		error(('"f" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(f)), 2)
+		error(
+			('"f" (#1 argument) must be a function of type (E) -> boolean, got (%s) instead'):format(outputHelper(f)),
+			2
+		)
 	end
 
 	if getmetatable(self) == Ok then
@@ -120,11 +136,18 @@ function Result:err<E>(...)
 		else require(script.Parent.Option).None
 end
 
+local function createOk<T>(value: T)
+	return table.freeze(setmetatable({ _v = value }, Ok)) :: Ok<T>
+end
+
 function Result:map<T, E, U>(op: (T) -> U, ...)
 	if select("#", ...) > 0 then
-		error(('"map" method expects exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"map" method expects exactly one function of type (T) -> U, got (%s) as well'):format(outputHelper(...)),
+			2
+		)
 	elseif type(op) ~= "function" then
-		error(('"op" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(op)), 2)
+		error(('"op" (#1 argument) must be a function of type (T) -> U, got (%s) instead'):format(outputHelper(op)), 2)
 	end
 
 	if getmetatable(self) == Err then
@@ -142,14 +165,19 @@ function Result:map<T, E, U>(op: (T) -> U, ...)
 		)
 	end
 
-	return table.freeze(setmetatable({ _v = newValue }, Ok)) :: Result<U, E>
+	return createOk(newValue) :: Result<U, E>
 end
 
 function Result:mapOr<T, U>(default: U, f: (T) -> U, ...)
 	if select("#", ...) > 0 then
-		error(('"mapOr" method expects exactly two values, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"mapOr" method expects exactly two values (default: U, f: (T) -> U), got (%s) as well'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(f) ~= "function" then
-		error(('"f" (#2 argument) must be a function, got (%s) instead'):format(outputHelper(f)), 2)
+		error(('"f" (#2 argument) must be a function of type (T) -> U, got (%s) instead'):format(outputHelper(f)), 2)
 	end
 
 	if getmetatable(self) == Err then
@@ -172,11 +200,21 @@ end
 
 function Result:mapOrElse<T, E, U>(default: (E) -> U, f: (T) -> U, ...)
 	if select("#", ...) > 0 then
-		error(('"mapOrElse" method expects exactly two values, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"mapOrElse" method expects exactly two values (default: (E) -> U, f: (T) -> U), got (%s) as well'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(default) ~= "function" then
-		error(('"default" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(default)), 2)
+		error(
+			('"default" (#1 argument) must be a function of type (E) -> U, got (%s) instead'):format(
+				outputHelper(default)
+			),
+			2
+		)
 	elseif type(f) ~= "function" then
-		error(('"f" (#2 argument) must be a function, got (%s) instead'):format(outputHelper(f)), 2)
+		error(('"f" (#2 argument) must be a function of type (T) -> U, got (%s) instead'):format(outputHelper(f)), 2)
 	end
 
 	if getmetatable(self) == Err then
@@ -208,11 +246,20 @@ function Result:mapOrElse<T, E, U>(default: (E) -> U, f: (T) -> U, ...)
 	return newValue
 end
 
+local function createErr<E>(value: E)
+	return table.freeze(setmetatable({ _v = value }, Err)) :: Err<E>
+end
+
 function Result:mapErr<T, E, F>(op: (E) -> F, ...)
 	if select("#", ...) > 0 then
-		error(('"mapErr" method expects exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"mapErr" method expects exactly one function of type (E) -> F, got (%s) as well'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(op) ~= "function" then
-		error(('"op" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(op)), 2)
+		error(('"op" (#1 argument) must be a function of type (E) -> F, got (%s) instead'):format(outputHelper(op)), 2)
 	end
 
 	if getmetatable(self) == Ok then
@@ -230,14 +277,19 @@ function Result:mapErr<T, E, F>(op: (E) -> F, ...)
 		)
 	end
 
-	return table.freeze(setmetatable({ _v = newValue }, Err)) :: Result<T, F>
+	return createErr(newValue) :: Result<T, F>
 end
 
 function Result:inspect<T>(f: (T) -> (), ...)
 	if select("#", ...) > 0 then
-		error(('"inspect" method expects exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"inspect" method expects exactly one function of type (T) -> (), got (%s) as well'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(f) ~= "function" then
-		error(('"f" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(f)), 2)
+		error(('"f" (#1 argument) must be a function of type (T) -> (), got (%s) instead'):format(outputHelper(f)), 2)
 	end
 
 	if getmetatable(self) == Ok then
@@ -258,9 +310,14 @@ end
 
 function Result:inspectErr<E>(f: (E) -> (), ...)
 	if select("#", ...) > 0 then
-		error(('"inspectErr" method expects exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"inspectErr" method expects exactly one function of type (E) -> (), got (%s) as well'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(f) ~= "function" then
-		error(('"f" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(f)), 2)
+		error(('"f" (#1 argument) must be a function of type (E) -> (), got (%s) instead'):format(outputHelper(f)), 2)
 	end
 
 	if getmetatable(self) == Err then
@@ -344,7 +401,12 @@ end
 
 function Result:andThen<T, E, U>(op: (T) -> Result<U, E>, ...)
 	if select("#", ...) > 0 then
-		error(('"andThen" method expects exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"andThen" method expects exactly one function of type (T) -> Result<U, E>, got (%s) as well'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(op) ~= "function" then
 		error(('"op" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(op)), 2)
 	end
@@ -381,7 +443,12 @@ end
 
 function Result:orElse<T, E, F>(op: (E) -> Result<T, F>, ...)
 	if select("#", ...) > 0 then
-		error(('"orElse" method expects exatly one function, got (%s) instead'):format(outputHelper(...)), 2)
+		error(
+			('"orElse" method expects exatly one function of type (E) -> Result<T, F>, got (%s) instead'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(op) ~= "function" then
 		error(('"op" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(op)))
 	end
@@ -416,9 +483,14 @@ end
 
 function Result:unwrapOrElse<T, E>(op: (E) -> T, ...)
 	if select("#", ...) > 0 then
-		error(('"unwrapOrElse" method excepts exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+		error(
+			('"unwrapOrElse" method excepts exactly one function of type (E) -> T, got (%s) as well'):format(
+				outputHelper(...)
+			),
+			2
+		)
 	elseif type(op) ~= "function" then
-		error(('"op" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(op)), 2)
+		error(('"op" (#1 argument) must be a function of type (E) -> T, got (%s) instead'):format(outputHelper(op)), 2)
 	end
 
 	if getmetatable(self) == Ok then
@@ -482,13 +554,8 @@ table.freeze(Ok)
 table.freeze(Err)
 
 local ResultExport = {
-	Ok = function(v)
-		return table.freeze(setmetatable({ _v = v }, Ok))
-	end,
-
-	Err = function(v)
-		return table.freeze(setmetatable({ _v = v }, Err))
-	end,
+	Ok = createOk,
+	Err = createErr,
 
 	_ok = Ok,
 	_err = Err,

@@ -5,5 +5,9 @@ return function()
 		expect(function()
 			FunctionUtils.NEW_FIELD = {}
 		end).to.throw()
+
+		expect(function()
+			setmetatable(FunctionUtils, {})
+		end).to.throw()
 	end)
 end

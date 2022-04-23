@@ -3,4 +3,6 @@ local StarterGuiUtils = {
 	setCoreGuiTypesEnabled = require(script.setCoreGuiTypesEnabled),
 }
 
+table.freeze(StarterGuiUtils)
+
 return StarterGuiUtils
