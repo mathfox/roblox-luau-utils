@@ -1,3 +1,5 @@
+-- source: https://github.com/howmanysmall/enumerator
+
 local Types = require(script.Parent.Types)
 
 type EnumeratorItem<V> = Types.EnumeratorItem<V>

@@ -1,5 +1,5 @@
 --[[
-   This module exposes basically exposes Option.None
+   This module exposes Option.None
 ]]
 
 local Option = require(script.Parent.Option)

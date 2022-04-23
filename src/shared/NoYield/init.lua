@@ -17,17 +17,18 @@ local function resultHandler<T...>(message: string, co: thread, ok: boolean, ...
 	return ...
 end
 
-local function NoYield<T...>(message: string, callback: (T...) -> ...any, ...: T...)
-	if type(message) ~= "string" then
+-- provide nil in case message is not yet specified
+local function NoYield<T...>(messageOrNil: string?, callback: (T...) -> ...any, ...: T...)
+	if type(messageOrNil) ~= "string" and messageOrNil ~= nil then
 		error(
-			('"message" (#1 argument) must be a string, got ("%s": %s) instead'):format(
-				tostring(message),
-				typeof(message)
+			('"message" (#1 argument) must be either a string or nil, got ("%s": %s) instead'):format(
+				tostring(messageOrNil),
+				typeof()
 			),
 			2
 		)
-	elseif message == "" then
-		error('"message" (#1 argument) must be a non-empty string', 2)
+	elseif messageOrNil == "" then
+		error('"message" (#1 argument) must be either a non-empty string or nil, got an empty string', 2)
 	elseif type(callback) ~= "function" then
 		error(
 			('"callback" (#2 argument) must be a function, got ("%s": %s) instead'):format(
@@ -40,7 +41,11 @@ local function NoYield<T...>(message: string, callback: (T...) -> ...any, ...: T
 
 	local co = coroutine.create(callback)
 
-	return resultHandler(message, co, coroutine.resume(co, ...))
+	return resultHandler(
+		messageOrNil or 'provided "callback" (#2 argument) function attempted to yield',
+		co,
+		coroutine.resume(co, ...)
+	)
 end
 
 return NoYield
