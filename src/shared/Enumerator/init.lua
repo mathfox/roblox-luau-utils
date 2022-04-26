@@ -2,8 +2,8 @@
 
 local Types = require(script.Parent.Types)
 
-export type EnumeratorItem<V> = Types.EnumeratorItem<V>
-export type Enumerator<V> = Types.Enumerator<V>
+export type EnumeratorItem<T> = Types.EnumeratorItem<T>
+export type Enumerator<T> = Types.Enumerator<T>
 type Record<K, V> = Types.Record<K, V>
 type Array<T> = Types.Array<T>
 
