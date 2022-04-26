@@ -1,3 +1,7 @@
-local function void() end
+--[[
+   This module basically exposes FunctionUtils.void function
+]]
 
-return void
+local FunctionUtils = require(script.Parent.FunctionUtils)
+
+return FunctionUtils.void
