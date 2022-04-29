@@ -1,11 +1,15 @@
 -- An implementation of Promises similar to Promise/A+.
+-- refactored version of: https://github.com/evaera/roblox-lua-promise
 
 local MODE_KEY_METATABLE = { __mode = "k" }
 
+local Enumerator = require(script.Parent.Enumerator)
 local Types = require(script.Parent.Types)
 
-type Executor<V...> = Types.Executor<V...>
-type Promise<V...> = Types.Promise<V...>
+type EnumeratorItem<T> = Types.EnumeratorItem<T>
+type Array<T> = Types.Array<T>
+type Executor<T...> = Types.Executor<T...>
+export type Promise<T...> = Types.Promise<T...>
 type Error = {
 	error: string,
 	trace: string?,
@@ -16,18 +20,24 @@ type Error = {
 	createdTrace: string,
 }
 
+local function outputHelper(...)
+	local tbl: Array<string> = {}
+
+	for index = 1, select("#", ...) do
+		local value = select(index, ...)
+		table.insert(tbl, ('"%s": %s'):format(tostring(value), typeof(value)))
+	end
+
+	return table.concat(tbl, ", ")
+end
+
 --[=[
 	An object to represent runtime errors that occur during execution.
 	Promises that experience an error like this will be rejected with
 	an instance of this object.
 ]=]
 local Error = {
-	Kind = {
-		ExecutionError = "ExecutionError",
-		AlreadyCancelled = "AlreadyCancelled",
-		NotResolvedInTime = "NotResolvedInTime",
-		TimedOut = "TimedOut",
-	},
+	Kind = Enumerator("Error.Kind", { "ExecutionError", "AlreadyCancelled", "NotResolvedInTime", "TimedOut" }),
 }
 Error.__index = Error
 
@@ -105,15 +115,10 @@ end
 -- A Promise is an object that represents a value that will exist in the future, but doesn't right now. Promises allow you to then attach callbacks that can run once the value becomes available (known as *resolving*), or if an error has occurred (known as *rejecting*).
 local Promise = {
 	Error = Error,
-	Status = {
-		Started = "Started",
-		Resolved = "Resolved",
-		Rejected = "Rejected",
-		Cancelled = "Cancelled",
-	},
+	Status = Enumerator("Promise.Status", { "Started", "Resolved", "Rejected", "Cancelled" }),
 	_unhandledRejectionCallbacks = {},
 }
-Promise.prototype = {} :: Promise & {
+Promise.prototype = {} :: Promise<...any> & {
 	_source: string,
 
 	-- The executor thread.
@@ -128,15 +133,14 @@ Promise.prototype = {} :: Promise & {
 	-- The function to run when/if this Promise is cancelled.
 	_cancellationHook: (() -> ())?,
 
+	_status: EnumeratorItem<string>,
 	_parent: Promise<...any>?,
 	_consumers: { [Promise<...any>]: boolean },
-
-	_new: <V...>(traceback: string, executor: Executor<V...>, parent: Promise?) -> Promise<V...>,
 }
 Promise.__index = Promise.prototype
 
 function Promise:__tostring()
-	return string.format("Promise(%s)", self._status :: string)
+	return string.format("Promise(%s)", self._status.name)
 end
 
 function Promise.is(object)
@@ -228,27 +232,29 @@ end
 	You must perform any cleanup code in the cancellation hook: any time your executor yields, it **may never resume**.
 	:::
 ]=]
-function Promise.new<V...>(executor: Executor<V...>): Promise<V...>
+function Promise.new<T...>(executor: Executor<T...>): Promise<T...>
 	return Promise._new(debug.traceback(nil, 2), executor)
 end
 
 -- The same as `Promise.new`, except execution begins after the next resumption cycle.
-function Promise.defer<V...>(executor: Executor<V...>): Promise<V...>
+function Promise.defer<T...>(executor: Executor<T...>): Promise<T...>
 	local traceback = debug.traceback(nil, 2)
-	return Promise._new(traceback, function(resolve, reject, onCancel)
-		task.defer(function()
-			local ok, result = runExecutor(traceback, executor, resolve, reject, onCancel)
 
-			if not ok then
-				reject(result[1])
-			end
-		end)
+	return Promise._new(traceback, function(resolve, reject, onCancel)
+		task.wait()
+
+		local ok, result = runExecutor(traceback, executor, resolve, reject, onCancel)
+
+		if not ok then
+			reject(result[1])
+		end
 	end)
 end
 
 -- Creates an immediately resolved `Promise` with the given values.
-function Promise.resolve<V...>(...: V...): Promise<V...>
+function Promise.resolve<T...>(...: T...): Promise<T...>
 	local length, values = select("#", ...), { ... }
+
 	return Promise._new(debug.traceback(nil, 2), function(resolve)
 		resolve(unpack(values, 1, length))
 	end)
@@ -261,16 +267,18 @@ end
 	Something needs to consume this rejection (i.e. `:catch()` it), otherwise it will emit an unhandled Promise rejection warning on the next frame. Thus, you should not create and store rejected Promises for later use. Only create them on-demand as needed.
 	:::
 ]=]
-function Promise.reject<V...>(...: V...): Promise<V...>
+function Promise.reject<T...>(...: T...): Promise<T...>
 	local length, values = select("#", ...), { ... }
+
 	return Promise._new(debug.traceback(nil, 2), function(_, reject)
 		reject(unpack(values, 1, length))
 	end)
 end
 
 -- Runs a non-promise-returning function as a `Promise` with the given arguments.
-function Promise._try<V..., R...>(traceback: string, callback: (V...) -> R..., ...: V...): Promise<R...>
+function Promise._try<T..., R...>(traceback: string, callback: (T...) -> R..., ...: T...): Promise<R...>
 	local length, values = select("#", ...), { ... }
+
 	return Promise._new(traceback, function(resolve)
 		resolve(callback(unpack(values, 1, length)))
 	end)
@@ -295,7 +303,7 @@ end
 		end)
 	```
 ]=]
-function Promise.try<V..., R...>(callback: (V...) -> R..., ...: V...): Promise<R...>
+function Promise.try<T..., R...>(callback: (T...) -> R..., ...: T...): Promise<R...>
 	return Promise._try(debug.traceback(nil, 2), callback, ...)
 end
 
@@ -320,8 +328,8 @@ end
 	end)
 	```
 ]=]
-function Promise.promisify<V...>(callback: (V...) -> Promise<V...>): (V...) -> Promise<V...>
-	return function(...: V...)
+function Promise.promisify<T...>(callback: (T...) -> Promise<T...>): (T...) -> Promise<T...>
+	return function(...: T...)
 		return Promise._try(debug.traceback(nil, 2), callback, ...)
 	end
 end
@@ -331,7 +339,7 @@ end
 		* is resolved when all input promises resolve
 		* is rejected if ANY input promises reject
 ]]
-function Promise._all<V>(traceback: string, promises: { Promise<V> }, amount: number?): Promise<{ V }>
+function Promise._all<T>(traceback: string, promises: Array<Promise<T>>, amount: number?): Promise<Array<T>>
 	-- If there are no values then return an already resolved promise.
 	return if #promises == 0 or amount == 0
 		then Promise.resolve({})
@@ -421,7 +429,7 @@ end
 	return Promise.all(promises)
 	```
 ]=]
-function Promise.all<V>(promises: { Promise<V> }): Promise<{ V }>
+function Promise.all<T>(promises: Array<Promise<T>>): Promise<Array<T>>
 	return Promise._all(debug.traceback(nil, 2), promises)
 end
 
@@ -446,11 +454,12 @@ end
 	```
 ]=]
 function Promise.fold<V, U>(
-	list: { V | Promise<V> },
+	list: Array<V | Promise<V>>,
 	reducer: (accumulator: U, value: V, index: number) -> U | Promise<U>,
 	initialValue: U
 ): Promise<U>
 	local accumulator = Promise.resolve(initialValue)
+
 	return Promise.each(list, function(resolvedElement, i)
 		accumulator = accumulator:andThen(function(previousValueResolved)
 			return reducer(previousValueResolved, resolvedElement, i)
@@ -475,7 +484,11 @@ end
 	return Promise.some(promises, 2) -- Only resolves with first 2 promises to resolve
 	```
 ]=]
-function Promise.some<V>(promises: { Promise<V> }, count: number): Promise<{ V }>
+function Promise.some<T>(promises: Array<Promise<T>>, count: number): Promise<Array<T>>
+	if type(count) ~= "number" then
+		error(('"count" (#2 argument) must be a number, got (%s) instead'):format(outputHelper(count)), 2)
+	end
+
 	return Promise._all(debug.traceback(nil, 2), promises, count)
 end
 
@@ -494,7 +507,7 @@ end
 	return Promise.any(promises) -- Resolves with first value to resolve (only rejects if all 3 rejected)
 	```
 ]=]
-function Promise.any<V>(promises: { Promise<V> }): Promise<V>
+function Promise.any<T>(promises: Array<Promise<T>>): Promise<T>
 	return Promise._all(debug.traceback(nil, 2), promises, 1):andThen(function(values)
 		return values[1]
 	end)
@@ -513,7 +526,7 @@ end
 	return Promise.allSettled(promises)
 	```
 ]=]
-function Promise.allSettled(promises: { Promise<...any> }): Promise<{ number }>
+function Promise.allSettled(promises: Array<Promise<...any>>): Promise<Array<EnumeratorItem<string>>>
 	-- If there are no values then return an already resolved promise.
 	return if #promises == 0
 		then Promise.resolve({})
@@ -575,7 +588,7 @@ end
 	return Promise.race(promises) -- Only returns 1st value to resolve or reject
 	```
 ]=]
-function Promise.race<V...>(promises: { Promise<V...> }): Promise<V...>
+function Promise.race<T...>(promises: { Promise<T...> }): Promise<T...>
 	return Promise._new(debug.traceback(nil, 2), function(resolve, reject, onCancel)
 		local newPromises = {}
 		local finished = false
@@ -660,9 +673,9 @@ end
 	- The Promise returned from the currently active predicate will be cancelled if it hasn't resolved yet.
 ]=]
 function Promise.each<V, U>(
-	list: { V | Promise<V> },
+	list: Array<V | Promise<V>>,
 	predicate: (value: V, index: number) -> (U | Promise<U>)
-): Promise<{ U }>
+): Promise<Array<U>>
 	return Promise._new(debug.traceback(nil, 2), function(resolve, reject, onCancel)
 		local results = {}
 		local promisesToCancel = {}
@@ -977,6 +990,7 @@ end
 ]=]
 function Promise.prototype:andThenCall<V..., R...>(callback: (V...) -> R..., ...: V...): Promise<R...>
 	local length, values = select("#", ...), { ... }
+
 	return self:_andThen(debug.traceback(nil, 2), function()
 		return callback(unpack(values, 1, length))
 	end)
@@ -1003,6 +1017,7 @@ end
 ]=]
 function Promise.prototype:andThenReturn<R...>(...: R...): Promise<R...>
 	local length, values = select("#", ...), { ... }
+
 	return self:_andThen(debug.traceback(nil, 2), function()
 		return unpack(values, 1, length)
 	end)
@@ -1148,7 +1163,7 @@ end
 
 	```
 ]=]
-function Promise.prototype:finally(finallyHandler: (string) -> ...any)
+function Promise.prototype:finally(finallyHandler: (EnumeratorItem<string>) -> ...any)
 	return self:_finally(debug.traceback(nil, 2), finallyHandler)
 end
 
@@ -1159,6 +1174,7 @@ end
 ]=]
 function Promise.prototype:finallyCall<V...>(callback: (V...) -> ...any, ...: V...)
 	local length, values = select("#", ...), { ... }
+
 	return self:_finally(debug.traceback(nil, 2), function()
 		return callback(unpack(values, 1, length))
 	end)
@@ -1181,6 +1197,7 @@ end
 ]=]
 function Promise.prototype:finallyReturn(...)
 	local length, values = select("#", ...), { ... }
+
 	return self:_finally(debug.traceback(nil, 2), function()
 		return unpack(values, 1, length)
 	end)
@@ -1414,6 +1431,7 @@ end
 ]=]
 function Promise.prototype:now(rejectionValue)
 	local traceback = debug.traceback(nil, 2)
+
 	return if self._status == Promise.Status.Resolved
 		then self:_andThen(traceback, function(...)
 			return ...
@@ -1452,9 +1470,10 @@ end
 	```
 ]=]
 function Promise.retry<V..., R...>(callback: (V...) -> Promise<R...>, times: number, ...: V...): Promise<R...>
-	local args, length = { ... }, select("#", ...)
+	local length, values = select("#", ...), { ... }
+
 	return Promise.resolve(callback(...)):catch(function(...)
-		return if times > 0 then Promise.retry(callback, times - 1, unpack(args, 1, length)) else Promise.reject(...)
+		return if times > 0 then Promise.retry(callback, times - 1, unpack(values, 1, length)) else Promise.reject(...)
 	end)
 end
 
@@ -1470,12 +1489,13 @@ function Promise.retryWithDelay<V..., R...>(
 	seconds: number,
 	...: V...
 ): Promise<R...>
-	local args, length = { ... }, select("#", ...)
+	local length, values = select("#", ...), { ... }
+
 	return Promise.resolve(callback(...)):catch(function(...)
 		if times > 0 then
 			Promise.delay(seconds):await()
 
-			return Promise.retryWithDelay(callback, times - 1, seconds, unpack(args, 1, length))
+			return Promise.retryWithDelay(callback, times - 1, seconds, unpack(values, 1, length))
 		else
 			return Promise.reject(...)
 		end

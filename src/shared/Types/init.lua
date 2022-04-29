@@ -125,8 +125,8 @@ export type CollectionComponentExtension = {
 	stopped: (CollectionComponentInstance) -> (),
 }
 
-export type Executor<V...> = (
-	resolve: (V...) -> (),
+export type Executor<T...> = (
+	resolve: (T...) -> (),
 	reject: (...any) -> (),
 	onCancel: (cancellationHook: (() -> ())?) -> boolean
 ) -> ()
@@ -139,14 +139,14 @@ export type Promise<T...> = {
 	andThenCall: <V..., R...>(self: Promise<T...>, callback: (V...) -> R..., V...) -> Promise<R...>,
 	andThenReturn: <R...>(self: Promise<T...>, R...) -> Promise<R...>,
 	await: (self: Promise<T...>) -> (boolean, T...),
-	awaitStatus: (self: Promise<T...>) -> (string, T...),
+	awaitStatus: (self: Promise<T...>) -> (EnumeratorItem<string>, T...),
 	cancel: (self: Promise<T...>) -> (),
 	catch: (self: Promise<T...>, failureHandler: <R...>(...any) -> R...) -> Promise<R...>,
 	expect: (self: Promise<T...>) -> T...,
 	finally: (self: Promise<T...>, finallyHandler: (status: string) -> ...any) -> Promise<T...>,
 	finallyCall: <R...>(self: Promise<T...>, callback: (R...) -> ...any, R...) -> Promise<T...>,
 	finallyReturn: <R...>(self: Promise<T...>, R...) -> Promise<T...>,
-	getStatus: (self: Promise<T...>) -> number,
+	getStatus: (self: Promise<T...>) -> EnumeratorItem<string>,
 	now: (self: Promise<T...>, rejectionValue: any) -> Promise<T...>,
 	tap: (self: Promise<T...>, tapHandler: (...any) -> ...any) -> Promise<T...>,
 	timeout: (self: Promise<T...>, seconds: number, rejectionValue: any) -> Promise<T...>,
