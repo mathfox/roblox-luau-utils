@@ -1,5 +1,5 @@
 --[[
-   This module exposes Some constuctor function
+   This module exports Option.Some 
 ]]
 
 local Option = require(script.Parent.Option)

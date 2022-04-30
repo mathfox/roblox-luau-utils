@@ -125,17 +125,9 @@ export type CollectionComponentExtension = {
 	stopped: (CollectionComponentInstance) -> (),
 }
 
-export type Executor<T...> = (
-	resolve: (T...) -> (),
-	reject: (...any) -> (),
-	onCancel: (cancellationHook: (() -> ())?) -> boolean
-) -> ()
+export type Executor<T...> = (resolve: (T...) -> (), reject: (...any) -> (), onCancel: (cancellationHook: (() -> ())?) -> boolean) -> ()
 export type Promise<T...> = {
-	andThen: <R...>(
-		self: Promise<T...>,
-		successHandler: (T...) -> R...,
-		failureHandler: (...any) -> R...
-	) -> Promise<R...>,
+	andThen: <R...>(self: Promise<T...>, successHandler: (T...) -> R..., failureHandler: (...any) -> R...) -> Promise<R...>,
 	andThenCall: <V..., R...>(self: Promise<T...>, callback: (V...) -> R..., V...) -> Promise<R...>,
 	andThenReturn: <R...>(self: Promise<T...>, R...) -> Promise<R...>,
 	await: (self: Promise<T...>) -> (boolean, T...),
@@ -153,7 +145,7 @@ export type Promise<T...> = {
 }
 
 export type Janitor = {
-	add: <V>(self: Janitor, object: V, methodName: string?, index: any) -> V,
+	add: <T>(self: Janitor, object: T, methodName: string?, index: any) -> T,
 	addPromise: (self: Janitor, promise: Promise<...any>) -> Symbol,
 	get: (self: Janitor, index: any) -> any,
 	remove: (self: Janitor, index: any) -> Janitor,
@@ -218,7 +210,7 @@ export type Cast = {
 }
 
 export type Debounce = {
-	type: string,
+	type: EnumeratorItem<string>,
 	invoke: (self: Debounce, ...any) -> ...any,
 	unbounce: (self: Debounce) -> (),
 	destroy: (self: Debounce) -> (),

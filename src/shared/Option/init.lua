@@ -1,9 +1,9 @@
 -- reference: https://doc.rust-lang.org/std/option/enum.Option.html
 local Types = require(script.Parent.Types)
 
-type Option<T> = Types.Option<T>
-type Some<T> = Types.Some<T>
-type None = Types.None
+export type Option<T> = Types.Option<T>
+export type Some<T> = Types.Some<T>
+export type None = Types.None
 
 local None = {}
 local Some = {}
@@ -62,15 +62,11 @@ function Option:mapOrElse(default, f)
 end
 
 function Option:okOr(err)
-	return if getmetatable(self) == None
-		then require(script.Parent.Result).Err(err)
-		else require(script.Parent.Result).Ok(self._v)
+	return if getmetatable(self) == None then require(script.Parent.Result).Err(err) else require(script.Parent.Result).Ok(self._v)
 end
 
 function Option:okOrElse(err)
-	return if getmetatable(self) == None
-		then require(script.Parent.Result).Err(err())
-		else require(script.Parent.Result).Ok(self._v)
+	return if getmetatable(self) == None then require(script.Parent.Result).Err(err()) else require(script.Parent.Result).Ok(self._v)
 end
 
 Option["and"] = function(self, optb)

@@ -2,7 +2,6 @@
 
 local Types = require(script.Parent.Types)
 
-type PackedValues = Types.PackedValues
 export type Result<T, E> = Types.Result<T, E>
 export type Err<E> = Types.Err<E>
 export type Ok<T> = Types.Ok<T>
@@ -40,17 +39,9 @@ end
 
 function Result:isOkAnd<T>(f: (T) -> boolean, ...)
 	if select("#", ...) > 0 then
-		error(
-			('"isOkAnd" method expects exactly one function of type (T) -> boolean, got (%s) as well'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"isOkAnd" method expects exactly one function of type (T) -> boolean, got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(f) ~= "function" then
-		error(
-			('"f" (#1 argument) must be a function of type (T) -> boolean, got (%s) instead'):format(outputHelper(f)),
-			2
-		)
+		error(('"f" (#1 argument) must be a function of type (T) -> boolean, got (%s) instead'):format(outputHelper(f)), 2)
 	end
 
 	if getmetatable(self) == Err then
@@ -60,12 +51,7 @@ function Result:isOkAnd<T>(f: (T) -> boolean, ...)
 	local length, values, bool = packResult(f(self._v :: T))
 
 	if length ~= 1 then
-		error(
-			('"f" (#1 argument) function must return exactly one boolean, got (%s) instead'):format(
-				outputHelper(unpack(values, 1, length))
-			),
-			2
-		)
+		error(('"f" (#1 argument) function must return exactly one boolean, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 	elseif type(bool) ~= "boolean" then
 		error(('"f" (#1 argument) function must return a boolean, got (%s) instead'):format(outputHelper(bool)), 2)
 	end
@@ -83,17 +69,9 @@ end
 
 function Result:isErrAnd<E>(f: (E) -> boolean, ...)
 	if select("#", ...) > 0 then
-		error(
-			('"isErrAnd" method expects exactly one function of type (E) -> boolean, got (%s) as well'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"isErrAnd" method expects exactly one function of type (E) -> boolean, got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(f) ~= "function" then
-		error(
-			('"f" (#1 argument) must be a function of type (E) -> boolean, got (%s) instead'):format(outputHelper(f)),
-			2
-		)
+		error(('"f" (#1 argument) must be a function of type (E) -> boolean, got (%s) instead'):format(outputHelper(f)), 2)
 	end
 
 	if getmetatable(self) == Ok then
@@ -103,12 +81,7 @@ function Result:isErrAnd<E>(f: (E) -> boolean, ...)
 	local length, values, bool = packResult(f(self._v :: E))
 
 	if length ~= 1 then
-		error(
-			('"f" (#1 argument) function must return exactly one boolean, got (%s) instead'):format(
-				outputHelper(unpack(values, 1, length))
-			),
-			2
-		)
+		error(('"f" (#1 argument) function must return exactly one boolean, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 	elseif type(bool) ~= "boolean" then
 		error(('"f" (#1 argument) function must return a boolean, got (%s) instead'):format(outputHelper(bool)), 2)
 	end
@@ -121,9 +94,7 @@ function Result:ok<T>(...)
 		error(('"ok" method expects no values, got (%s) instead'):format(outputHelper(...)), 2)
 	end
 
-	return if getmetatable(self) == Ok
-		then require(script.Parent.Option).Some(self._v :: T) :: Some<T>
-		else require(script.Parent.Option).None
+	return if getmetatable(self) == Ok then require(script.Parent.Option).Some(self._v :: T) :: Some<T> else require(script.Parent.Option).None
 end
 
 function Result:err<E>(...)
@@ -131,9 +102,7 @@ function Result:err<E>(...)
 		error(('"err" method expects no values, got (%s) instead'):format(outputHelper(...)), 2)
 	end
 
-	return if getmetatable(self) == Err
-		then require(script.Parent.Option).Some(self._v :: E) :: Some<E>
-		else require(script.Parent.Option).None
+	return if getmetatable(self) == Err then require(script.Parent.Option).Some(self._v :: E) :: Some<E> else require(script.Parent.Option).None
 end
 
 local function createOk<T>(value: T)
@@ -142,10 +111,7 @@ end
 
 function Result:map<T, E, U>(op: (T) -> U, ...)
 	if select("#", ...) > 0 then
-		error(
-			('"map" method expects exactly one function of type (T) -> U, got (%s) as well'):format(outputHelper(...)),
-			2
-		)
+		error(('"map" method expects exactly one function of type (T) -> U, got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(op) ~= "function" then
 		error(('"op" (#1 argument) must be a function of type (T) -> U, got (%s) instead'):format(outputHelper(op)), 2)
 	end
@@ -157,12 +123,7 @@ function Result:map<T, E, U>(op: (T) -> U, ...)
 	local length, values, newValue: U = packResult(op(self._v :: T))
 
 	if length ~= 1 then
-		error(
-			('"op" (#1 argument) function must return exactly one value, got (%s) instead'):format(
-				outputHelper(unpack(values, 1, length))
-			),
-			2
-		)
+		error(('"op" (#1 argument) function must return exactly one value, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 	end
 
 	return createOk(newValue) :: Result<U, E>
@@ -170,12 +131,7 @@ end
 
 function Result:mapOr<T, U>(default: U, f: (T) -> U, ...)
 	if select("#", ...) > 0 then
-		error(
-			('"mapOr" method expects exactly two values (default: U, f: (T) -> U), got (%s) as well'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"mapOr" method expects exactly two values (default: U, f: (T) -> U), got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(f) ~= "function" then
 		error(('"f" (#2 argument) must be a function of type (T) -> U, got (%s) instead'):format(outputHelper(f)), 2)
 	end
@@ -187,12 +143,7 @@ function Result:mapOr<T, U>(default: U, f: (T) -> U, ...)
 	local length, values, newValue: U = packResult(f(self._v :: T))
 
 	if length ~= 1 then
-		error(
-			('"f" (#2 argument) function must return exactly one value, got (%s) instead'):format(
-				outputHelper(unpack(values, 1, length))
-			),
-			2
-		)
+		error(('"f" (#2 argument) function must return exactly one value, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 	end
 
 	return newValue
@@ -200,19 +151,9 @@ end
 
 function Result:mapOrElse<T, E, U>(default: (E) -> U, f: (T) -> U, ...)
 	if select("#", ...) > 0 then
-		error(
-			('"mapOrElse" method expects exactly two values (default: (E) -> U, f: (T) -> U), got (%s) as well'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"mapOrElse" method expects exactly two values (default: (E) -> U, f: (T) -> U), got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(default) ~= "function" then
-		error(
-			('"default" (#1 argument) must be a function of type (E) -> U, got (%s) instead'):format(
-				outputHelper(default)
-			),
-			2
-		)
+		error(('"default" (#1 argument) must be a function of type (E) -> U, got (%s) instead'):format(outputHelper(default)), 2)
 	elseif type(f) ~= "function" then
 		error(('"f" (#2 argument) must be a function of type (T) -> U, got (%s) instead'):format(outputHelper(f)), 2)
 	end
@@ -221,12 +162,7 @@ function Result:mapOrElse<T, E, U>(default: (E) -> U, f: (T) -> U, ...)
 		local length, values, newValue: U = packResult(default(self._v :: E))
 
 		if length ~= 1 then
-			error(
-				('"default" (#1 argument) function must return exactly one value, got (%s) instead'):format(
-					outputHelper(unpack(values, 1, length))
-				),
-				2
-			)
+			error(('"default" (#1 argument) function must return exactly one value, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 		end
 
 		return newValue
@@ -235,12 +171,7 @@ function Result:mapOrElse<T, E, U>(default: (E) -> U, f: (T) -> U, ...)
 	local length, values, newValue: U = packResult(f(self._v :: T))
 
 	if length ~= 1 then
-		error(
-			('"f" (#2 argument) function must return exactly one value, got (%s) instead'):format(
-				outputHelper(unpack(values, 1, length))
-			),
-			2
-		)
+		error(('"f" (#2 argument) function must return exactly one value, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 	end
 
 	return newValue
@@ -252,12 +183,7 @@ end
 
 function Result:mapErr<T, E, F>(op: (E) -> F, ...)
 	if select("#", ...) > 0 then
-		error(
-			('"mapErr" method expects exactly one function of type (E) -> F, got (%s) as well'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"mapErr" method expects exactly one function of type (E) -> F, got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(op) ~= "function" then
 		error(('"op" (#1 argument) must be a function of type (E) -> F, got (%s) instead'):format(outputHelper(op)), 2)
 	end
@@ -269,12 +195,7 @@ function Result:mapErr<T, E, F>(op: (E) -> F, ...)
 	local length, values, newValue: F = packResult(op(self._v :: E))
 
 	if length ~= 1 then
-		error(
-			('"op" (#1 argument) function must return exactly one value, got (%s) instead'):format(
-				outputHelper(unpack(values, 1, length))
-			),
-			2
-		)
+		error(('"op" (#1 argument) function must return exactly one value, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 	end
 
 	return createErr(newValue) :: Result<T, F>
@@ -282,12 +203,7 @@ end
 
 function Result:inspect<T>(f: (T) -> (), ...)
 	if select("#", ...) > 0 then
-		error(
-			('"inspect" method expects exactly one function of type (T) -> (), got (%s) as well'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"inspect" method expects exactly one function of type (T) -> (), got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(f) ~= "function" then
 		error(('"f" (#1 argument) must be a function of type (T) -> (), got (%s) instead'):format(outputHelper(f)), 2)
 	end
@@ -296,12 +212,7 @@ function Result:inspect<T>(f: (T) -> (), ...)
 		local length, values = packResult(f(self._v :: T))
 
 		if length > 0 then
-			error(
-				('"f" (#1 argument) function must return no values, got (%s) instead'):format(
-					outputHelper(unpack(values, 1, length))
-				),
-				2
-			)
+			error(('"f" (#1 argument) function must return no values, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 		end
 	end
 
@@ -310,12 +221,7 @@ end
 
 function Result:inspectErr<E>(f: (E) -> (), ...)
 	if select("#", ...) > 0 then
-		error(
-			('"inspectErr" method expects exactly one function of type (E) -> (), got (%s) as well'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"inspectErr" method expects exactly one function of type (E) -> (), got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(f) ~= "function" then
 		error(('"f" (#1 argument) must be a function of type (E) -> (), got (%s) instead'):format(outputHelper(f)), 2)
 	end
@@ -324,12 +230,7 @@ function Result:inspectErr<E>(f: (E) -> (), ...)
 		local length, values = packResult(f(self._v :: E))
 
 		if length > 0 then
-			error(
-				('"f" (#1 argument) function must return no values, got (%s) instead'):format(
-					outputHelper(unpack(values, 1, length))
-				),
-				2
-			)
+			error(('"f" (#1 argument) function must return no values, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 		end
 	end
 
@@ -401,12 +302,7 @@ end
 
 function Result:andThen<T, E, U>(op: (T) -> Result<U, E>, ...)
 	if select("#", ...) > 0 then
-		error(
-			('"andThen" method expects exactly one function of type (T) -> Result<U, E>, got (%s) as well'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"andThen" method expects exactly one function of type (T) -> Result<U, E>, got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(op) ~= "function" then
 		error(('"op" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(op)), 2)
 	end
@@ -418,12 +314,7 @@ function Result:andThen<T, E, U>(op: (T) -> Result<U, E>, ...)
 	local length, values, res = packResult(op(self._v :: T))
 
 	if length ~= 1 then
-		error(
-			('"op" (#1 argument) function must return exactly one Result, got (%s) instead'):format(
-				outputHelper(unpack(values, 1, length))
-			),
-			2
-		)
+		error(('"op" (#1 argument) function must return exactly one Result, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 	elseif not isResult(res) then
 		error(('"op" (#1 argument) function must return a Result, got (%s) instead'):format(outputHelper(res)), 2)
 	end
@@ -443,12 +334,7 @@ end
 
 function Result:orElse<T, E, F>(op: (E) -> Result<T, F>, ...)
 	if select("#", ...) > 0 then
-		error(
-			('"orElse" method expects exatly one function of type (E) -> Result<T, F>, got (%s) instead'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"orElse" method expects exatly one function of type (E) -> Result<T, F>, got (%s) instead'):format(outputHelper(...)), 2)
 	elseif type(op) ~= "function" then
 		error(('"op" (#1 argument) must be a function, got (%s) instead'):format(outputHelper(op)))
 	end
@@ -460,12 +346,7 @@ function Result:orElse<T, E, F>(op: (E) -> Result<T, F>, ...)
 	local length, values, res = packResult(op(self._v :: E))
 
 	if length ~= 1 then
-		error(
-			('"op" (#1 argument) function must return exactly one Result, got (%s) instead'):format(
-				outputHelper(unpack(values, 1, length))
-			),
-			2
-		)
+		error(('"op" (#1 argument) function must return exactly one Result, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 	elseif not isResult(res) then
 		error(('"op" (#1 argument) function must return Result, got (%s) instead'):format(outputHelper(res)), 2)
 	end
@@ -483,12 +364,7 @@ end
 
 function Result:unwrapOrElse<T, E>(op: (E) -> T, ...)
 	if select("#", ...) > 0 then
-		error(
-			('"unwrapOrElse" method excepts exactly one function of type (E) -> T, got (%s) as well'):format(
-				outputHelper(...)
-			),
-			2
-		)
+		error(('"unwrapOrElse" method excepts exactly one function of type (E) -> T, got (%s) as well'):format(outputHelper(...)), 2)
 	elseif type(op) ~= "function" then
 		error(('"op" (#1 argument) must be a function of type (E) -> T, got (%s) instead'):format(outputHelper(op)), 2)
 	end
@@ -500,12 +376,7 @@ function Result:unwrapOrElse<T, E>(op: (E) -> T, ...)
 	local length, values, computedValue: T = packResult(op(self._v :: E))
 
 	if length ~= 1 then
-		error(
-			('"op" (#1 argument) function must return exactly one value, got (%s) instead'):format(
-				outputHelper(unpack(values, 1, length))
-			),
-			2
-		)
+		error(('"op" (#1 argument) function must return exactly one value, got (%s) instead'):format(outputHelper(unpack(values, 1, length))), 2)
 	end
 
 	return computedValue

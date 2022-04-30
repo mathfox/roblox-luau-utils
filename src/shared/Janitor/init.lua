@@ -12,13 +12,13 @@ local DEFAULT_METHOD_NAMES = {
 }
 
 type Promise<V...> = Types.Promise<V...>
-type Janitor = Types.Janitor
+export type Janitor = Types.Janitor
 type Symbol = Types.Symbol
 
 local Janitor = {}
 Janitor.__index = Janitor
 
-function Janitor:add<V>(object: V, methodName: string?, index): V
+function Janitor:add<T>(object: T, methodName: string?, index): T
 	if index then
 		local this = self:remove(index)[IndicesReference]
 		if not this then

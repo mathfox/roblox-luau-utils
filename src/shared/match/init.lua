@@ -15,6 +15,7 @@ local function match(object: MatchableObject)
 			if wasMatchResultCalled then
 				error("match function should only be called once", 2)
 			end
+
 			wasMatchResultCalled = true
 
 			if type(matches.Ok) ~= "function" then
@@ -23,16 +24,19 @@ local function match(object: MatchableObject)
 				error("pattern Err(_) not covered", 2)
 			end
 
-			if getmetatable(object) == Result._ok then
-				matches.Ok(object._v)
-			else
-				matches.Err(object._v)
+			for k in pairs(matches) do
+				if k ~= "Ok" and k ~= "Err" then
+					error(('"matches" should only contain "Ok" and "Err" keys, but "%s" found'):format(tostring(k)), 2)
+				end
 			end
+
+			matches[if getmetatable(object) == Result._ok then "Ok" else "Err"](object._v)
 		end
 
 		task.defer(function()
 			if not wasMatchResultCalled then
 				coroutine.close(runningThread)
+
 				error("match function must be called instantly", 2)
 			end
 		end)
@@ -46,12 +50,19 @@ local function match(object: MatchableObject)
 			if wasMatchOptionCalled then
 				error("match function should only be called once", 2)
 			end
+
 			wasMatchOptionCalled = true
 
 			if type(matches.Some) ~= "function" then
 				error("pattern Some(_) not covered", 2)
 			elseif type(matches.None) ~= "function" then
 				error("pattern None not covered", 2)
+			end
+
+			for k in pairs(matches) do
+				if k ~= "Some" and k ~= "None" then
+					error(('"matches" should only contain "Some" and "None" keys, but "%s" found'):format(tostring(k)), 2)
+				end
 			end
 
 			if getmetatable(object) == Result._some then
@@ -64,6 +75,7 @@ local function match(object: MatchableObject)
 		task.defer(function()
 			if not wasMatchOptionCalled then
 				coroutine.close(runningThread)
+
 				error("match function must be called instantly", 2)
 			end
 		end)

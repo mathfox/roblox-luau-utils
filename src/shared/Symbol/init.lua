@@ -22,22 +22,11 @@ end
 local SymbolExport = {
 	named = function(name: string, ...): Symbol
 		if type(name) ~= "string" then
-			error(
-				('"name" (#1 argument) must be a string, got ("%s": %s) instead'):format(tostring(name), typeof(name)),
-				2
-			)
+			error(('"name" (#1 argument) must be a string, got ("%s": %s) instead'):format(tostring(name), typeof(name)), 2)
 		elseif name == "" then
-			error(
-				'"name" (#1 argument) must be a non-empty string, maybe you should try to use Symbol.unnamed instead?',
-				2
-			)
+			error('"name" (#1 argument) must be a non-empty string, maybe you should try to use Symbol.unnamed instead?', 2)
 		elseif select("#", ...) > 0 then
-			error(
-				('"named" function expects exactly one argument: (string), but got (%s) as well'):format(
-					outputHelper(...)
-				),
-				2
-			)
+			error(('"named" function expects exactly one argument: (string), but got (%s) as well'):format(outputHelper(...)), 2)
 		end
 
 		local self = newproxy(true)

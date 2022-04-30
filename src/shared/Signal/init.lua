@@ -22,7 +22,10 @@ do
 	end
 end
 
-local Connection = {}
+local Connection = {} :: Connection & {
+	_signal: Signal<...any> & { _last: (Connection & { _next: Connection? })? },
+	_fn: (...any) -> (),
+}
 Connection.connected = true
 Connection.__index = Connection
 
@@ -50,7 +53,9 @@ function Connection:disconnect()
 	end
 end
 
-local Signal = {}
+local Signal = {} :: Signal<...any> & {
+	_last: (Connection & { _next: Connection? })?,
+}
 Signal.__index = Signal
 
 function Signal:__tostring()

@@ -1,8 +1,11 @@
 local StoreProvider = require(script.StoreProvider)
 local connect = require(script.connect)
 
-return {
+local RoactRodux = {
 	StoreProvider = StoreProvider,
 	connect = connect,
-	UNSTABLE_connect2 = connect,
 }
+
+table.freeze(RoactRodux)
+
+return RoactRodux

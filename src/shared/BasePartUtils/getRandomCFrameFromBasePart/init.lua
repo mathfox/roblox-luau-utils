@@ -6,12 +6,7 @@ local function getRandomCFrameFromBasePart(part: BasePart, rngOverride: Random?)
 	local halfSizeY = size.Y / 2
 	local halfSizeZ = size.Z / 2
 
-	return part.CFrame
-		* CFrame.new(
-			random:NextNumber(-halfSizeX, halfSizeX),
-			random:NextNumber(-halfSizeY, halfSizeY),
-			random:NextNumber(-halfSizeZ, halfSizeZ)
-		)
+	return part.CFrame * CFrame.new(random:NextNumber(-halfSizeX, halfSizeX), random:NextNumber(-halfSizeY, halfSizeY), random:NextNumber(-halfSizeZ, halfSizeZ))
 end
 
 return getRandomCFrameFromBasePart

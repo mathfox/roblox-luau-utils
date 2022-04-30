@@ -17,14 +17,7 @@ function InstanceCache:getInstance(): Instance
 end
 
 function InstanceCache:returnInstance(instance: Instance)
-	table.insert(
-		self._available,
-		table.remove(
-			self._inUse,
-			table.find(self._inUse, instance)
-				or error("attempted to return Instance which was not retrieved using 'getInstance'", 2)
-		)
-	)
+	table.insert(self._available, table.remove(self._inUse, table.find(self._inUse, instance) or error("attempted to return Instance which was not retrieved using 'getInstance'", 2)))
 end
 
 function InstanceCache:setParent(parent: Instance?)
@@ -62,6 +55,7 @@ local InstanceCacheExport = {
 	is = function(v)
 		return type(v) == "table" and getmetatable(v) == InstanceCache
 	end,
+
 	new = function(params)
 		local self = setmetatable({
 			params = params,

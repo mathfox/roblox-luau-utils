@@ -1,5 +1,5 @@
 --[[
-   This module exports Err constuctor function from Result
+   This module exports Result.Err
 ]]
 
 local Result = require(script.Parent.Result)

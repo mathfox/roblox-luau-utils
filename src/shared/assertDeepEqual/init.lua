@@ -17,9 +17,7 @@ local function deepEqual(a, b)
 
 			local success, innerMessage = deepEqual(value, b[key])
 			if not success then
-				local message = innerMessage
-					:gsub("{1}", ("{1}[%s]"):format(tostring(key)))
-					:gsub("{2}", ("{2}[%s]"):format(tostring(key)))
+				local message = innerMessage:gsub("{1}", ("{1}[%s]"):format(tostring(key))):gsub("{2}", ("{2}[%s]"):format(tostring(key)))
 
 				return false, message
 			end
@@ -30,9 +28,7 @@ local function deepEqual(a, b)
 				local success, innerMessage = deepEqual(value, a[key])
 
 				if not success then
-					local message = innerMessage
-						:gsub("{1}", ("{1}[%s]"):format(tostring(key)))
-						:gsub("{2}", ("{2}[%s]"):format(tostring(key)))
+					local message = innerMessage:gsub("{1}", ("{1}[%s]"):format(tostring(key))):gsub("{2}", ("{2}[%s]"):format(tostring(key)))
 
 					return false, message
 				end

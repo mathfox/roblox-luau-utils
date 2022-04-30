@@ -1,5 +1,5 @@
 --[[
-   This module exports Ok constuctor function from Result
+   This module exports Result.Ok
 ]]
 
 local Result = require(script.Parent.Result)
