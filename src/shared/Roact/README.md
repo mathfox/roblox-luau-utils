@@ -1,5 +1,1 @@
-# Roact
-A refactored version of Roact from Roblox github.
-
-## Reference
-https://github.com/Roblox/roact
+refactored version of: https://github.com/Roblox/roact

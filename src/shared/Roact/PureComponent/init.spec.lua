@@ -1,9 +1,9 @@
 return function()
-	local createElement = require(script.Parent.createElement)
-	local NoopRenderer = require(script.Parent.NoopRenderer)
-	local createReconciler = require(script.Parent.createReconciler)
+	local createElement = require(script.Parent.Parent.createElement)
+	local NoopRenderer = require(script.Parent.Parent.NoopRenderer)
+	local createReconciler = require(script.Parent.Parent.createReconciler)
 
-	local PureComponent = require(script.Parent.PureComponent)
+	local PureComponent = require(script.Parent)
 
 	local noopReconciler = createReconciler(NoopRenderer)
 

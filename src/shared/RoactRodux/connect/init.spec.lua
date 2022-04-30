@@ -1,10 +1,10 @@
 return function()
-	local connect = require(script.Parent.connect)
+	local StoreProvider = require(script.Parent.Parent.StoreProvider)
 
-	local StoreProvider = require(script.Parent.StoreProvider)
+	local Roact = require(script.Parent.Parent.Parent.Roact)
+	local Rodux = require(script.Parent.Parent.Parent.Rodux)
 
-	local Roact = require(script.Parent.Parent.Roact)
-	local Rodux = require(script.Parent.Parent.Rodux)
+	local connect = require(script.Parent)
 
 	local function noop()
 		return nil

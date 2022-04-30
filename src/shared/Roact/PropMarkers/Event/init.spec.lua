@@ -1,7 +1,7 @@
 return function()
-	local Type = require(script.Parent.Parent.Type)
+	local Type = require(script.Parent.Parent.Parent.Type)
 
-	local Event = require(script.Parent.Event)
+	local Event = require(script.Parent)
 
 	it("should yield event objects when indexed", function()
 		expect(Type.of(Event.MouseButton1Click)).to.equal(Type.HostEvent)

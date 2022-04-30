@@ -1,5 +1,5 @@
 return function()
-	local GlobalConfig = require(script.Parent.GlobalConfig)
+	local GlobalConfig = require(script.Parent)
 
 	it("should have the correct methods", function()
 		expect(GlobalConfig).to.be.ok()

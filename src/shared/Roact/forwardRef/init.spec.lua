@@ -2,16 +2,16 @@
 -- * https://github.com/facebook/react/blob/v17.0.1/packages/react/src/__tests__/forwardRef-test.js
 -- * https://github.com/facebook/react/blob/v17.0.1/packages/react/src/__tests__/forwardRef-test.internal.js
 return function()
-	local assign = require(script.Parent.Parent.TableUtils.assign)
-	local createElement = require(script.Parent.createElement)
-	local createRef = require(script.Parent.createRef)
-	local forwardRef = require(script.Parent.forwardRef)
-	local createReconciler = require(script.Parent.createReconciler)
-	local Component = require(script.Parent.Component)
-	local GlobalConfig = require(script.Parent.GlobalConfig)
-	local Ref = require(script.Parent.PropMarkers.Ref)
+	local assign = require(script.Parent.Parent.Parent.TableUtils.assign)
+	local createElement = require(script.Parent.Parent.createElement)
+	local createRef = require(script.Parent.Parent.createRef)
+	local createReconciler = require(script.Parent.Parent.createReconciler)
+	local Component = require(script.Parent.Parent.Component)
+	local GlobalConfig = require(script.Parent.Parent.GlobalConfig)
+	local Ref = require(script.Parent.Parent.PropMarkers.Ref)
+	local RobloxRenderer = require(script.Parent.Parent.RobloxRenderer)
 
-	local RobloxRenderer = require(script.Parent.RobloxRenderer)
+	local forwardRef = require(script.Parent.Parent.forwardRef)
 
 	local reconciler = createReconciler(RobloxRenderer)
 

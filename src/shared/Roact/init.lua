@@ -1,5 +1,7 @@
 --[[
 	Packages up the internals of Roact and exposes a public API for it.
+
+   refactored version of: https://github.com/Roblox/roact
 ]]
 
 local createReconcilerCompat = require(script.createReconcilerCompat)

@@ -1,5 +1,5 @@
 return function()
-	local getDefaultInstanceProperty = require(script.Parent.getDefaultInstanceProperty)
+	local getDefaultInstanceProperty = require(script.Parent)
 
 	it("should get default name string values", function()
 		local _, defaultName = getDefaultInstanceProperty("StringValue", "Name")

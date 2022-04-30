@@ -1,7 +1,7 @@
 return function()
-	local Type = require(script.Parent.Parent.Type)
+	local Type = require(script.Parent.Parent.Parent.Type)
 
-	local Change = require(script.Parent.Change)
+	local Change = require(script.Parent)
 
 	it("should yield change listener objects when indexed", function()
 		expect(Type.of(Change.Text)).to.equal(Type.HostChangeEvent)

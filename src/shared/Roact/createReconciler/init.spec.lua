@@ -1,13 +1,13 @@
 return function()
-	local assign = require(script.Parent.Parent.TableUtils.assign)
-	local createElement = require(script.Parent.createElement)
-	local createFragment = require(script.Parent.createFragment)
-	local createSpy = require(script.Parent.createSpy)
-	local NoopRenderer = require(script.Parent.NoopRenderer)
-	local Type = require(script.Parent.Type)
-	local ElementKind = require(script.Parent.ElementKind)
+	local assign = require(script.Parent.Parent.Parent.TableUtils.assign)
+	local createElement = require(script.Parent.Parent.createElement)
+	local createFragment = require(script.Parent.Parent.createFragment)
+	local createSpy = require(script.Parent.Parent.createSpy)
+	local NoopRenderer = require(script.Parent.Parent.NoopRenderer)
+	local Type = require(script.Parent.Parent.Type)
+	local ElementKind = require(script.Parent.Parent.ElementKind)
 
-	local createReconciler = require(script.Parent.createReconciler)
+	local createReconciler = require(script.Parent)
 
 	local noopReconciler = createReconciler(NoopRenderer)
 

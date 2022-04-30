@@ -1,5 +1,5 @@
 return function()
-	local shallowEqual = require(script.Parent.shallowEqual)
+	local shallowEqual = require(script.Parent)
 
 	it("should compare dictionaries", function()
 		local a = {

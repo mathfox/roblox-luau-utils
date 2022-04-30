@@ -1,8 +1,9 @@
 return function()
-	local ElementUtils = require(script.Parent.ElementUtils)
-	local createElement = require(script.Parent.createElement)
-	local createFragment = require(script.Parent.createFragment)
-	local Type = require(script.Parent.Type)
+	local createElement = require(script.Parent.Parent.createElement)
+	local createFragment = require(script.Parent.Parent.createFragment)
+	local Type = require(script.Parent.Parent.Type)
+
+	local ElementUtils = require(script.Parent)
 
 	describe("iterateElements", function()
 		it("should iterate once for a single child", function()

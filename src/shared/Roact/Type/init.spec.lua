@@ -1,5 +1,5 @@
 return function()
-	local Type = require(script.Parent.Type)
+	local Type = require(script.Parent)
 
 	describe("of", function()
 		it("should return nil if the value is not a table", function()

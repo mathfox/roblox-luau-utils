@@ -1,9 +1,9 @@
 return function()
-	local assertDeepEqual = require(script.Parent.Parent.assertDeepEqual)
-	local createSpy = require(script.Parent.createSpy)
-	local Logging = require(script.Parent.Logging)
+	local assertDeepEqual = require(script.Parent.Parent.Parent.assertDeepEqual)
+	local createSpy = require(script.Parent.Parent.createSpy)
+	local Logging = require(script.Parent.Parent.Logging)
 
-	local SingleEventManager = require(script.Parent.SingleEventManager)
+	local SingleEventManager = require(script.Parent)
 
 	describe("new", function()
 		it("should create a SingleEventManager", function()

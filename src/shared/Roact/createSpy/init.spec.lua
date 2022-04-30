@@ -1,5 +1,5 @@
 return function()
-	local createSpy = require(script.Parent.createSpy)
+	local createSpy = require(script.Parent)
 
 	describe("createSpy", function()
 		it("should create spies", function()

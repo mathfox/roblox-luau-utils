@@ -1,8 +1,8 @@
 return function()
-	local Portal = require(script.Parent.Portal)
-	local Component = require(script.Parent.Component)
+	local Component = require(script.Parent.Parent.Component)
+	local Portal = require(script.Parent.Parent.Portal)
 
-	local ElementKind = require(script.Parent.ElementKind)
+	local ElementKind = require(script.Parent)
 
 	describe("of", function()
 		it("should return nil for non-table values", function()

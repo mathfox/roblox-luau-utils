@@ -1,5 +1,5 @@
 return function()
-	local Config = require(script.Parent.Config)
+	local Config = require(script.Parent)
 
 	it("should accept valid configuration", function()
 		local config = Config.new()
