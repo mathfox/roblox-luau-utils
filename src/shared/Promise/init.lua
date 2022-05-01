@@ -75,7 +75,7 @@ end
 
 function Error:__tostring()
 	local errorStrings = {
-		string.format("-- Promise.Error(%s) --", self.kind or "?"),
+		string.format("-- Promise.Error(%s) --", self.kind.name or "?"),
 	}
 
 	for _, runtimeError in ipairs(self:getErrorChain()) do
@@ -453,11 +453,7 @@ end
 	end, 0)
 	```
 ]=]
-function Promise.fold<V, U>(
-	list: Array<V | Promise<V>>,
-	reducer: (accumulator: U, value: V, index: number) -> U | Promise<U>,
-	initialValue: U
-): Promise<U>
+function Promise.fold<V, U>(list: Array<V | Promise<V>>, reducer: (accumulator: U, value: V, index: number) -> U | Promise<U>, initialValue: U): Promise<U>
 	local accumulator = Promise.resolve(initialValue)
 
 	return Promise.each(list, function(resolvedElement, i)
@@ -672,10 +668,7 @@ end
 	- Any Promises within the array of values will now be cancelled if they have no other consumers.
 	- The Promise returned from the currently active predicate will be cancelled if it hasn't resolved yet.
 ]=]
-function Promise.each<V, U>(
-	list: Array<V | Promise<V>>,
-	predicate: (value: V, index: number) -> (U | Promise<U>)
-): Promise<Array<U>>
+function Promise.each<V, U>(list: Array<V | Promise<V>>, predicate: (value: V, index: number) -> (U | Promise<U>)): Promise<Array<U>>
 	return Promise._new(debug.traceback(nil, 2), function(resolve, reject, onCancel)
 		local results = {}
 		local promisesToCancel = {}
@@ -827,11 +820,7 @@ function Promise.prototype:timeout(seconds: number, rejectionValue)
 			return Promise.reject(rejectionValue == nil and Error.new({
 				kind = Error.Kind.TimedOut,
 				error = "Timed out",
-				context = string.format(
-					"Timeout of %d seconds exceeded.\n:timeout() called at:\n\n%s",
-					seconds,
-					traceback
-				),
+				context = string.format("Timeout of %d seconds exceeded.\n:timeout() called at:\n\n%s", seconds, traceback),
 			}) or rejectionValue)
 		end),
 		self,
@@ -917,10 +906,7 @@ end
 	To run code no matter what, use [Promise:finally].
 	:::
 ]=]
-function Promise.prototype:andThen<R...>(
-	successHandler: (...any) -> R...,
-	failureHandler: (...any) -> R...
-): Promise<R...>
+function Promise.prototype:andThen<R...>(successHandler: (...any) -> R..., failureHandler: (...any) -> R...): Promise<R...>
 	return self:_andThen(debug.traceback(nil, 2), successHandler, failureHandler)
 end
 
@@ -1216,9 +1202,7 @@ function Promise.prototype:awaitStatus(): (string, ...any)
 			end)
 			-- The finally promise can propagate rejections, so we attach a catch handler to prevent the unhandled
 			-- rejection warning from appearing
-			:catch(
-				function() end
-			)
+			:catch(function() end)
 
 		coroutine.yield()
 	end
@@ -1302,12 +1286,7 @@ function Promise.prototype:_resolve(...)
 	if Promise.is((...)) then
 		-- Without this warning, arguments sometimes mysteriously disappear
 		if select("#", ...) > 1 then
-			warn(
-				string.format(
-					"When returning a Promise from andThen, extra arguments are discarded! See:\n\n%s",
-					self._source
-				)
-			)
+			warn(string.format("When returning a Promise from andThen, extra arguments are discarded! See:\n\n%s", self._source))
 		end
 
 		local chainedPromise = ...
@@ -1321,10 +1300,7 @@ function Promise.prototype:_resolve(...)
 				return self:_reject(maybeRuntimeError:extend({
 					error = "This Promise was chained to a Promise that errored.",
 					trace = "",
-					context = string.format(
-						"The Promise at:\n\n%s\n...Rejected because it was chained to the following Promise, which encountered an error:\n",
-						self._source
-					),
+					context = string.format("The Promise at:\n\n%s\n...Rejected because it was chained to the following Promise, which encountered an error:\n", self._source),
 				}))
 			end
 
@@ -1483,12 +1459,7 @@ end
 
 	If the amount of retries is exceeded, the function will return the latest rejected Promise.
 ]=]
-function Promise.retryWithDelay<V..., R...>(
-	callback: (V...) -> Promise<R...>,
-	times: number,
-	seconds: number,
-	...: V...
-): Promise<R...>
+function Promise.retryWithDelay<V..., R...>(callback: (V...) -> Promise<R...>, times: number, seconds: number, ...: V...): Promise<R...>
 	local length, values = select("#", ...), { ... }
 
 	return Promise.resolve(callback(...)):catch(function(...)
@@ -1521,10 +1492,7 @@ end
 	end)
 	```
 ]=]
-function Promise.fromEvent<R...>(
-	event: RBXScriptSignal | { connect: ((R...) -> ...any) -> ...any },
-	predicate: (R...) -> ...any
-): Promise<R...>
+function Promise.fromEvent<R...>(event: RBXScriptSignal | { connect: ((R...) -> ...any) -> ...any }, predicate: (R...) -> ...any): Promise<R...>
 	return Promise._new(debug.traceback(nil, 2), function(resolve, _, onCancel)
 		local connection
 		local shouldDisconnect = false
@@ -1599,15 +1567,8 @@ return Promise :: {
 	defer: <V...>(executor: Executor<V...>) -> Promise<V...>,
 	delay: (seconds: number) -> Promise<number>,
 	each: <V, R>(list: { V | Promise<V> }, predicate: (value: V, index: number) -> (R | Promise<R>)) -> Promise<R>,
-	fold: <V, R>(
-		list: { V | Promise<V> },
-		reducer: (accumulator: R, value: V, index: number) -> (R | Promise<R>),
-		initialValue: R
-	) -> Promise<R>,
-	fromEvent: <R...>(
-		event: RBXScriptSignal | { connect: ((R...) -> ...any) -> ...any },
-		predicate: (R...) -> boolean
-	) -> Promise<R...>,
+	fold: <V, R>(list: { V | Promise<V> }, reducer: (accumulator: R, value: V, index: number) -> (R | Promise<R>), initialValue: R) -> Promise<R>,
+	fromEvent: <R...>(event: RBXScriptSignal | { connect: ((R...) -> ...any) -> ...any }, predicate: (R...) -> boolean) -> Promise<R...>,
 	is: (object: any) -> boolean,
 	new: <V...>(executor: Executor<V...>) -> Promise<V...>,
 	onUnhandledRejection: () -> (),
@@ -1616,12 +1577,7 @@ return Promise :: {
 	reject: <V...>(V...) -> Promise<V...>,
 	resolve: <V...>(V...) -> Promise<V...>,
 	retry: <V..., R...>(callback: (V...) -> Promise<R...>, times: number, V...) -> Promise<R...>,
-	retryWithDelay: <V..., R...>(
-		callback: (V...) -> Promise<R...>,
-		times: number,
-		seconds: number,
-		V...
-	) -> Promise<R...>,
+	retryWithDelay: <V..., R...>(callback: (V...) -> Promise<R...>, times: number, seconds: number, V...) -> Promise<R...>,
 	some: <V>(promises: { Promise<V> }, count: number) -> Promise<{ V }>,
 	try: <V..., R...>(callback: (V...) -> R..., V...) -> Promise<R...>,
 }
