@@ -26,35 +26,21 @@ return function()
 		end).to.throw()
 	end)
 
-	it("should throw an error on attempt to modify Ok", function()
-		expect(function()
-			getmetatable(Result.Ok()).__index = {}
-		end).to.throw()
-
-		expect(function()
-			setmetatable(Result.Ok(), {})
-		end).to.throw()
-
-		expect(function()
-			Result.Ok().NEW_FIELD = {}
-		end).to.throw()
-	end)
-
-	it("should throw an error on attempt to modify Err", function()
-		expect(function()
-			getmetatable(Result.Err()).__index = {}
-		end).to.throw()
-
-		expect(function()
-			setmetatable(Result.Err(), {})
-		end).to.throw()
-
-		expect(function()
-			Result.Err().NEW_FIELD = {}
-		end).to.throw()
-	end)
-
 	describe("Ok", function()
+		it("should throw an error on attempt to modify the Ok table", function()
+			expect(function()
+				getmetatable(Result.Ok()).__index = {}
+			end).to.throw()
+
+			expect(function()
+				setmetatable(Result.Ok(), {})
+			end).to.throw()
+
+			expect(function()
+				Result.Ok().NEW_FIELD = {}
+			end).to.throw()
+		end)
+
 		it("should print a nice string instead of a table", function()
 			expect(function()
 				assert(tostring(Result.Ok()) == "Ok<nil>")
@@ -72,6 +58,20 @@ return function()
 	end)
 
 	describe("Err", function()
+		it("should throw an error on attempt to modify the Err table", function()
+			expect(function()
+				getmetatable(Result.Err()).__index = {}
+			end).to.throw()
+
+			expect(function()
+				setmetatable(Result.Err(), {})
+			end).to.throw()
+
+			expect(function()
+				Result.Err().NEW_FIELD = {}
+			end).to.throw()
+		end)
+
 		it("should print a nice string instead of a table", function()
 			expect(function()
 				assert(tostring(Result.Err()) == "Err<nil>")
@@ -84,6 +84,9 @@ return function()
 			expect(function()
 				assert(Result.Err() == Result.Err())
 				assert(Result.Err(0) == Result.Err(0))
+				assert(Result.Err() ~= Result.Err(0))
+				assert(Result.Err() ~= Result.Ok())
+				assert(Result.Err(0) ~= Result.Ok(0))
 			end).never.to.throw()
 		end)
 	end)
@@ -101,13 +104,13 @@ return function()
 			end).never.to.throw()
 		end)
 
-		it("should throw an error if any argument provided", function()
+		it("should throw an error if any arguments provided", function()
 			expect(function()
-				Result.Ok():isOk(nil, nil)
+				Result.Ok():isOk(nil)
 			end).to.throw()
 
 			expect(function()
-				Result.Err():isOk(nil, nil)
+				Result.Err():isOk(nil)
 			end).to.throw()
 		end)
 	end)
@@ -129,11 +132,11 @@ return function()
 
 		it("should throw an error if extra arguments provided", function()
 			expect(function()
-				Result.Ok():isOkAnd(RETURN_TRUE, nil, nil)
+				Result.Ok():isOkAnd(RETURN_TRUE, nil)
 			end).to.throw()
 
 			expect(function()
-				Result.Err():isOkAnd(RETURN_TRUE, nil, nil)
+				Result.Err():isOkAnd(RETURN_TRUE, nil)
 			end).to.throw()
 		end)
 
@@ -165,6 +168,11 @@ return function()
 			expect(function()
 				Result.Ok(0):isOkAnd(function(v)
 					assert(v == 0)
+					return true
+				end)
+
+				Result.Ok():isOkAnd(function(v)
+					assert(v == nil)
 					return true
 				end)
 			end).never.to.throw()
@@ -212,11 +220,11 @@ return function()
 
 		it("should throw an error if any arguments provided", function()
 			expect(function()
-				Result.Ok():isErr(nil, nil)
+				Result.Ok():isErr(nil)
 			end).to.throw()
 
 			expect(function()
-				Result.Err():isErr(nil, nil)
+				Result.Err():isErr(nil)
 			end).to.throw()
 		end)
 	end)
@@ -238,11 +246,11 @@ return function()
 
 		it("should throw an error if extra arguments provided", function()
 			expect(function()
-				Result.Ok():isErrAnd(RETURN_TRUE, nil, nil)
+				Result.Ok():isErrAnd(RETURN_TRUE, nil)
 			end).to.throw()
 
 			expect(function()
-				Result.Err():isErrAnd(RETURN_TRUE, nil, nil)
+				Result.Err():isErrAnd(RETURN_TRUE, nil)
 			end).to.throw()
 		end)
 

@@ -23,8 +23,10 @@ export type Result<T, E> = {
 	unwrap: (self: Result<T, E>) -> T,
 	expectErr: (self: Result<T, E>, msg: string) -> E,
 	unwrapErr: (self: Result<T, E>) -> E,
+	-- originally named "and"
 	andRes: <U>(self: Result<T, E>, res: Result<U, E>) -> Result<T, E> | Result<U, E>,
 	andThen: <U>(self: Result<T, E>, op: (T) -> Result<U, E>) -> Result<T, E> | Result<U, E>,
+	-- originally named "or"
 	orRes: <F>(self: Result<T, E>, res: Result<T, F>) -> Result<T, E> | Result<T, F>,
 	orElse: <F>(self: Result<T, E>, op: (E) -> Result<T, F>) -> Result<T, E> | Result<T, F>,
 	unwrapOr: (self: Result<T, E>, default: T) -> T,

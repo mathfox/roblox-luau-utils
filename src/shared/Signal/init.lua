@@ -16,10 +16,23 @@ do
 
 	function runEventHandlerInFreeThread(...)
 		acquireRunnerThreadAndCallEventHandler(...)
+
 		while true do
 			acquireRunnerThreadAndCallEventHandler(coroutine.yield())
 		end
 	end
+end
+
+local function outputHelper(...)
+	local length = select("#", ...)
+	local tbl: Array<string> = table.create(length)
+
+	for index = 1, length do
+		local value = select(index, ...)
+		table.insert(tbl, ('"%s": %s'):format(tostring(value), typeof(value)))
+	end
+
+	return table.concat(tbl, ", ")
 end
 
 local Connection = {} :: Connection & {
@@ -62,7 +75,10 @@ function Signal:__tostring()
 	return "Signal"
 end
 
-function Signal:connect(fn: (...any) -> ())
+function Signal:connect(fn: (...any) -> (), ...)
+	if select("#", ...) > 0 then
+		error(('"connect" method expects exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+	end
 	local connection: Connection = setmetatable({ _signal = self, _fn = fn }, Connection)
 
 	if self._last then

@@ -1,3 +1,1 @@
-# Rodux
-
-Original: https://github.com/Roblox/rodux
+refactored version of: https://github.com/Roblox/rodux

@@ -8,18 +8,17 @@ export type Ok<T> = Types.Ok<T>
 type Array<T> = Types.Array<T>
 type Some<T> = Types.Some<T>
 
-local VALUE_TO_TYPE_STRING = '"%s": %s'
-
 local function packResult(...)
 	return select("#", ...), { ... }, (...)
 end
 
 local function outputHelper(...)
-	local tbl: Array<string> = {}
+	local length = select("#", ...)
+	local tbl: Array<string> = table.create(length)
 
-	for index = 1, select("#", ...) do
+	for index = 1, length do
 		local value = select(index, ...)
-		table.insert(tbl, VALUE_TO_TYPE_STRING:format(tostring(value), typeof(value)))
+		table.insert(tbl, ('"%s": %s'):format(tostring(value), typeof(value)))
 	end
 
 	return table.concat(tbl, ", ")
