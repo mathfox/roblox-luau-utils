@@ -3,11 +3,15 @@
 ]]
 local function combineReducers(map)
 	return function(state, action)
+		if state == nil then
+			state = {}
+		end
+
 		local newState = {}
 
 		for key, reducer in pairs(map) do
 			-- Each reducer gets its own state, not the entire state table
-			newState[key] = reducer(if state then state[key] else nil, action)
+			newState[key] = reducer(state[key], action)
 		end
 
 		return newState

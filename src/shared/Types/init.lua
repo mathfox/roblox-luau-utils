@@ -235,6 +235,8 @@ export type Friend = {
 
 export type PackedValues = { n: number, [number]: any }
 
+export type Fn<A..., R...> = (A...) -> R...
+
 export type RoduxStore = {
 	getState: (self: RoduxStore) -> {},
 	dispatch: (self: RoduxStore, action: RoduxAction) -> (),
@@ -243,7 +245,7 @@ export type RoduxStore = {
 }
 
 export type RoduxAction = { type: string, [any]: any }
-export type RoduxStoreState = {}
+export type RoduxStoreState = None | boolean | number | string | { [any]: any } | thread | userdata | Fn<(...any), (...any)> | Instance
 
 export type RoduxReducer = (state: RoduxStoreState, action: RoduxAction) -> RoduxStoreState
 export type RoduxReducerHandler = (state: RoduxStoreState, action: RoduxAction) -> ()
