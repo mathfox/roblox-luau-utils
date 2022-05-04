@@ -1,6 +1,10 @@
-local function find<K, V>(tbl: { [K]: V }, predicate: (V, K, { [K]: V }) -> boolean)
-	for k, v in pairs(tbl) do
-		if predicate(v, k, tbl) then
+local Types = require(script.Parent.Parent.Types)
+
+type Record<K, V> = Types.Record<K, V>
+
+local function find<K, V>(source: Record<K, V>, predicate: (V, K, Record<K, V>) -> boolean)
+	for k, v in pairs(source) do
+		if predicate(v, k, source) then
 			return v, k
 		end
 	end

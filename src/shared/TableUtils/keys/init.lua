@@ -1,9 +1,14 @@
-local function keys<K>(tbl: { [K]: any }): { K }
-	local new = table.create(#tbl)
-	for k in pairs(tbl) do
-		table.insert(new, k)
+local Types = require(script.Parent.Parent.Types)
+
+type Record<K, V> = Types.Record<K, V>
+type Array<T> = Types.Array<T>
+
+local function keys<K>(source: Record<K, any>): Array<K>
+	local result = table.create(#source)
+	for key in pairs(source) do
+		table.insert(result, key)
 	end
-	return new
+	return result
 end
 
 return keys

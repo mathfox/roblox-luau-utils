@@ -1,11 +1,13 @@
-local function override<K, V>(tbl: { [K]: V }, overridingTbl: { [K]: V }): { [K]: V }
-	local new = table.clone(tbl)
-	for k, v in pairs(overridingTbl) do
-		new[k] = if type(v) == "table"
-			then if type(new[k]) == "table" then override(new[k], v) else table.clone(v)
-			else v
+local Types = require(script.Parent.Parent.Types)
+
+type Record<K, V> = Types.Record<K, V>
+
+local function override(target: Record<any, any>, source: Record<any, any>): Record<any, any>
+	local result = table.clone(target)
+	for key, value in pairs(source) do
+		result[key] = if type(value) == "table" then if type(result[key]) == "table" then override(result[key], value) else table.clone(value) else value
 	end
-	return new
+	return result
 end
 
 return override

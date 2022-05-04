@@ -1,6 +1,10 @@
-local function every<K, V>(tbl: { [K]: V }, predicate: (V, K, { [K]: V }) -> boolean)
-	for k, v in pairs(tbl) do
-		if not predicate(v, k, tbl) then
+local Types = require(script.Parent.Parent.Types)
+
+type Record<K, V> = Types.Record<K, V>
+
+local function every<K, V>(source: Record<K, V>, predicate: (V, K, Record<K, V>) -> boolean)
+	for key, value in pairs(source) do
+		if not predicate(value, key, source) then
 			return false
 		end
 	end

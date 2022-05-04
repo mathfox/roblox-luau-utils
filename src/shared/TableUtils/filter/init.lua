@@ -1,16 +1,12 @@
-local function filter<K, V>(tbl: { [K]: V }, predicate: (V, K, { [K]: V }) -> boolean): { [K]: V }
-	local new = table.create(#tbl)
-	if #tbl > 0 then
-		for i, v in ipairs(tbl) do
-			if predicate(v, i, tbl) then
-				table.insert(new, v)
-			end
-		end
-	else
-		for k, v in pairs(tbl) do
-			if predicate(v, k, tbl) then
-				new[k] = v
-			end
+local Types = require(script.Parent.Parent.Types)
+
+type Record<K, V> = Types.Record<K, V>
+
+local function filter<K, V>(source: Record<K, V>, predicate: (V, K, Record<K, V>) -> boolean): Record<K, V>
+	local new = {}
+	for key, value in pairs(source) do
+		if predicate(value, key, source) then
+			new[key] = value
 		end
 	end
 	return new
