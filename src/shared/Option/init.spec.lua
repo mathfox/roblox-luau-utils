@@ -1,3 +1,3 @@
 return function()
-	return
+	local Option = require(script.Parent)
 end

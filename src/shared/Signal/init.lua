@@ -2,12 +2,14 @@ local Types = require(script.Parent.Types)
 
 export type Signal<T...> = Types.Signal<T...>
 export type Connection = Types.Connection
+type Array<T...> = Types.Array<T...>
+type Proc<T...> = Types.Proc<T...>
 
 local freeRunnerThread: thread? = nil
 local runEventHandlerInFreeThread = nil
 
 do
-	local function acquireRunnerThreadAndCallEventHandler(fn: (...any) -> (), ...)
+	local function acquireRunnerThreadAndCallEventHandler(fn: Proc<...any>, ...)
 		local acquiredRunnerThread = freeRunnerThread
 		freeRunnerThread = nil
 		fn(...)
@@ -25,19 +27,19 @@ end
 
 local function outputHelper(...)
 	local length = select("#", ...)
-	local tbl: Array<string> = table.create(length)
+	local arr: Array<string> = table.create(length)
 
 	for index = 1, length do
 		local value = select(index, ...)
-		table.insert(tbl, ('"%s": %s'):format(tostring(value), typeof(value)))
+		table.insert(arr, ('"%s": %s'):format(tostring(value), typeof(value)))
 	end
 
-	return table.concat(tbl, ", ")
+	return table.concat(arr, ", ")
 end
 
 local Connection = {} :: Connection & {
 	_signal: Signal<...any> & { _last: (Connection & { _next: Connection? })? },
-	_fn: (...any) -> (),
+	_fn: Proc<...any>,
 }
 Connection.connected = true
 Connection.__index = Connection
@@ -66,8 +68,10 @@ function Connection:disconnect()
 	end
 end
 
+type LastConnection = Connection & { _next: LastConnection? }
+
 local Signal = {} :: Signal<...any> & {
-	_last: (Connection & { _next: Connection? })?,
+	_last: LastConnection?,
 }
 Signal.__index = Signal
 
@@ -75,11 +79,12 @@ function Signal:__tostring()
 	return "Signal"
 end
 
-function Signal:connect(fn: (...any) -> (), ...)
+function Signal:connect(fn: Proc<...any>, ...)
 	if select("#", ...) > 0 then
-		error(('"connect" method expects exactly one function, got (%s) as well'):format(outputHelper(...)), 2)
+		error(('"connect" method expects exactly one procedure, got (%s) as well'):format(outputHelper(...)), 2)
 	end
-	local connection: Connection = setmetatable({ _signal = self, _fn = fn }, Connection)
+
+	local connection = setmetatable({ _signal = self, _fn = fn }, Connection) :: Connection
 
 	if self._last then
 		connection._next = self._last
@@ -97,6 +102,7 @@ function Signal:fire(...)
 			if not freeRunnerThread then
 				freeRunnerThread = coroutine.create(runEventHandlerInFreeThread)
 			end
+
 			task.spawn(freeRunnerThread, connection._fn, ...)
 		end
 

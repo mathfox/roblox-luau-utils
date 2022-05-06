@@ -1,6 +1,6 @@
 local FunctionUtils = {
-	returnArgs = require(script.returnArgs),
 	bindArgs = require(script.bindArgs),
+	returnArgs = require(script.returnArgs),
 	void = require(script.void),
 }
 

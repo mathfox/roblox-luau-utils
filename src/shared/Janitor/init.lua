@@ -11,7 +11,7 @@ local DEFAULT_METHOD_NAMES = {
 	["function"] = true,
 }
 
-type Promise<V...> = Types.Promise<V...>
+type Promise<T...> = Types.Promise<T...>
 export type Janitor = Types.Janitor
 type Symbol = Types.Symbol
 

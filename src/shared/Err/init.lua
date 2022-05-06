@@ -1,6 +1,4 @@
---[[
-   This module exports Result.Err
-]]
+-- this module exports Result.Err
 
 local Result = require(script.Parent.Result)
 

@@ -7,6 +7,7 @@
 local Types = require(script.Parent.Types)
 
 export type Symbol = Types.Symbol
+type Array<T> = Types.Array<T>
 
 local function outputHelper(...)
 	local tbl: Array<string> = {}

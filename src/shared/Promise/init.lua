@@ -7,9 +7,9 @@ local Enumerator = require(script.Parent.Enumerator)
 local Types = require(script.Parent.Types)
 
 type EnumeratorItem<T> = Types.EnumeratorItem<T>
-type Array<T> = Types.Array<T>
-type Executor<T...> = Types.Executor<T...>
 export type Promise<T...> = Types.Promise<T...>
+type Executor<T...> = Types.Executor<T...>
+type Array<T> = Types.Array<T>
 type Error = {
 	error: string,
 	trace: string?,

@@ -1,12 +1,12 @@
 local HumanoidUtils = {
-	getAliveRootPartFromDescendant = require(script.getAliveRootPartFromDescendant),
 	getAliveHumanoidFromDescendant = require(script.getAliveHumanoidFromDescendant),
-	teleportHumanoidToPosition = require(script.teleportHumanoidToPosition),
 	getAliveHumanoidFromModel = require(script.getAliveHumanoidFromModel),
+	getAliveRootPartFromDescendant = require(script.getAliveRootPartFromDescendant),
 	getAliveRootPartFromModel = require(script.getAliveRootPartFromModel),
-	teleportHumanoidToCFrame = require(script.teleportHumanoidToCFrame),
-	scaleHumanoid = require(script.scaleHumanoid),
 	healHumanoid = require(script.healHumanoid),
+	scaleHumanoid = require(script.scaleHumanoid),
+	teleportHumanoidToCFrame = require(script.teleportHumanoidToCFrame),
+	teleportHumanoidToPosition = require(script.teleportHumanoidToPosition),
 }
 
 table.freeze(HumanoidUtils)

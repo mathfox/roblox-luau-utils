@@ -1,6 +1,4 @@
---[[
-   This module exports Option.Some 
-]]
+-- this module exports Option.Some
 
 local Option = require(script.Parent.Option)
 

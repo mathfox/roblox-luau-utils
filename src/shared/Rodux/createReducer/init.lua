@@ -2,8 +2,8 @@ local Types = require(script.Parent.Parent.Types)
 
 type EnumeratorItem<V> = Types.EnumeratorItem<V>
 type StoreState = Types.RoduxStoreState
-type Reducer = Types.RoduxReducer
 type Record<K, V> = Types.Record<K, V>
+type Reducer = Types.RoduxReducer
 type Action = Types.RoduxAction
 
 local function createReducer(initialState: StoreState, handlers: Record<string | EnumeratorItem<any>, Reducer>, ...): Reducer

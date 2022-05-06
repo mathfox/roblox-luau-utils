@@ -1,6 +1,4 @@
---[[
-   This module exports Result.Ok
-]]
+-- this module exports Result.Ok
 
 local Result = require(script.Parent.Result)
 

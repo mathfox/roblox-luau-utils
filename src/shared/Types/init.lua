@@ -68,7 +68,7 @@ export type Connection = {
 	disconnect: (self: Connection) -> (),
 }
 export type Signal<T...> = {
-	connect: (self: Signal<T...>, fn: (T...) -> ()) -> Connection,
+	connect: (self: Signal<T...>, fn: Proc<T...>) -> Connection,
 	fire: (self: Signal<T...>, T...) -> (),
 	wait: (self: Signal<T...>) -> T...,
 	destroy: (self: Signal<T...>) -> (),
@@ -235,7 +235,8 @@ export type Friend = {
 
 export type PackedValues = { n: number, [number]: any }
 
-export type Fn<A..., R...> = (A...) -> R...
+export type Fn<T..., R...> = (T...) -> R...
+export type Proc<T...> = (T...) -> ()
 
 export type RoduxStore = {
 	getState: (self: RoduxStore) -> {},

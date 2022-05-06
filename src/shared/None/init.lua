@@ -1,6 +1,4 @@
---[[
-   This module exports Option.None
-]]
+-- this module exports Option.None
 
 local Option = require(script.Parent.Option)
 

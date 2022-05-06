@@ -1,7 +1,7 @@
---[[
-   This module basically exposes FunctionUtils.void function
-]]
+-- this module exports FunctionUtils.void
 
 local FunctionUtils = require(script.Parent.FunctionUtils)
 
-return FunctionUtils.void
+local void = FunctionUtils.void
+
+return void

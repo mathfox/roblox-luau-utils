@@ -18,8 +18,6 @@ local InstanceUtils = {
 	clearAllChildrenWhichIsA = require(script.clearAllChildrenWhichIsA),
 	clearAllDescendantsOfClass = require(script.clearAllDescendantsOfClass),
 	clearAllDescendantsWhichIsA = require(script.clearAllDescendantsWhichIsA),
-
-	getPVInstanceMass = require(script.getPVInstanceMass),
 }
 
 table.freeze(InstanceUtils)
