@@ -1,23 +1,26 @@
 return function()
-	local FunctionUtils = require(script.Parent.Parent.Parent.FunctionUtils)
 	local makeActionCreator = require(script.Parent)
 
-	local RETURN_TABLE = FunctionUtils.returnArgs({})
-
 	it("should set the name of the actionCreator creator", function()
-		local FooAction = makeActionCreator("foo", RETURN_TABLE)
+		local FooAction = makeActionCreator("foo", function()
+			return {}
+		end)
 
 		expect(FooAction.name).to.equal("foo")
 	end)
 
 	it("should return a table when called as a function", function()
-		local FooAction = makeActionCreator("foo", RETURN_TABLE)
+		local FooAction = makeActionCreator("foo", function()
+			return {}
+		end)
 
 		expect(FooAction()).to.be.a("table")
 	end)
 
 	it("should set the type of the action creator", function()
-		local FooAction = makeActionCreator("foo", RETURN_TABLE)
+		local FooAction = makeActionCreator("foo", function()
+			return {}
+		end)
 
 		expect(FooAction().type).to.equal("foo")
 	end)
@@ -66,11 +69,15 @@ return function()
 
 	it("should throw an error if extra values are passed", function()
 		expect(function()
-			makeActionCreator("foo", RETURN_TABLE, nil)
+			makeActionCreator("foo", function()
+				return {}
+			end, nil)
 		end).to.throw()
 
 		expect(function()
-			makeActionCreator("foo", RETURN_TABLE, {})
+			makeActionCreator("foo", function()
+				return {}
+			end, {})
 		end).to.throw()
 	end)
 
@@ -78,13 +85,13 @@ return function()
 		expect(function()
 			makeActionCreator("foo", function()
 				return { type = "bar" }
-			end)
+			end)()
 		end).to.throw()
 
 		expect(function()
 			makeActionCreator("foo", function()
-				return { type = FunctionUtils.void }
-			end)
+				return { type = function() end }
+			end)()
 		end).to.throw()
 	end)
 end

@@ -1,4 +1,5 @@
 return function()
+	local GlobalConfig = require(script.Parent.Parent.Parent.Roact.GlobalConfig)
 	local Roact = require(script.Parent.Parent.Parent.Roact)
 	local Rodux = require(script.Parent.Parent.Parent.Rodux)
 
@@ -22,6 +23,8 @@ return function()
 
 	it("should expect a 'store' prop", function()
 		local element = Roact.createElement(StoreProvider)
+
+		GlobalConfig.set({ propValidation = true })
 
 		expect(function()
 			Roact.mount(element)
