@@ -2,57 +2,148 @@
 	A 'Symbol' is an opaque marker type that can be used to signify unique
 	statuses. Symbols have the type 'userdata', but when printed to the console,
 	the name of the symbol is shown.
+
+   reference: https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Symbol
 ]]
 
 local Types = require(script.Parent.Types)
 
+type Record<K, V> = Types.Record<K, V>
 export type Symbol = Types.Symbol
 type Array<T> = Types.Array<T>
 
 local function outputHelper(...)
-	local tbl: Array<string> = {}
+	local length = select("#", ...)
+	local arr: Array<string> = table.create(length)
 
-	for index = 1, select("#", ...) do
+	for index = 1, length do
 		local value = select(index, ...)
-		table.insert(tbl, ('"%s": %s'):format(tostring(value), typeof(value)))
+		table.insert(arr, ('"%s": %s'):format(tostring(value), typeof(value)))
 	end
 
-	return table.concat(tbl, ", ")
+	return table.concat(arr, ", ")
 end
 
-local SymbolExport = {
-	named = function(name: string, ...): Symbol
+-- an internal function used by both __call metamethod and named constructor function
+local createNamed: (name: string) -> Symbol = nil
+
+do
+	-- the purpose of this block is to speed up the creation of named symbols with the same "name" value;
+	-- the way this is achieved is that each time named symbol with a certain "name" gets created
+	-- it's frozen metatable gets cached in a weak-value table, so further function calls
+	-- will just use this metatable and as soon as there is no more references to any of the
+	-- named symbols with a provided "name", that metatable gets gced and the next call will repeat
+	-- the same procedure with a creation and caching again;
+
+	type NamedSymbolMetatable = { __tostring: () -> string }
+	type NamedSymbolMetatablesCache = Record<string, NamedSymbolMetatable>
+
+	-- there is no point for the late initialization of the table as there is no way to track
+	-- the garbage collection of the table values which is requires for us to assign this variable to a nil
+	-- when there is no more cached metatables left
+	local namedSymbolMetatablesCache: NamedSymbolMetatablesCache = {}
+
+	local function createNamedInternal(symbolMetatable: NamedSymbolMetatable)
+		return table.freeze(setmetatable({}, symbolMetatable)) :: Symbol
+	end
+
+	function createNamed(name: string)
+		local cachedSymbolMetatable: NamedSymbolMetatable? = namedSymbolMetatablesCache[name]
+		if cachedSymbolMetatable then
+			return createNamedInternal(cachedSymbolMetatable)
+		end
+
+		local newSymbolMetatable = {
+			__tostring = function()
+				return "Symbol(" .. name .. ")"
+			end,
+		}
+
+		namedSymbolMetatablesCache[name] = newSymbolMetatable
+
+		return createNamedInternal(newSymbolMetatable)
+	end
+end
+
+-- an internal function used by both __call metamethod and unnamed constructor function
+local createUnnamed: () -> Symbol = nil
+
+do
+	-- the purpose of this block is to dynamically create and cache global table with a __tostring
+	-- function that will be shared between all of the unnamed symbols, so if unnamed symbol never
+	-- gets created we'll never create and cache that table;
+	-- as a result unnamed symbols construction gets ~20% percent faster
+
+	type UnnamedSymbolMetatable = { __tostring: () -> "Symbol()" }
+
+	local cachedUnnamedSymbolMetatable: UnnamedSymbolMetatable? = nil
+
+	local function createUnnamedInternal()
+		return table.freeze(setmetatable({}, cachedUnnamedSymbolMetatable :: UnnamedSymbolMetatable)) :: Symbol
+	end
+
+	function createUnnamed()
+		if not cachedUnnamedSymbolMetatable then
+			cachedUnnamedSymbolMetatable = {
+				__tostring = function()
+					return "Symbol<_>"
+				end,
+			}
+
+			-- make sure further calls won't have to check if the table with a __tostring function
+			-- was cached or not, so they will always assume it has been created and cached;
+			createUnnamed = createUnnamedInternal
+		end
+
+		return createUnnamedInternal() :: Symbol
+	end
+end
+
+-- stylua: ignore
+
+local SymbolExport = table.freeze(setmetatable({
+	named = function(name: string, ...)
 		if type(name) ~= "string" then
-			error(('"name" (#1 argument) must be a string, got ("%s": %s) instead'):format(tostring(name), typeof(name)), 2)
+			error(('"name" (#1 argument) must be a string, got (%s) instead'):format(outputHelper(name)), 2)
 		elseif name == "" then
-			error('"name" (#1 argument) must be a non-empty string, maybe you should try to use Symbol.unnamed instead?', 2)
+			error('"name" (#1 argument) must be a non-empty string, maybe you should try to use Symbol.unnamed function instead?', 2)
 		elseif select("#", ...) > 0 then
 			error(('"named" function expects exactly one argument: (string), but got (%s) as well'):format(outputHelper(...)), 2)
 		end
 
-		local self = newproxy(true)
-		getmetatable(self).__tostring = function()
-			return "Symbol<" .. name .. ">"
-		end
-		return self
+      return createNamed(name)
 	end,
 
-	unnamed = function(...): Symbol
+	unnamed = function(...)
 		if select("#", ...) > 0 then
 			error(('"unnamed" function expects no values, got (%s) instead'):format(outputHelper(...)), 2)
 		end
 
-		local self = newproxy(true)
-		getmetatable(self).__tostring = function()
-			return "Symbol<_>"
-		end
-		return self
+      return createUnnamed()
 	end,
-}
+}, table.freeze({
+   __call = function(_, ...)
+      local name, length = (...), select('#', ...)
 
-table.freeze(SymbolExport)
+      if type(name) == 'string' then
+         if (name :: string) == "" then
+            error('In case SymbolConstuctor receives the string as the first arguments, it must be a non-empty string, maybe you should try to use either a Symbol() or Symbol.unnamed function instead?', 2)
+         elseif length > 1 then
+            error(('In case SymbolConstructor receives the string as the first argument, no extra arguments should be provided, but (%s) arguments were provided'):format(outputHelper(select(2, ...))), 2)
+         end
 
-return SymbolExport :: {
+         return createNamed(name :: string)
+      elseif length ~= 0 then
+         error(('SymbolConstuctor expects either one string or no values, got (%s) instead'):format(outputHelper(...)), 2)
+      end
+
+      return createUnnamed()
+   end
+})))
+
+type SymbolConstructor = {
 	named: (name: string) -> Symbol,
 	unnamed: () -> Symbol,
-}
+} & (name: string?) -> Symbol
+
+return SymbolExport :: SymbolConstructor

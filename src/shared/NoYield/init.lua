@@ -19,7 +19,8 @@ local function outputHelper(...)
 	return table.concat(tbl, ", ")
 end
 
-local function resultHandler<T...>(message: string, co: thread, ok: boolean, ...: T...)
+-- * important to note that NoYield will only return the tuple returned from the co thread
+local function resultHandler<R...>(message: string, co: thread, ok: boolean, ...: R...)
 	if not ok then
 		error(debug.traceback(co, (...)), 2)
 	elseif coroutine.status(co) ~= "dead" then
@@ -30,7 +31,7 @@ local function resultHandler<T...>(message: string, co: thread, ok: boolean, ...
 end
 
 -- provide nil in case message is not yet specified
-local function NoYield<T...>(messageOrNil: string?, callback: (T...) -> ...any, ...: T...)
+local function NoYield<T..., R...>(messageOrNil: string?, callback: (T...) -> R..., ...: T...)
 	if type(messageOrNil) ~= "string" and messageOrNil ~= nil then
 		error(('"messageOrNil" (#1 argument) must be either a string or nil, got (%s) instead'):format(outputHelper(messageOrNil)), 2)
 	elseif messageOrNil == "" then

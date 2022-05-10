@@ -75,7 +75,9 @@ return function()
 
 	it("should implement __tostring metamethod", function()
 		expect(function()
-			assert(tostring(Enumerator("a", { "a" })) == "a")
+			local enumerator = Enumerator("a", { "a" })
+			assert(tostring(enumerator) == "a")
+			assert(tostring(enumerator.a) == "a.a")
 		end).never.to.throw()
 	end)
 

@@ -289,6 +289,7 @@ local function isResult(value)
 	return if metatable then metatable.__index == Result else false
 end
 
+-- original naming: https://doc.rust-lang.org/std/result/enum.Result.html#method.and
 function Result:andRes<T, E, U>(res: Result<U, E>, ...)
 	if select("#", ...) > 0 then
 		error(('"andRes" method expects exactly one Result, got (%s) as well'):format(outputHelper(...)), 2)
@@ -321,6 +322,7 @@ function Result:andThen<T, E, U>(op: (T) -> Result<U, E>, ...)
 	return res :: Result<U, E>
 end
 
+-- original naming: https://doc.rust-lang.org/std/result/enum.Result.html#method.or
 function Result:orRes<T, E, F>(res: Result<T, F>, ...)
 	if select("#", ...) > 0 then
 		error(('"orRes" method expects exactly one Result, got (%s) as well'):format(outputHelper(...)), 2)

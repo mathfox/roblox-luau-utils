@@ -9,6 +9,17 @@ return function()
 		expect(function()
 			setmetatable(Symbol, {})
 		end).to.throw()
+
+		expect(function()
+			getmetatable(Symbol).__index = {}
+		end).to.throw()
+	end)
+
+	it("should implement __call metamethod", function()
+		expect(function()
+			Symbol()
+			Symbol("foo")
+		end).never.throw()
 	end)
 
 	describe("named", function()
@@ -33,15 +44,13 @@ return function()
 		end)
 
 		it("should give an opaque object", function()
-			local symbol = Symbol.named("foo")
-
-			expect(symbol).to.be.a("userdata")
+			expect(Symbol.named("foo")).to.be.a("table")
+			expect(Symbol("foo")).to.be.a("table")
 		end)
 
 		it("should coerce to the given name", function()
-			local symbol = Symbol.named("foo")
-
-			expect(tostring(symbol):find("foo")).to.be.ok()
+			expect(tostring(Symbol.named("foo")):find("foo")).to.be.ok()
+			expect(tostring(Symbol("foo")):find("foo")).to.be.ok()
 		end)
 
 		it("should be unique when constructed", function()

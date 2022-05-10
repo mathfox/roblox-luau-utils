@@ -21,14 +21,15 @@ type Error = {
 }
 
 local function outputHelper(...)
-	local tbl: Array<string> = {}
+	local length = select("#", ...)
+	local arr: Array<string> = table.create(length)
 
-	for index = 1, select("#", ...) do
+	for index = 1, length do
 		local value = select(index, ...)
-		table.insert(tbl, ('"%s": %s'):format(tostring(value), typeof(value)))
+		table.insert(arr, ('"%s": %s'):format(tostring(value), typeof(value)))
 	end
 
-	return table.concat(tbl, ", ")
+	return table.concat(arr, ", ")
 end
 
 --[=[

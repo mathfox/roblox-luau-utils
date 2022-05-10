@@ -23,10 +23,10 @@ export type Result<T, E> = {
 	unwrap: (self: Result<T, E>) -> T,
 	expectErr: (self: Result<T, E>, msg: string) -> E,
 	unwrapErr: (self: Result<T, E>) -> E,
-	-- originally named "and"
+	-- originally named "and": https://doc.rust-lang.org/std/result/enum.Result.html#method.and
 	andRes: <U>(self: Result<T, E>, res: Result<U, E>) -> Result<T, E> | Result<U, E>,
 	andThen: <U>(self: Result<T, E>, op: (T) -> Result<U, E>) -> Result<T, E> | Result<U, E>,
-	-- originally named "or"
+	-- originally named "or": https://doc.rust-lang.org/std/result/enum.Result.html#method.or
 	orRes: <F>(self: Result<T, E>, res: Result<T, F>) -> Result<T, E> | Result<T, F>,
 	orElse: <F>(self: Result<T, E>, op: (E) -> Result<T, F>) -> Result<T, E> | Result<T, F>,
 	unwrapOr: (self: Result<T, E>, default: T) -> T,
