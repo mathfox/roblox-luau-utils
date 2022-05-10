@@ -3,7 +3,7 @@
 	statuses. Symbols have the type 'userdata', but when printed to the console,
 	the name of the symbol is shown.
 
-   reference: https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Symbol
+   reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol
 ]]
 
 local Types = require(script.Parent.Types)
