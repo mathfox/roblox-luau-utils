@@ -8,7 +8,7 @@ local Types = require(script.Parent.Types)
 
 type EnumeratorItem<T> = Types.EnumeratorItem<T>
 export type Promise<T...> = Types.Promise<T...>
-type Executor<T...> = Types.Executor<T...>
+type PromiseExecutor<T...> = Types.PromiseExecutor<T...>
 type Array<T> = Types.Array<T>
 type Error = {
 	error: string,
@@ -101,7 +101,7 @@ do
 		return success, { ... }, select("#", ...)
 	end
 
-	function runExecutor(traceback: string, executor: Executor<...any>, ...)
+	function runExecutor(traceback: string, executor: PromiseExecutor<...any>, ...)
 		return packResult(xpcall(executor, function(err)
 			return Error.new({
 				error = err,
@@ -148,7 +148,7 @@ function Promise.is(object)
 	return type(object) == "table" and getmetatable(object) == Promise
 end
 
-function Promise._new<V...>(traceback: string, executor: Executor<V...>, parent: Promise<...any>?): Promise<V...>
+function Promise._new<V...>(traceback: string, executor: PromiseExecutor<V...>, parent: Promise<...any>?): Promise<V...>
 	local self = setmetatable({
 		-- Used to locate where a promise was created.
 		_source = traceback,
@@ -233,12 +233,12 @@ end
 	You must perform any cleanup code in the cancellation hook: any time your executor yields, it **may never resume**.
 	:::
 ]=]
-function Promise.new<T...>(executor: Executor<T...>): Promise<T...>
+function Promise.new<T...>(executor: PromiseExecutor<T...>): Promise<T...>
 	return Promise._new(debug.traceback(nil, 2), executor)
 end
 
 -- The same as `Promise.new`, except execution begins after the next resumption cycle.
-function Promise.defer<T...>(executor: Executor<T...>): Promise<T...>
+function Promise.defer<T...>(executor: PromiseExecutor<T...>): Promise<T...>
 	local traceback = debug.traceback(nil, 2)
 
 	return Promise._new(traceback, function(resolve, reject, onCancel)
@@ -813,16 +813,19 @@ end
 	})
 	```
 ]=]
-function Promise.prototype:timeout(seconds: number, rejectionValue)
+function Promise.prototype:timeout(seconds: number, ...)
+	local length, values = select("#", ...), { ... }
 	local traceback = debug.traceback(nil, 2)
 
 	return Promise.race({
 		Promise.delay(seconds):andThen(function()
-			return Promise.reject(rejectionValue == nil and Error.new({
-				kind = Error.Kind.TimedOut,
-				error = "Timed out",
-				context = string.format("Timeout of %d seconds exceeded.\n:timeout() called at:\n\n%s", seconds, traceback),
-			}) or rejectionValue)
+			return Promise.reject(if length == 0
+				then Error.new({
+					kind = Error.Kind.TimedOut,
+					error = "Timed out",
+					context = string.format("Timeout of %d seconds exceeded.\n:timeout() called at:\n\n%s", seconds, traceback),
+				})
+				else unpack(values, 1, length))
 		end),
 		self,
 	})
@@ -1406,20 +1409,21 @@ end
 
 	If this Promise is still running, Rejected, or Cancelled, the Promise returned from `:now()` will reject with the `rejectionValue` if passed, otherwise with a `Promise.Error(Promise.Error.Kind.NotResolvedInTime)`. This can be checked with [[Error.isKind]].
 ]=]
-function Promise.prototype:now(rejectionValue)
+function Promise.prototype:now(...)
+	local length, values = select("#", ...), { ... }
 	local traceback = debug.traceback(nil, 2)
 
 	return if self._status == Promise.Status.Resolved
 		then self:_andThen(traceback, function(...)
 			return ...
 		end)
-		else Promise.reject(if rejectionValue == nil
+		else Promise.reject(if length == 0
 			then Error.new({
 				kind = Error.Kind.NotResolvedInTime,
 				error = "This Promise was not resolved in time for :now()",
 				context = ":now() was called at:\n\n" .. traceback,
 			})
-			else rejectionValue)
+			else unpack(values, 1, length))
 end
 
 --[=[
@@ -1565,13 +1569,13 @@ return Promise :: {
 	all: <V>(promises: { Promise<V> }) -> Promise<{ V }>,
 	allSettled: (promises: { Promise<...any> }) -> Promise<{ number }>,
 	any: <V>(promises: { Promise<V> }) -> Promise<V>,
-	defer: <V...>(executor: Executor<V...>) -> Promise<V...>,
+	defer: <V...>(executor: PromiseExecutor<V...>) -> Promise<V...>,
 	delay: (seconds: number) -> Promise<number>,
 	each: <V, R>(list: { V | Promise<V> }, predicate: (value: V, index: number) -> (R | Promise<R>)) -> Promise<R>,
 	fold: <V, R>(list: { V | Promise<V> }, reducer: (accumulator: R, value: V, index: number) -> (R | Promise<R>), initialValue: R) -> Promise<R>,
 	fromEvent: <R...>(event: RBXScriptSignal | { connect: ((R...) -> ...any) -> ...any }, predicate: (R...) -> boolean) -> Promise<R...>,
 	is: (object: any) -> boolean,
-	new: <V...>(executor: Executor<V...>) -> Promise<V...>,
+	new: <V...>(executor: PromiseExecutor<V...>) -> Promise<V...>,
 	onUnhandledRejection: () -> (),
 	promisify: <V...>(callback: (V...) -> ...any) -> (V...) -> Promise<V...>,
 	race: <V...>(promises: { Promise<V...> }) -> Promise<V...>,

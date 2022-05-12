@@ -127,7 +127,8 @@ export type CollectionComponentExtension = {
 	stopped: (CollectionComponentInstance) -> (),
 }
 
-export type Executor<T...> = (resolve: (T...) -> (), reject: (...any) -> (), onCancel: (cancellationHook: (() -> ())?) -> boolean) -> ()
+export type PromiseExecutor<T...> = (resolve: (T...) -> (), reject: (...any) -> (), onCancel: (cancellationHook: (() -> ())?) -> boolean) -> ()
+-- reference: https://eryn.io/roblox-lua-promise/api/Promise
 export type Promise<T...> = {
 	andThen: <R...>(self: Promise<T...>, successHandler: (T...) -> R..., failureHandler: (...any) -> R...) -> Promise<R...>,
 	andThenCall: <V..., R...>(self: Promise<T...>, callback: (V...) -> R..., V...) -> Promise<R...>,
@@ -137,13 +138,15 @@ export type Promise<T...> = {
 	cancel: (self: Promise<T...>) -> (),
 	catch: (self: Promise<T...>, failureHandler: <R...>(...any) -> R...) -> Promise<R...>,
 	expect: (self: Promise<T...>) -> T...,
-	finally: (self: Promise<T...>, finallyHandler: (status: string) -> ...any) -> Promise<T...>,
+	finally: (self: Promise<T...>, finallyHandler: (status: EnumeratorItem<string>) -> ...any) -> Promise<T...>,
 	finallyCall: <R...>(self: Promise<T...>, callback: (R...) -> ...any, R...) -> Promise<T...>,
 	finallyReturn: <R...>(self: Promise<T...>, R...) -> Promise<T...>,
 	getStatus: (self: Promise<T...>) -> EnumeratorItem<string>,
-	now: (self: Promise<T...>, rejectionValue: any) -> Promise<T...>,
-	tap: (self: Promise<T...>, tapHandler: (...any) -> ...any) -> Promise<T...>,
-	timeout: (self: Promise<T...>, seconds: number, rejectionValue: any) -> Promise<T...>,
+	-- originally was able to return a Promise.reject with only one value passed: https://eryn.io/roblox-lua-promise/api/Promise#now
+	now: <E...>(self: Promise<T...>, E...) -> Promise<T...> | Promise<E...>,
+	tap: (self: Promise<T...>, tapHandler: (T...) -> ...any) -> Promise<T...>,
+	-- originally was able to return a Promise.reject with only one value passed: https://eryn.io/roblox-lua-promise/api/Promise#timeout
+	timeout: <E...>(self: Promise<T...>, seconds: number, E...) -> Promise<T...> | Promise<E...>,
 }
 
 export type Janitor = {
