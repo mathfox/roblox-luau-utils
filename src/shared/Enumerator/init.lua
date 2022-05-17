@@ -57,9 +57,13 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumValues: Arra
 	local totalEnumeratorItems = 0
 
 	if firstKeyType == "number" then
+		local processedValuesMap: Record<string, true> = {}
+
 		for index, value in pairs(enumValues :: Array<string>) do
-			if type(index) ~= "number" then
-				error(('invalid key specified in "enumValues" (#2 argument) table which presumably is an Array<string>, expected a number but got (%s) instead'):format(outputHelper(index)), 2)
+			if processedValuesMap[value] then
+				error(('(%s) value specified twice in "enumValues" (#2 argument) table which presumably should be an Array<string>'):format(value), 2)
+			elseif type(index) ~= "number" then
+				error(('invalid key specified in "enumValues" (#2 argument) table which presumably should be an Array<string>, expected a number but got (%s) instead'):format(outputHelper(index)), 2)
 			end
 
 			totalEnumeratorItems += 1
@@ -103,7 +107,7 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumValues: Arra
 				table.sort(missingIndexes)
 
 				error(
-					('"enumValues" (#2 argument) table which type presumably is an Array<string> contains (%s) missing index%s%s'):format(
+					('"enumValues" (#2 argument) table which type presumably should be an Array<string> contains (%s) missing index%s%s'):format(
 						table.concat(missingIndexes, ", "),
 						if #missingIndexes == 1 then "" else "es",
 						if invalidKeys then (" as well as invalid keys (%s)"):format(outputHelper(unpack(invalidKeys, 1, #invalidKeys))) else ""
@@ -112,12 +116,13 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumValues: Arra
 				)
 			end
 
-			local valueType = type(value)
-			if valueType ~= "string" then
-				error(('invalid value provided in "enumValues": Array<string> (#2 argument), expected a string but got (%s) instead'):format(outputHelper(valueType)), 2)
+			if type(value) ~= "string" then
+				error(('invalid value provided in "enumValues" (#2 argument) table which presumably should be an Array<string>, expected a string but got (%s) instead'):format(outputHelper(value)), 2)
 			elseif value == "" then
-				error('empty string provided as a value in "enumValues": Array<string> (#2 argument), expected non-empty string', 2)
+				error('empty string provided as a value in "enumValues" (#2 argument) table which presumably should be an Array<string>, expected non-empty string', 2)
 			end
+
+			processedValuesMap[value] = true
 
 			local enumeratorItem = table.freeze(setmetatable(
 				{ name = value, type = enumerator, value = value },
@@ -144,13 +149,13 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumValues: Arra
 					2
 				)
 			elseif key == "" then
-				error(('empty string provided as a key in "enumValues" (#2 argument) which is presumably is a Record<string, %s>, expected a non-empty string'):format(firstValueType), 2)
+				error(('empty string provided as a key in "enumValues" (#2 argument) which is presumably should be a Record<string, %s>, expected a non-empty string'):format(firstValueType), 2)
 			end
 
 			local valueType = typeof(value)
 			if valueType ~= firstValueType then
 				error(
-					('"enumValues" (#2 argument) table which is presumably is a Record<string, %s> contains invalid value (%s), expected values of (%s) type'):format(
+					('"enumValues" (#2 argument) table which presumably should be a Record<string, %s> contains invalid value (%s), expected value of (%s) type'):format(
 						firstValueType,
 						outputHelper(value),
 						firstValueType

@@ -81,6 +81,12 @@ return function()
 		end).never.to.throw()
 	end)
 
+	it("should throw an error if duplicate values specified", function()
+		expect(function()
+			Enumerator("foo", { "bar", "bar" })
+		end).to.throw()
+	end)
+
 	describe("EnumeratorItem", function()
 		it("should throw an error on attempt to modify a table", function()
 			expect(function()
