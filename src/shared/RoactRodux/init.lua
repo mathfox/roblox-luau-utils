@@ -1,9 +1,9 @@
-local StoreProvider = require(script.StoreProvider)
-local connect = require(script.connect)
+-- modified version of https://github.com/Roblox/roact-rodux
 
 local RoactRodux = {
-	StoreProvider = StoreProvider,
-	connect = connect,
+	StoreProvider = require(script.StoreProvider),
+	StoreContext = require(script.StoreContext),
+	connect = require(script.connect),
 }
 
 table.freeze(RoactRodux)
