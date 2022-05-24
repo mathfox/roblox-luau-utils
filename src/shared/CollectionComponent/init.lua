@@ -13,11 +13,7 @@ local function GET_NEXT_RENDER_NAME()
 	return "ComponentRender" .. HttpService:GenerateGUID(false)
 end
 
-local function INVOKE_EXTENSIONS_FUNCTION(
-	component,
-	extensionList: { Types.CollectionComponentExtension },
-	name: string
-)
+local function INVOKE_EXTENSIONS_FUNCTION(component, extensionList: { Types.CollectionComponentExtension }, name: string)
 	for _, extension in ipairs(extensionList) do
 		local fn = extension[name]
 		if type(fn) == "function" then

@@ -36,21 +36,16 @@ do
 	-- the same procedure with a creation and caching again;
 
 	type NamedSymbolMetatable = { __tostring: () -> string }
-	type NamedSymbolMetatablesCache = Record<string, NamedSymbolMetatable>
 
 	-- there is no point for the late initialization of the table as there is no way to track
 	-- the garbage collection of the table values which is requires for us to assign this variable to a nil
 	-- when there is no more cached metatables left
-	local namedSymbolMetatablesCache: NamedSymbolMetatablesCache = {}
-
-	local function createNamedInternal(symbolMetatable: NamedSymbolMetatable)
-		return table.freeze(setmetatable({}, symbolMetatable)) :: Symbol
-	end
+	local namedSymbolMetatablesCache: Record<string, NamedSymbolMetatable> = setmetatable({}, { __mode = "v" })
 
 	function createNamed(name: string)
 		local cachedSymbolMetatable: NamedSymbolMetatable? = namedSymbolMetatablesCache[name]
 		if cachedSymbolMetatable then
-			return createNamedInternal(cachedSymbolMetatable)
+			return table.freeze(setmetatable({}, cachedSymbolMetatable)) :: Symbol
 		end
 
 		local newSymbolMetatable = {
@@ -61,7 +56,7 @@ do
 
 		namedSymbolMetatablesCache[name] = newSymbolMetatable
 
-		return createNamedInternal(newSymbolMetatable)
+		return table.freeze(setmetatable({}, newSymbolMetatable)) :: Symbol
 	end
 end
 
@@ -78,10 +73,6 @@ do
 
 	local cachedUnnamedSymbolMetatable: UnnamedSymbolMetatable? = nil
 
-	local function createUnnamedInternal()
-		return table.freeze(setmetatable({}, cachedUnnamedSymbolMetatable :: UnnamedSymbolMetatable)) :: Symbol
-	end
-
 	function createUnnamed()
 		if not cachedUnnamedSymbolMetatable then
 			cachedUnnamedSymbolMetatable = {
@@ -92,54 +83,65 @@ do
 
 			-- make sure further calls won't have to check if the table with a __tostring function
 			-- was cached or not, so they will always assume it has been created and cached;
-			createUnnamed = createUnnamedInternal
+			createUnnamed = function()
+				return table.freeze(setmetatable({}, cachedUnnamedSymbolMetatable :: UnnamedSymbolMetatable)) :: Symbol
+			end
 		end
 
-		return createUnnamedInternal() :: Symbol
+		return table.freeze(setmetatable({}, cachedUnnamedSymbolMetatable :: UnnamedSymbolMetatable)) :: Symbol
 	end
 end
 
--- stylua: ignore
+local SymbolExport = table.freeze(setmetatable(
+	{
+		named = function(name: string, ...)
+			if type(name) ~= "string" then
+				error(('"name" (#1 argument) must be a string, got (%s) instead'):format(outputHelper(name)), 2)
+			elseif name == "" then
+				error('"name" (#1 argument) must be a non-empty string, maybe you should try to use Symbol.unnamed function instead?', 2)
+			elseif select("#", ...) > 0 then
+				error(('"named" function expected exactly one argument of type (string), but got (%s) as well'):format(outputHelper(...)), 2)
+			end
 
-local SymbolExport = table.freeze(setmetatable({
-	named = function(name: string, ...)
-		if type(name) ~= "string" then
-			error(('"name" (#1 argument) must be a string, got (%s) instead'):format(outputHelper(name)), 2)
-		elseif name == "" then
-			error('"name" (#1 argument) must be a non-empty string, maybe you should try to use Symbol.unnamed function instead?', 2)
-		elseif select("#", ...) > 0 then
-			error(('"named" function expects exactly one argument: (string), but got (%s) as well'):format(outputHelper(...)), 2)
-		end
+			return createNamed(name)
+		end,
 
-      return createNamed(name)
-	end,
+		unnamed = function(...)
+			if select("#", ...) > 0 then
+				error(('"unnamed" function expected no values, got (%s) instead'):format(outputHelper(...)), 2)
+			end
 
-	unnamed = function(...)
-		if select("#", ...) > 0 then
-			error(('"unnamed" function expects no values, got (%s) instead'):format(outputHelper(...)), 2)
-		end
+			return createUnnamed()
+		end,
+	},
+	table.freeze({
+		__call = function(_, ...)
+			local name, length = (...), select("#", ...)
 
-      return createUnnamed()
-	end,
-}, table.freeze({
-   __call = function(_, ...)
-      local name, length = (...), select('#', ...)
+			if type(name) == "string" then
+				if (name :: string) == "" then
+					error(
+						"In case SymbolConstuctor receives the string as the first arguments, it must be a non-empty string, maybe you should try to use either a Symbol() or Symbol.unnamed function instead?",
+						2
+					)
+				elseif length > 1 then
+					error(
+						("In case SymbolConstructor receives the string as the first argument, no extra arguments should be provided, but (%s) arguments were provided"):format(
+							outputHelper(select(2, ...))
+						),
+						2
+					)
+				end
 
-      if type(name) == 'string' then
-         if (name :: string) == "" then
-            error('In case SymbolConstuctor receives the string as the first arguments, it must be a non-empty string, maybe you should try to use either a Symbol() or Symbol.unnamed function instead?', 2)
-         elseif length > 1 then
-            error(('In case SymbolConstructor receives the string as the first argument, no extra arguments should be provided, but (%s) arguments were provided'):format(outputHelper(select(2, ...))), 2)
-         end
+				return createNamed(name :: string)
+			elseif length ~= 0 then
+				error(("SymbolConstuctor expects either one string or no values, got (%s) instead"):format(outputHelper(...)), 2)
+			end
 
-         return createNamed(name :: string)
-      elseif length ~= 0 then
-         error(('SymbolConstuctor expects either one string or no values, got (%s) instead'):format(outputHelper(...)), 2)
-      end
-
-      return createUnnamed()
-   end
-})))
+			return createUnnamed()
+		end,
+	})
+))
 
 type SymbolConstructor = {
 	named: (name: string) -> Symbol,

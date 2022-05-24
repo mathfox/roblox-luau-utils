@@ -1,11 +1,9 @@
 local PhysicsService = game:GetService("PhysicsService")
 
 local function createCollisionGroupIfNotCreated(collisionGroupName: string)
-	local collisionGroups = PhysicsService:GetCollisionGroups()
-
-	-- loop thru all already created collision groups and check if their name is
-	-- the same as the one was provided, if no then do nothing
-	for _, collisionGroup in ipairs(collisionGroups) do
+	-- looping thru all of the created collision groups and checking if their name is
+	-- the same as the one that was provided, if so then return, otherwise do nothing
+	for _, collisionGroup in ipairs(PhysicsService:GetCollisionGroups()) do
 		if collisionGroup.name == collisionGroupName then
 			return
 		end
