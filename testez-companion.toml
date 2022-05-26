@@ -1,3 +1,1 @@
-roots = ["ReplicatedStorage/Shared", "StarterPlayer/Client", "ServerStorage/Server"]
-
-[extraOptions]
+roots = ["ReplicatedStorage"]

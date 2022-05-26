@@ -4,9 +4,7 @@
       "$className": "DataModel",
       "ReplicatedStorage": {
          "$className": "ReplicatedStorage",
-         "Shared": {
-            "$path": "src/shared"
-         },
+         "$path": "src",
          "TestEZ": {
             "$path": "submodules/testez/src"
          }
@@ -14,18 +12,6 @@
       "ServerScriptService": {
          "$className": "ServerScriptService",
          "$path": "tests"
-      },
-      "ServerStorage": {
-         "$className": "ServerStorage",
-         "Server": {
-            "$path": "src/server"
-         }
-      },
-      "StarterPlayer": {
-         "$className": "StarterPlayer",
-         "Client": {
-            "$path": "src/client"
-         }
       }
    }
 }
