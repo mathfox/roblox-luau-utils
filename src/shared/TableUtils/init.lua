@@ -1,6 +1,7 @@
 local TableUtils = {
 	assign = require(script.assign),
 	copy = require(script.copy),
+	deepFreeze = require(script.deepFreeze),
 	deepSafeFreeze = require(script.deepSafeFreeze),
 	every = require(script.every),
 	everyArray = require(script.everyArray),
@@ -20,7 +21,7 @@ local TableUtils = {
 	safeFreeze = require(script.safeFreeze),
 	shuffle = require(script.shuffle),
 	some = require(script.some),
-   someArray = require(script.someArray),
+	someArray = require(script.someArray),
 	values = require(script.values),
 }
 
