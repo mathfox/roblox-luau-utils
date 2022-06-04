@@ -9,4 +9,11 @@ export type ReceiptInfo = {
 	CurrencySpent: number,
 }
 
+-- reference: https://developer.roblox.com/en-us/api-reference/function/PhysicsService/GetCollisionGroups
+export type CollisionGroupConfigurationTable = {
+	id: number,
+	mask: number,
+	name: string,
+}
+
 return nil
