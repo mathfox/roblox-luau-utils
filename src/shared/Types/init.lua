@@ -1,3 +1,4 @@
+-- reference: https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type
 export type Record<K, V> = { [K]: V }
 export type Array<T> = { T }
 
