@@ -184,7 +184,7 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumValues: Arra
 	end
 
 	function enumerator.isEnumeratorItem(value)
-		if typeof(value) ~= "userdata" then
+		if typeof(value) ~= "table" then
 			return false
 		end
 
