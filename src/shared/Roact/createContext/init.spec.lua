@@ -396,11 +396,14 @@ return function()
 		parent.Parent = ReplicatedStorage
 
 		local hostKey = "Some Key"
-		robloxReconciler.mountVirtualNode(createElement(ParentComponent), parent, hostKey)
+		local node = robloxReconciler.mountVirtualNode(createElement(ParentComponent), parent, hostKey)
 
 		expect(function()
 			-- calling setState on ChildComponent will trigger `willUnmount` multiple times
 			childCallback()
 		end).never.to.throw()
+
+		robloxReconciler.unmountVirtualNode(node)
+		parent:Destroy()
 	end)
 end

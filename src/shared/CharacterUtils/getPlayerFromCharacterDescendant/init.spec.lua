@@ -20,6 +20,9 @@ return function()
 
 			local descendant = Instance.new("Folder", character)
 			assert(getPlayerFromCharacterDescendant(descendant) == player)
+
+			preudoPlayersFolder:Destroy()
+			player:Destroy()
 		end).never.to.throw()
 	end)
 end
