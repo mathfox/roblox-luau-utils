@@ -1,5 +1,3 @@
---!strict
-
 local Types = require(script.Parent.Types)
 
 export type Signal<T...> = Types.Signal<T...>
