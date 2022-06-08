@@ -1,9 +1,11 @@
+--!strict
+
 local Types = require(script.Parent.Types)
 
 export type Signal<T...> = Types.Signal<T...>
 export type Connection = Types.Connection
-type Array<T...> = Types.Array<T...>
 type Proc<T...> = Types.Proc<T...>
+type Array<T> = Types.Array<T>
 
 local freeRunnerThread: thread? = nil
 local runEventHandlerInFreeThread = nil
@@ -70,16 +72,25 @@ end
 
 type LastConnection = Connection & { _next: LastConnection? }
 
-local Signal = {} :: Signal<...any> & {
+local Signal = {}
+Signal.prototype = {} :: Signal<...any> & {
 	_last: LastConnection?,
 }
-Signal.__index = Signal
+Signal.__index = Signal.prototype
 
 function Signal:__tostring()
 	return "Signal"
 end
 
-function Signal:connect(fn: Proc<...any>, ...)
+function Signal.is(object)
+	return type(object) == "table" and getmetatable(object) == Signal
+end
+
+function Signal.new()
+	return setmetatable({}, Signal) :: Signal<...any>
+end
+
+function Signal.prototype:connect(fn: Proc<...any>, ...)
 	if select("#", ...) > 0 then
 		error(('"connect" method expects exactly one procedure, got (%s) as well'):format(outputHelper(...)), 2)
 	end
@@ -94,7 +105,7 @@ function Signal:connect(fn: Proc<...any>, ...)
 	return connection
 end
 
-function Signal:fire(...)
+function Signal.prototype:fire(...)
 	local connection = self._last
 
 	while connection do
@@ -103,14 +114,14 @@ function Signal:fire(...)
 				freeRunnerThread = coroutine.create(runEventHandlerInFreeThread)
 			end
 
-			task.spawn(freeRunnerThread, connection._fn, ...)
+			task.spawn(freeRunnerThread :: thread, connection._fn, ...)
 		end
 
 		connection = connection._next
 	end
 end
 
-function Signal:wait(): ...any
+function Signal.prototype:wait()
 	local waitingCoroutine = coroutine.running()
 
 	local connection: Connection = nil
@@ -123,7 +134,7 @@ function Signal:wait(): ...any
 	return coroutine.yield()
 end
 
-function Signal:destroy()
+function Signal.prototype:destroy()
 	local last = self._last
 
 	while last do
@@ -134,19 +145,7 @@ function Signal:destroy()
 	self._last = nil
 end
 
-local SignalExport = {
-	is = function(object)
-		return type(object) == "table" and getmetatable(object) == Signal
-	end,
+table.freeze(Signal)
+table.freeze(Signal.prototype)
 
-	new = function()
-		return setmetatable({}, Signal) :: Signal<...any>
-	end,
-}
-
-table.freeze(SignalExport)
-
-return SignalExport :: {
-	is: (object: any) -> boolean,
-	new: <T...>() -> Signal<T...>,
-}
+return Signal
