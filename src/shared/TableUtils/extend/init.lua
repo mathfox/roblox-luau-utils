@@ -9,6 +9,7 @@ local function extend(target: Array<any>, ...: Array<any>?)
 			table.move(source, 1, #source, #target + 1, target)
 		end
 	end
+
 	return target
 end
 

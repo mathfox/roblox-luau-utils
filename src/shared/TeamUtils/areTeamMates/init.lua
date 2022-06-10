@@ -7,7 +7,7 @@ local function areTeamMates(...: Player)
 
 	local teams: { Team } = {}
 
-	for _, mate in ipairs(mates) do
+	for _, mate in mates do
 		if mate.Neutral then
 			return false
 		end

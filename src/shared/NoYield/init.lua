@@ -7,6 +7,10 @@
 	given function will be returned.
 ]]
 
+local Types = require(script.Parent.Types)
+
+type Array<T> = Types.Array<T>
+
 local function outputHelper(...)
 	local length = select("#", ...)
 	local tbl: Array<string> = table.create(length)

@@ -32,7 +32,6 @@ local function immutableRemoveValue(list, removeValue)
 end
 
 local Signal = {}
-
 Signal.__index = Signal
 
 function Signal.new(store)
@@ -70,12 +69,7 @@ function Signal:connect(callback)
 
 	local function disconnect()
 		if listener.disconnected then
-			error(
-				("Listener connected at: \n%s\n" .. "was already disconnected at: \n%s\n"):format(
-					tostring(listener.connectTraceback),
-					tostring(listener.disconnectTraceback)
-				)
-			)
+			error(("Listener connected at: \n%s\n" .. "was already disconnected at: \n%s\n"):format(tostring(listener.connectTraceback), tostring(listener.disconnectTraceback)))
 		end
 
 		if self._store and self._store._isDispatching then
@@ -93,7 +87,7 @@ function Signal:connect(callback)
 end
 
 function Signal:fire(...)
-	for _, listener in ipairs(self._listeners) do
+	for _, listener in self._listeners do
 		if not listener.disconnected then
 			listener.callback(...)
 		end

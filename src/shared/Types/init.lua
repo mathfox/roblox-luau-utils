@@ -1,6 +1,14 @@
 -- reference: https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type
-export type Record<K, V> = { [K]: V }
+export type Record<K, V = K> = { [K]: V }
 export type Array<T> = { T }
+export type EmptyTable = {}
+-- a type all of the tables can be downcasted to
+export type AnyTable = Record<any>
+
+export type Proc<T... = ...any> = (T...) -> ()
+
+-- the table returned by the table.pack function: https://create.roblox.com/docs/reference/engine/libraries/table#pack
+export type PackedValues<T = any> = { n: number, [number]: T }
 
 export type Symbol = {}
 
@@ -53,10 +61,12 @@ export type Option<T> = {
 	mapOrElse: <U>(self: Option<T>, default: () -> U, f: (T) -> U) -> U,
 	okOr: <E>(self: Option<T>, err: E) -> Result<T, E>,
 	okOrElse: <E>(self: Option<T>, err: () -> E) -> Result<T, E>,
-	["and"]: <U>(self: Option<T>, optb: Option<U>) -> Option<U>,
+	-- originally named "and": https://doc.rust-lang.org/std/option/enum.Option.html#method.and
+	andRes: <U>(self: Option<T>, optb: Option<U>) -> Option<U>,
 	andThen: <U>(self: Option<T>, f: (T) -> Option<U>) -> Option<U>,
 	filter: (self: Option<T>, predicate: (T) -> boolean) -> Option<T>,
-	["or"]: (self: Option<T>, optb: Option<T>) -> Option<T>,
+	-- originally named "or": https://doc.rust-lang.org/std/option/enum.Option.html#method.or
+	orRes: (self: Option<T>, optb: Option<T>) -> Option<T>,
 	orElse: (self: Option<T>, f: () -> Option<T>) -> Option<T>,
 	xor: (self: Option<T>, optb: Option<T>) -> Option<T>,
 	take: (self: Option<T>) -> Option<T>,
@@ -143,10 +153,10 @@ export type Promise<T...> = {
 	finallyCall: <R...>(self: Promise<T...>, callback: (R...) -> ...any, R...) -> Promise<T...>,
 	finallyReturn: <R...>(self: Promise<T...>, R...) -> Promise<T...>,
 	getStatus: (self: Promise<T...>) -> EnumeratorItem<string>,
-	-- originally was able to return a Promise.reject with only one value passed: https://eryn.io/roblox-lua-promise/api/Promise#now
+	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#now
 	now: <E...>(self: Promise<T...>, E...) -> Promise<T...> | Promise<E...>,
 	tap: (self: Promise<T...>, tapHandler: (T...) -> ...any) -> Promise<T...>,
-	-- originally was able to return a Promise.reject with only one value passed: https://eryn.io/roblox-lua-promise/api/Promise#timeout
+	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#timeout
 	timeout: <E...>(self: Promise<T...>, seconds: number, E...) -> Promise<T...> | Promise<E...>,
 }
 
@@ -237,22 +247,16 @@ export type Friend = {
 	IsOnline: boolean,
 }
 
-export type PackedValues = { n: number, [number]: any }
-
-export type Fn<T..., R...> = (T...) -> R...
-export type Proc<T...> = (T...) -> ()
-
+-- rodux related types, reference: https://roblox.github.io/rodux/
+-- some types reference: https://github.com/Roblox/rodux/commit/07f634e1dffd173f9e160fed40e1f03b9d17e619
 export type RoduxStore = {
 	getState: (self: RoduxStore) -> {},
 	dispatch: (self: RoduxStore, action: RoduxAction) -> (),
 	flush: (self: RoduxStore) -> (),
 	destruct: (self: RoduxStore) -> (),
 }
-
-export type RoduxAction = { type: string, [any]: any }
-export type RoduxStoreState = None | boolean | number | string | { [any]: any } | thread | userdata | Fn<(...any), (...any)> | Instance
-
-export type RoduxReducer = (state: RoduxStoreState, action: RoduxAction) -> RoduxStoreState
-export type RoduxReducerHandler = (state: RoduxStoreState, action: RoduxAction) -> ()
+export type RoduxAction<Type = any> = AnyTable & { type: Type }
+export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: (any, Args...) -> Action & { type: Type } }))
+export type RoduxReducer<State = any, Action = RoduxAction> = (State?, Action) -> State
 
 return nil

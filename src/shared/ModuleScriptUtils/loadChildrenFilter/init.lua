@@ -9,7 +9,7 @@ local function loadChildrenFilter(parent: Instance, predicate: (ModuleScript) ->
 
 	local modules: Array<any> = {}
 
-	for _, child in ipairs(parent:GetChildren()) do
+	for _, child in parent:GetChildren() do
 		if child:IsA("ModuleScript") then
 			local bool = predicate(child :: ModuleScript)
 			if type(bool) ~= "boolean" then

@@ -9,7 +9,7 @@ local function loadDescendantsFilter(parent: Instance, predicate: (ModuleScript)
 
 	local modules: Array<any> = {}
 
-	for _, descendant in ipairs(parent:GetDescendants()) do
+	for _, descendant in parent:GetDescendants() do
 		if descendant:IsA("ModuleScript") then
 			local bool = predicate(descendant :: ModuleScript)
 			if type(bool) ~= "boolean" then

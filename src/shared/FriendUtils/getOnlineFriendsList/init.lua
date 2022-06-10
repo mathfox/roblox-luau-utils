@@ -10,7 +10,7 @@ local function getOnlineFriendsList(userId: number)
 	local friendsList: Array<Friend> = {}
 
 	while true do
-		for _, item in ipairs(friendPages:GetCurrentPage()) do
+		for _, item in friendPages:GetCurrentPage() do
 			if item.IsOnline then
 				table.insert(friendsList, item)
 			end

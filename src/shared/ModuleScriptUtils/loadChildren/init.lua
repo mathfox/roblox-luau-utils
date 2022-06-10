@@ -5,7 +5,7 @@ type Array<T> = Types.Array<T>
 local function loadChildren(parent: Instance)
 	local modules: Array<any> = {}
 
-	for _, child in ipairs(parent:GetChildren()) do
+	for _, child in parent:GetChildren() do
 		if child:IsA("ModuleScript") then
 			table.insert(modules, require(child :: ModuleScript))
 		end

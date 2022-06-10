@@ -5,7 +5,7 @@ local function scaleModel(model: Model, scale: number)
 	local primaryCFrame = primaryPart.CFrame
 	local inversedCFrame = primaryCFrame:Inverse()
 
-	for _, part in ipairs(getDescendantsWhichIsA(model, "BasePart")) do
+	for _, part in getDescendantsWhichIsA(model, "BasePart") do
 		part.Size *= scale
 
 		if part ~= primaryPart then

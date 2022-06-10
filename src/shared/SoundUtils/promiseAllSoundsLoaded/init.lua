@@ -8,9 +8,11 @@ type Array<T> = Types.Array<T>
 
 local function promiseAllSoundsLoaded(sounds: Array<Sound>): Promise<Array<Sound>>
 	local promises = {}
-	for _, sound in ipairs(sounds) do
+
+	for _, sound in sounds do
 		table.insert(promises, promiseSoundLoaded(sound))
 	end
+
 	return Promise.all(promises)
 end
 

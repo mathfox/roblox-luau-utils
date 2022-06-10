@@ -6,7 +6,7 @@ local function getDescendantsWhichIsA(parent: Instance, className: string)
 	local descendants = parent:GetDescendants()
 	local arr: Array<Instance> = table.create(#descendants)
 
-	for _, descendant in ipairs(descendants) do
+	for _, descendant in descendants do
 		if descendant:IsA(className) then
 			table.insert(arr, descendant)
 		end

@@ -69,7 +69,7 @@ function Option:okOrElse(err)
 	return if getmetatable(self) == None then require(script.Parent.Result).Err(err()) else require(script.Parent.Result).Ok(self._v)
 end
 
-Option["and"] = function(self, optb)
+function Option:andRes(self, optb)
 	return if getmetatable(self) == None then self else optb
 end
 
@@ -81,7 +81,7 @@ function Option:filter(predicate)
 	return if getmetatable(self) == None then self else if predicate(self._v) then self else None
 end
 
-Option["or"] = function(self, optb)
+function Option:orRes(self, optb)
 	return if getmetatable(self) == None then optb else self
 end
 

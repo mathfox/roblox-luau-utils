@@ -5,9 +5,11 @@ type Array<T> = Types.Array<T>
 
 local function values<V>(source: Record<any, V>): Array<V>
 	local result = table.create(#source)
-	for _, v in pairs(source) do
-		table.insert(result, v)
+
+	for _, value in source do
+		table.insert(result, value)
 	end
+
 	return result
 end
 

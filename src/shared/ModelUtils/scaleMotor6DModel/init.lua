@@ -1,10 +1,10 @@
 local getChildrenWhichIsA = require(script.Parent.Parent.InstanceUtils.getChildrenWhichIsA)
 
 local function scaleMotor6DModel(model: Model, scale: number)
-	for _, part in ipairs(getChildrenWhichIsA(model, "BasePart")) do
+	for _, part in getChildrenWhichIsA(model, "BasePart") do
 		part.Size *= scale
 
-		for _, joint in ipairs(getChildrenWhichIsA(part, "JointInstance")) do
+		for _, joint in getChildrenWhichIsA(part, "JointInstance") do
 			local jointScaleNumber = scale - 1
 
 			joint.C0 += joint.C0.Position * jointScaleNumber

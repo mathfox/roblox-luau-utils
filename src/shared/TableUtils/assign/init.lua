@@ -13,7 +13,7 @@ local function assign<K, V>(target: Record<K, V>, ...: Record<K, V>?)
 	for index = 1, select("#", ...) do
 		local source = select(index, ...)
 		if source ~= nil then
-			for key, value in pairs(source) do
+			for key, value in source do
 				target[key] = if value == None then nil else value
 			end
 		end

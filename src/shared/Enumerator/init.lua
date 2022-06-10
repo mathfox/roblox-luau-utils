@@ -59,7 +59,7 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumValues: Arra
 	if firstKeyType == "number" then
 		local processedValuesMap: Record<string, true> = {}
 
-		for index, value in pairs(enumValues :: Array<string>) do
+		for index, value in enumValues :: Array<string> do
 			if processedValuesMap[value] then
 				error(('(%s) value specified twice in "enumValues" (#2 argument) table which presumably should be an Array<string>'):format(value), 2)
 			elseif type(index) ~= "number" then
@@ -139,7 +139,7 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumValues: Arra
 	else
 		local firstValueType = typeof(select(2, next(enumValues)))
 
-		for key, value in pairs(enumValues :: Record<string, T>) do
+		for key, value in enumValues :: Record<string, T> do
 			if type(key) ~= "string" then
 				error(
 					('invalid key specified in "enumValues" (#2 argument) whose type is presumably is a Record<string, %s>, expected a string but got (%s) instead'):format(
@@ -188,7 +188,7 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumValues: Arra
 			return false
 		end
 
-		for _, enumeratorItem in pairs(keysToEnumeratorItems) do
+		for _, enumeratorItem in keysToEnumeratorItems do
 			if enumeratorItem == value then
 				return true
 			end
@@ -201,7 +201,7 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumValues: Arra
 		local enumeratorItems = table.create(totalEnumeratorItems) :: Array<EnumeratorItem<T>>
 		local length = 0
 
-		for _, enumeratorItem in pairs(keysToEnumeratorItems) do
+		for _, enumeratorItem in keysToEnumeratorItems do
 			length += 1
 			enumeratorItems[length] = enumeratorItem
 		end
