@@ -104,8 +104,8 @@ export type InstanceCacheParams<T> = {
 export type SerializedColor3 = { number }
 export type SerializedCFrame = { number }
 
-export type EnumeratorItem<T> = { name: string, value: T, type: Enumerator<T> }
-export type Enumerator<T> = {
+export type EnumeratorItem<T = string> = { name: string, value: T, type: Enumerator<T> }
+export type Enumerator<T = string> = {
 	fromRawValue: (rawValue: T) -> EnumeratorItem<T>?,
 	isEnumeratorItem: (value: any) -> boolean,
 	getEnumeratorItems: () -> { EnumeratorItem<T> },

@@ -1,6 +1,7 @@
 local RunService = game:GetService("RunService")
 
 local NoYield = require(script.Parent.Parent.NoYield)
+
 local Signal = require(script.Parent.Signal)
 
 local ACTION_LOG_LENGTH = 3
@@ -44,10 +45,7 @@ function Store.new(reducer, initialState, middlewares, errorReporter)
 
 	if middlewares ~= nil then
 		for i = 1, #middlewares, 1 do
-			assert(
-				typeof(middlewares[i]) == "function",
-				("Expected the middleware ('%s') at index %d to be a function."):format(tostring(middlewares[i]), i)
-			)
+			assert(typeof(middlewares[i]) == "function", ("Expected the middleware ('%s') at index %d to be a function."):format(tostring(middlewares[i]), i))
 		end
 	end
 
@@ -136,12 +134,7 @@ function Store:dispatch(action)
 	end
 
 	if action.type == nil then
-		error(
-			"Actions may not have an undefined 'type' property. "
-				.. "Have you misspelled a constant? \n"
-				.. tostring(action),
-			2
-		)
+		error("Actions may not have an undefined 'type' property. " .. "Have you misspelled a constant? \n" .. tostring(action), 2)
 	end
 
 	if self._isDispatching then
@@ -173,7 +166,7 @@ end
 	Marks the store as deleted, disconnecting any outstanding connections.
 ]]
 function Store:destruct()
-	for _, connection in ipairs(self._connections) do
+	for _, connection in self._connections do
 		connection:Disconnect()
 	end
 

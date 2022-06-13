@@ -19,7 +19,7 @@ local function outputHelper(...)
 	return table.concat(tbl, ", ")
 end
 
-local function makeActionCreator<Type, Action, Args...>(name: Type, fn: Fn<(Args...), (Action)>, ...)
+local function makeActionCreator<Type, Action, Args...>(name: Type, fn: (Args...) -> Action, ...): ActionCreator<Type, Action, Args...>
 	if type(fn) ~= "function" then
 		error(('"fn" (#2 argument) must be function which is responsible for actions create, got (%s) instead'):format(outputHelper(fn)), 2)
 	elseif select("#", ...) > 0 then

@@ -7,7 +7,7 @@ local function prettyPrint(value, indentLevel)
 	if typeof(value) == "table" then
 		table.insert(output, "{\n")
 
-		for tableKey, tableValue in pairs(value) do
+		for tableKey, tableValue in value do
 			table.insert(output, indent:rep(indentLevel + 1))
 			table.insert(output, tostring(tableKey))
 			table.insert(output, " = ")
