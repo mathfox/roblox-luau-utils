@@ -1,5 +1,9 @@
 {
    "name": "roblox-luau-utils-test",
+   "globIgnorePaths": [
+      "submodules/**/*.spec.lua",
+      "submodules/**/*.spec"
+   ],
    "tree": {
       "$className": "DataModel",
       "ReplicatedStorage": {

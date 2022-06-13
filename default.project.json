@@ -1,7 +1,8 @@
 {
    "name": "roblox-luau-utils",
    "globIgnorePaths": [
-      "**/*.spec.lua"
+      "**/*.spec.lua",
+      "**/*.spec"
    ],
    "tree": {
       "$className": "DataModel",
