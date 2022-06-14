@@ -24,7 +24,7 @@ local function match(object: MatchableObject)
 				error("pattern Err(_) not covered", 2)
 			end
 
-			for k in pairs(matches) do
+			for k in matches do
 				if k ~= "Ok" and k ~= "Err" then
 					error(('"matches" should only contain "Ok" and "Err" keys, but "%s" found'):format(tostring(k)), 2)
 				end
@@ -59,7 +59,7 @@ local function match(object: MatchableObject)
 				error("pattern None not covered", 2)
 			end
 
-			for k in pairs(matches) do
+			for k in matches do
 				if k ~= "Some" and k ~= "None" then
 					error(('"matches" should only contain "Some" and "None" keys, but "%s" found'):format(tostring(k)), 2)
 				end

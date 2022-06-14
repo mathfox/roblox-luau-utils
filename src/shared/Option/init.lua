@@ -123,6 +123,10 @@ function Option:contains(x)
 	return getmetatable(self) == Some and self._v == x
 end
 
+function Option:match(onSome, onNone)
+	return if getmetatable(self) == Some then onSome(self._v) else onNone()
+end
+
 None.__index = Option
 
 function None:__tostring()

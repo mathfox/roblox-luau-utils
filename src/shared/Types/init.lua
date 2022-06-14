@@ -42,6 +42,8 @@ export type Result<T, E> = {
 	unwrapOrElse: (self: Result<T, E>, op: (E) -> T) -> T,
 	contains: <U>(self: Result<T, E>, x: U) -> boolean,
 	containsErr: <F>(self: Result<T, E>, f: F) -> boolean,
+	-- luau specific method in order to simulate match keyword from rust
+	match: <U>(self: Result<T, E>, onOk: (T) -> U, onErr: (E) -> U) -> U,
 }
 
 -- reference: https://doc.rust-lang.org/std/option/enum.Option.html
@@ -72,13 +74,15 @@ export type Option<T> = {
 	take: (self: Option<T>) -> Option<T>,
 	replace: (self: Option<T>, value: T) -> Option<T>,
 	contains: <U>(self: Option<T>, x: U) -> boolean,
+	-- luau specific method in order to simulate match keyword from rust
+	match: <U>(self: Option<T>, onSome: (T) -> U, onNone: () -> U) -> U,
 }
 
 export type Connection = {
 	connected: boolean,
 	disconnect: (self: Connection) -> (),
 }
-export type Signal<T...> = {
+export type Signal<T... = ...any> = {
 	connect: (self: Signal<T...>, fn: Proc<T...>) -> Connection,
 	fire: (self: Signal<T...>, T...) -> (),
 	wait: (self: Signal<T...>) -> T...,

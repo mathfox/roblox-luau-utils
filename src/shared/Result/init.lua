@@ -132,6 +132,10 @@ function Result:containsErr(f)
 	return getmetatable(self) == Err and self._v == f
 end
 
+function Result:match<T, E>(onOk: (T) -> (), onErr: (E) -> ())
+	return if getmetatable(self) == Ok then onOk(self._v :: T) else onErr(self._v :: E)
+end
+
 table.freeze(Result)
 
 Ok.__index = Result
