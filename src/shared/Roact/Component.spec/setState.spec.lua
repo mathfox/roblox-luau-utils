@@ -2,7 +2,7 @@ return function()
 	local createElement = require(script.Parent.Parent.createElement)
 	local createReconciler = require(script.Parent.Parent.createReconciler)
 	local createSpy = require(script.Parent.Parent.createSpy)
-	local None = require(script.Parent.Parent.Parent.None)
+	local Option = require(script.Parent.Parent.Parent.Option)
 	local NoopRenderer = require(script.Parent.Parent.NoopRenderer)
 
 	local Component = require(script.Parent.Parent.Component)
@@ -158,7 +158,7 @@ return function()
 			expect(getStateCallback().value).to.equal(0)
 
 			setStateCallback({
-				value = None,
+				value = Option.None,
 			})
 
 			expect(getStateCallback().value).to.equal(nil)

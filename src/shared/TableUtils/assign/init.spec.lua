@@ -1,5 +1,5 @@
 return function()
-	local None = require(script.Parent.Parent.Parent.None)
+	local Option = require(script.Parent.Parent.Parent.Option)
 
 	local assign = require(script.Parent.Parent.Parent.TableUtils.assign)
 
@@ -39,7 +39,7 @@ return function()
 		}
 
 		local source = {
-			foo = None,
+			foo = Option.None,
 		}
 
 		assign(target, source)
@@ -54,7 +54,7 @@ return function()
 		}
 
 		local source1 = {
-			foo = None,
+			foo = Option.None,
 		}
 
 		local source2 = {

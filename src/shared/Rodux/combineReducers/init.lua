@@ -13,7 +13,7 @@ local function combineReducers(map: Record<any, Reducer>)
 
 		local newState = {}
 
-		for key, reducer in pairs(map) do
+		for key, reducer in map do
 			-- Each reducer gets its own state, not the entire state table
 			newState[key] = reducer(state[key], action)
 		end

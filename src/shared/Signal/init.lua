@@ -3,7 +3,6 @@ local Types = require(script.Parent.Types)
 export type Signal<T...> = Types.Signal<T...>
 export type Connection = Types.Connection
 type Proc<T...> = Types.Proc<T...>
-type Array<T> = Types.Array<T>
 
 local freeRunnerThread: thread? = nil
 local runEventHandlerInFreeThread = nil
@@ -25,18 +24,6 @@ do
 	end
 end
 
-local function outputHelper(...)
-	local length = select("#", ...)
-	local arr: Array<string> = table.create(length)
-
-	for index = 1, length do
-		local value = select(index, ...)
-		table.insert(arr, ('"%s": %s'):format(tostring(value), typeof(value)))
-	end
-
-	return table.concat(arr, ", ")
-end
-
 local Connection = {} :: Connection & {
 	_signal: Signal<...any> & { _last: (Connection & { _next: Connection? })? },
 	_fn: Proc<...any>,
@@ -48,7 +35,7 @@ function Connection:__tostring()
 	return "Connection"
 end
 
-function Connection:disconnect()
+function Connection:disconnect(...)
 	if self.connected then
 		self.connected = false
 
@@ -67,6 +54,8 @@ function Connection:disconnect()
 		end
 	end
 end
+
+table.freeze(Connection)
 
 type LastConnection = Connection & { _next: LastConnection? }
 
@@ -89,10 +78,6 @@ function Signal.new()
 end
 
 function Signal.prototype:connect(fn: Proc<...any>, ...)
-	if select("#", ...) > 0 then
-		error(('"connect" method expects exactly one procedure, got (%s) as well'):format(outputHelper(...)), 2)
-	end
-
 	local connection = setmetatable({ _signal = self, _fn = fn }, Connection) :: Connection
 
 	if self._last then
@@ -119,7 +104,7 @@ function Signal.prototype:fire(...)
 	end
 end
 
-function Signal.prototype:wait()
+function Signal.prototype:wait(...)
 	local waitingCoroutine = coroutine.running()
 
 	local connection: Connection = nil
@@ -132,7 +117,7 @@ function Signal.prototype:wait()
 	return coroutine.yield()
 end
 
-function Signal.prototype:destroy()
+function Signal.prototype:destroy(...)
 	local last = self._last
 
 	while last do

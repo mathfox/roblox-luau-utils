@@ -4,7 +4,6 @@ return function()
 	if true then
 		return
 	end
-
 	local Promise = require(script.Parent)
 	Promise.TEST = true
 

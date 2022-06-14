@@ -1,11 +1,11 @@
 local assign = require(script.Parent.Parent.TableUtils.assign)
 local Ref = require(script.Parent.PropMarkers.Ref)
-local None = require(script.Parent.Parent.None)
+local Option = require(script.Parent.Parent.Option)
 
 local config = require(script.Parent.GlobalConfig).get()
 
 local excludeRef = {
-	[Ref] = None,
+	[Ref] = Option.None,
 }
 
 --[[

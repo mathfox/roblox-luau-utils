@@ -1,5 +1,9 @@
+local Types = require(script.Parent.Parent.Types)
+
+type Array<T> = Types.Array<T>
+
 -- Returns a total magnitude between waypoints.
-local function getPathWaypointsMagnitude(waypoints: { PathWaypoint })
+local function getPathWaypointsMagnitude(waypoints: Array<PathWaypoint>)
 	local previousPosition, magnitude = waypoints[1].Position, 0
 
 	-- skip initial waypoint as its magnitude will always be 0

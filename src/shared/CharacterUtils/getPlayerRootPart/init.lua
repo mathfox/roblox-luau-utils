@@ -1,3 +1,5 @@
+--!strict
+
 local getPlayerHumanoid = require(script.Parent.getPlayerHumanoid)
 
 local function getPlayerRootPart(player: Player)

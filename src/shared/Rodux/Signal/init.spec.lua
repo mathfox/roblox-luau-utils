@@ -1,5 +1,5 @@
 return function()
-	local Signal = require(script.Parent.Signal)
+	local Signal = require(script.Parent)
 
 	it("should construct from nothing", function()
 		local signal = Signal.new()

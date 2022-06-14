@@ -3,7 +3,9 @@ return function()
 	local Players = game:GetService("Players")
 	local getPlayerFromCharacterDescendant = require(script.Parent)
 
-	getfenv(getPlayerFromCharacterDescendant).__TEST__ = true
+	getPlayerFromCharacterDescendant.method = function(descendant: Instance)
+		return Players:FindFirstChild(descendant.Name)
+	end
 
 	it("should not return Player from the Character itself", function()
 		expect(function()

@@ -1,33 +1,24 @@
+--!strict
+
 local Players = game:GetService("Players")
 
-local function getPlayerFromCharacterDescendant(descendant: Instance)
-	if __TEST__ then
-		repeat
-			descendant = descendant.Parent
-
-			if not descendant then
-				return nil
-			end
-
-			local player: Instance? = Players:FindFirstChild(descendant.Name)
-			if player then
-				return player :: Instance
-			end
-		until false
-	else
-		repeat
-			descendant = descendant.Parent
-
-			if not descendant then
-				return nil
-			end
-
-			local player: Player? = Players:GetPlayerFromCharacter(descendant)
+local getPlayerFromCharacterDescendant = setmetatable({
+	method = function(descendant: Instance)
+		return Players:GetPlayerFromCharacter(descendant)
+	end,
+}, {
+	__call = function(self, descendant: Instance): Player?
+		while descendant.Parent do
+			local player: Player? = self.method(descendant.Parent)
 			if player then
 				return player :: Player
 			end
-		until false
-	end
-end
 
-return getPlayerFromCharacterDescendant
+			descendant = descendant.Parent
+		end
+
+		return nil
+	end,
+})
+
+return getPlayerFromCharacterDescendant :: typeof(setmetatable({}, getmetatable(getPlayerFromCharacterDescendant)))

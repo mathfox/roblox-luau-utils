@@ -2,7 +2,7 @@ return function()
 	local assertDeepEqual = require(script.Parent.Parent.Parent.assertDeepEqual)
 	local createElement = require(script.Parent.Parent.createElement)
 	local createReconciler = require(script.Parent.Parent.createReconciler)
-	local None = require(script.Parent.Parent.Parent.None)
+	local Option = require(script.Parent.Parent.Parent.Option)
 	local NoopRenderer = require(script.Parent.Parent.NoopRenderer)
 
 	local Component = require(script.Parent.Parent.Component)
@@ -104,7 +104,7 @@ return function()
 		end
 
 		local initialProps = {
-			b = None,
+			b = Option.None,
 			c = 4,
 		}
 

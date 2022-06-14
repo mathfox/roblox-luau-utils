@@ -27,11 +27,11 @@ function Queue.prototype:dequeue(posOverride: number?)
 	return unpack(tbl, 1, tbl.n)
 end
 
-function Queue.prototype:getFront(): ...any
+function Queue.prototype:getFront()
 	return unpack(self._queue[#self._queue])
 end
 
-function Queue.prototype:getBack(): ...any
+function Queue.prototype:getBack()
 	return unpack(self._queue[1])
 end
 

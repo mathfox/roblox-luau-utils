@@ -1,5 +1,5 @@
+local Option = require(script.Parent.Parent.Option)
 local Types = require(script.Parent.Parent.Types)
-local None = require(script.Parent.Parent.None)
 
 type Record<K, V> = Types.Record<K, V>
 
@@ -14,7 +14,7 @@ local function assign<K, V>(target: Record<K, V>, ...: Record<K, V>?)
 		local source = select(index, ...)
 		if source ~= nil then
 			for key, value in source do
-				target[key] = if value == None then nil else value
+				target[key] = if value == Option.None then nil else value
 			end
 		end
 	end
