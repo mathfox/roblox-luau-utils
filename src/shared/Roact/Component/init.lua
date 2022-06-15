@@ -14,7 +14,7 @@ local config = require(script.Parent.GlobalConfig).get()
 ]]
 local MAX_PENDING_UPDATES = 100
 
-local InternalData = Symbol.named("InternalData")
+local InternalData = Symbol("InternalData")
 
 local componentMissingRenderMessage = [[
 The component %q is missing the `render` method.
@@ -104,11 +104,7 @@ function Component:setState(mapState)
 		to call `setState` as it will interfere with in-flight updates. It's
 		also disallowed during unmounting
 	]]
-	if
-		lifecyclePhase == ComponentLifecyclePhase.ShouldUpdate
-		or lifecyclePhase == ComponentLifecyclePhase.WillUpdate
-		or lifecyclePhase == ComponentLifecyclePhase.Render
-	then
+	if lifecyclePhase == ComponentLifecyclePhase.ShouldUpdate or lifecyclePhase == ComponentLifecyclePhase.WillUpdate or lifecyclePhase == ComponentLifecyclePhase.Render then
 		local messageTemplate = invalidSetStateMessages[internalData.lifecyclePhase]
 
 		local message = messageTemplate:format(tostring(internalData.componentClass))
@@ -145,11 +141,7 @@ function Component:setState(mapState)
 		-- If `setState` is called in `init`, we can skip triggering an update!
 		local derivedState = self:__getDerivedState(self.props, newState)
 		self.state = assign(newState, derivedState)
-	elseif
-		lifecyclePhase == ComponentLifecyclePhase.DidMount
-		or lifecyclePhase == ComponentLifecyclePhase.DidUpdate
-		or lifecyclePhase == ComponentLifecyclePhase.ReconcileChildren
-	then
+	elseif lifecyclePhase == ComponentLifecyclePhase.DidMount or lifecyclePhase == ComponentLifecyclePhase.DidUpdate or lifecyclePhase == ComponentLifecyclePhase.ReconcileChildren then
 		--[[
 			During certain phases of the component lifecycle, it's acceptable to
 			allow `setState` but defer the update until we're done with ones in flight.
@@ -253,26 +245,14 @@ function Component:__validateProps(props)
 	end
 
 	if typeof(validator) ~= "function" then
-		error(
-			("validateProps must be a function, but it is a %s.\nCheck the definition of the component %q."):format(
-				typeof(validator),
-				self.__componentName
-			)
-		)
+		error(("validateProps must be a function, but it is a %s.\nCheck the definition of the component %q."):format(typeof(validator), self.__componentName))
 	end
 
 	local success, failureReason = validator(props)
 
 	if not success then
 		failureReason = failureReason or "<Validator function did not supply a message>"
-		error(
-			("Property validation failed in %s: %s\n\n%s"):format(
-				self.__componentName,
-				tostring(failureReason),
-				self:getElementTraceback() or "<enable element tracebacks>"
-			),
-			0
-		)
+		error(("Property validation failed in %s: %s\n\n%s"):format(self.__componentName, tostring(failureReason), self:getElementTraceback() or "<enable element tracebacks>"), 0)
 	end
 end
 
@@ -381,14 +361,8 @@ end
 function Component:__update(updatedElement, updatedState)
 	if config.internalTypeChecks then
 		internalAssert(Type.of(self) == Type.StatefulComponentInstance, "Invalid use of `__update`")
-		internalAssert(
-			Type.of(updatedElement) == Type.Element or updatedElement == nil,
-			"Expected arg #1 to be of type Element or nil"
-		)
-		internalAssert(
-			typeof(updatedState) == "table" or updatedState == nil,
-			"Expected arg #2 to be of type table or nil"
-		)
+		internalAssert(Type.of(updatedElement) == Type.Element or updatedElement == nil, "Expected arg #1 to be of type Element or nil")
+		internalAssert(typeof(updatedState) == "table" or updatedState == nil, "Expected arg #2 to be of type table or nil")
 	end
 
 	local internalData = self[InternalData]

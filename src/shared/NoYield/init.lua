@@ -7,22 +7,6 @@
 	given function will be returned.
 ]]
 
-local Types = require(script.Parent.Types)
-
-type Array<T> = Types.Array<T>
-
-local function outputHelper(...)
-	local length = select("#", ...)
-	local tbl: Array<string> = table.create(length)
-
-	for index = 1, length do
-		local value = select(index, ...)
-		table.insert(tbl, ('"%s": %s'):format(tostring(value), typeof(value)))
-	end
-
-	return table.concat(tbl, ", ")
-end
-
 -- * important to note that NoYield will only return the tuple returned from the co thread
 local function resultHandler<R...>(message: string, co: thread, ok: boolean, ...: R...)
 	if not ok then
@@ -36,14 +20,6 @@ end
 
 -- provide nil in case message is not yet specified
 local function NoYield<T..., R...>(messageOrNil: string?, callback: (T...) -> R..., ...: T...)
-	if type(messageOrNil) ~= "string" and messageOrNil ~= nil then
-		error(('"messageOrNil" (#1 argument) must be either a string or nil, got (%s) instead'):format(outputHelper(messageOrNil)), 2)
-	elseif messageOrNil == "" then
-		error('"messageOrNil" (#1 argument) must be either a non-empty string or nil, got an empty string', 2)
-	elseif type(callback) ~= "function" then
-		error(('"callback" (#2 argument) must be a function, got (%s) instead'):format(outputHelper(callback)), 2)
-	end
-
 	local co = coroutine.create(callback)
 
 	return resultHandler(messageOrNil or 'provided "callback" (#2 argument) function attempted to yield', co, coroutine.resume(co, ...))

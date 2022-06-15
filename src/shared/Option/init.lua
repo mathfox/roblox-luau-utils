@@ -25,13 +25,15 @@ function Option:expect(msg)
 	if getmetatable(self) == None then
 		error(msg, 2)
 	end
+
 	return self._v
 end
 
 function Option:unwrap()
 	if getmetatable(self) == None then
-		error()
+		error(nil, 2)
 	end
+
 	return self._v
 end
 
@@ -95,6 +97,7 @@ end
 
 function Option:take()
 	local opt = setmetatable({}, None)
+
 	if getmetatable(self) == None then
 		return opt
 	end
@@ -108,7 +111,7 @@ end
 
 function Option:replace(value)
 	if value == nil then
-		error()
+		error(nil, 2)
 	end
 
 	local prev = if getmetatable(self) == None then setmetatable({}, None) else setmetatable({ _v = self._v }, Some)

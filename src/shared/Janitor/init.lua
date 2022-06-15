@@ -2,8 +2,8 @@ local Promise = require(script.Parent.Promise)
 local Symbol = require(script.Parent.Symbol)
 local Types = require(script.Parent.Types)
 
-local LinkToInstanceIndex = Symbol.named("LinkToInstanceIndex")
-local IndicesReference = Symbol.named("IndicesReference")
+local LinkToInstanceIndex = Symbol("LinkToInstanceIndex")
+local IndicesReference = Symbol("IndicesReference")
 
 local DEFAULT_METHOD_NAMES = {
 	RBXScriptConnection = "Disconnect",

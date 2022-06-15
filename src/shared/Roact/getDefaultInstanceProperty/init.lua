@@ -10,7 +10,7 @@
 
 local Symbol = require(script.Parent.Parent.Symbol)
 
-local Nil = Symbol.named("Nil")
+local Nil = Symbol("Nil")
 local _cachedPropertyValues = {}
 
 local function getDefaultInstanceProperty(className, propertyName)

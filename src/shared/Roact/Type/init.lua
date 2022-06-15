@@ -16,7 +16,7 @@ local Type = newproxy(true)
 local TypeInternal = {}
 
 local function addType(name)
-	TypeInternal[name] = Symbol.named("Roact" .. name)
+	TypeInternal[name] = Symbol("Roact" .. name)
 end
 
 addType("Binding")

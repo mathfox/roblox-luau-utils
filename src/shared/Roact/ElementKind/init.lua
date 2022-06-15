@@ -14,11 +14,11 @@ local Portal = require(script.Parent.Portal)
 local ElementKind = newproxy(true)
 
 local ElementKindInternal = {
-	Portal = Symbol.named("Portal"),
-	Host = Symbol.named("Host"),
-	Function = Symbol.named("Function"),
-	Stateful = Symbol.named("Stateful"),
-	Fragment = Symbol.named("Fragment"),
+	Portal = Symbol("Portal"),
+	Host = Symbol("Host"),
+	Function = Symbol("Function"),
+	Stateful = Symbol("Stateful"),
+	Fragment = Symbol("Fragment"),
 }
 
 function ElementKindInternal.of(value)

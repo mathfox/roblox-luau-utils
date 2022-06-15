@@ -8,7 +8,7 @@ local internalAssert = require(script.Parent.internalAssert)
 
 local config = require(script.Parent.GlobalConfig).get()
 
-local InternalData = Symbol.named("InternalData")
+local InternalData = Symbol("InternalData")
 
 --[[
 	The reconciler is the mechanism in Roact that constructs the virtual tree
@@ -112,13 +112,7 @@ local function createReconciler(renderer)
 			end
 
 			if virtualNode.children[childKey] == nil then
-				local childNode = mountVirtualNode(
-					newElement,
-					hostParent,
-					concreteKey,
-					virtualNode.context,
-					virtualNode.legacyContext
-				)
+				local childNode = mountVirtualNode(newElement, hostParent, concreteKey, virtualNode.context, virtualNode.legacyContext)
 
 				-- If updating this node has caused a component higher up the tree to re-render
 				-- and updateChildren to be re-entered for this virtualNode then
@@ -148,13 +142,7 @@ local function createReconciler(renderer)
 		if Type.of(renderResult) == Type.Element or renderResult == nil or typeof(renderResult) == "boolean" then
 			updateChildren(virtualNode, hostParent, renderResult)
 		else
-			error(
-				("%s\n%s"):format(
-					"Component returned invalid children:",
-					virtualNode.currentElement.source or "<enable element tracebacks>"
-				),
-				0
-			)
+			error(("%s\n%s"):format("Component returned invalid children:", virtualNode.currentElement.source or "<enable element tracebacks>"), 0)
 		end
 	end
 
@@ -242,10 +230,7 @@ local function createReconciler(renderer)
 			internalAssert(Type.of(virtualNode) == Type.VirtualNode, "Expected arg #1 to be of type VirtualNode")
 		end
 		if config.typeChecks then
-			assert(
-				Type.of(newElement) == Type.Element or typeof(newElement) == "boolean" or newElement == nil,
-				"Expected arg #2 to be of type Element, boolean, or nil"
-			)
+			assert(Type.of(newElement) == Type.Element or typeof(newElement) == "boolean" or newElement == nil, "Expected arg #2 to be of type Element, boolean, or nil")
 		end
 
 		-- If nothing changed, we can skip this update
@@ -296,22 +281,13 @@ local function createReconciler(renderer)
 	]]
 	local function createVirtualNode(element, hostParent, hostKey, context, legacyContext)
 		if config.internalTypeChecks then
-			internalAssert(
-				renderer.isHostObject(hostParent) or hostParent == nil,
-				"Expected arg #2 to be a host object"
-			)
+			internalAssert(renderer.isHostObject(hostParent) or hostParent == nil, "Expected arg #2 to be a host object")
 			internalAssert(typeof(context) == "table" or context == nil, "Expected arg #4 to be of type table or nil")
-			internalAssert(
-				typeof(legacyContext) == "table" or legacyContext == nil,
-				"Expected arg #5 to be of type table or nil"
-			)
+			internalAssert(typeof(legacyContext) == "table" or legacyContext == nil, "Expected arg #5 to be of type table or nil")
 		end
 		if config.typeChecks then
 			assert(hostKey ~= nil, "Expected arg #3 to be non-nil")
-			assert(
-				Type.of(element) == Type.Element or typeof(element) == "boolean",
-				"Expected arg #1 to be of type Element or boolean"
-			)
+			assert(Type.of(element) == Type.Element or typeof(element) == "boolean", "Expected arg #1 to be of type Element or boolean")
 		end
 
 		return {
@@ -374,21 +350,12 @@ local function createReconciler(renderer)
 	]]
 	function mountVirtualNode(element, hostParent, hostKey, context, legacyContext)
 		if config.internalTypeChecks then
-			internalAssert(
-				renderer.isHostObject(hostParent) or hostParent == nil,
-				"Expected arg #2 to be a host object"
-			)
-			internalAssert(
-				typeof(legacyContext) == "table" or legacyContext == nil,
-				"Expected arg #5 to be of type table or nil"
-			)
+			internalAssert(renderer.isHostObject(hostParent) or hostParent == nil, "Expected arg #2 to be a host object")
+			internalAssert(typeof(legacyContext) == "table" or legacyContext == nil, "Expected arg #5 to be of type table or nil")
 		end
 		if config.typeChecks then
 			assert(hostKey ~= nil, "Expected arg #3 to be non-nil")
-			assert(
-				Type.of(element) == Type.Element or typeof(element) == "boolean",
-				"Expected arg #1 to be of type Element or boolean"
-			)
+			assert(Type.of(element) == Type.Element or typeof(element) == "boolean", "Expected arg #1 to be of type Element or boolean")
 		end
 
 		-- Boolean values render as nil to enable terse conditional rendering.

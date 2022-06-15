@@ -55,8 +55,6 @@ function Connection:disconnect(...)
 	end
 end
 
-table.freeze(Connection)
-
 type LastConnection = Connection & { _next: LastConnection? }
 
 local Signal = {}

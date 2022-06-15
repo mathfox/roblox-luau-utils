@@ -10,7 +10,7 @@ export type Proc<T... = ...any> = (T...) -> ()
 -- the table returned by the table.pack function: https://create.roblox.com/docs/reference/engine/libraries/table#pack
 export type PackedValues<T = any> = { n: number, [number]: T }
 
-export type Symbol = {}
+export type Symbol = typeof(setmetatable({}, {} :: { __tostring: () -> string }))
 
 -- reference: https://doc.rust-lang.org/std/result/enum.Result.html#
 export type Ok<T> = Result<T, nil>

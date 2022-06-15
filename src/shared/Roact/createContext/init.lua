@@ -132,7 +132,7 @@ Context.__index = Context
 function Context.new(defaultValue)
 	return setmetatable({
 		defaultValue = defaultValue,
-		key = Symbol.named("ContextKey"),
+		key = Symbol("ContextKey"),
 	}, Context)
 end
 

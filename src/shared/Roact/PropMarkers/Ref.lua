@@ -1,5 +1,5 @@
 local Symbol = require(script.Parent.Parent.Parent.Symbol)
 
-local Ref = Symbol.named("Ref")
+local Ref = Symbol("Ref")
 
 return Ref

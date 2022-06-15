@@ -4,7 +4,7 @@ local Type = require(script.Parent.Type)
 
 local config = require(script.Parent.GlobalConfig).get()
 
-local BindingImpl = Symbol.named("BindingImpl")
+local BindingImpl = Symbol("BindingImpl")
 
 local BindingInternalApi = {}
 
@@ -96,9 +96,7 @@ function BindingInternalApi.join(upstreamBindings)
 
 		for key, value in pairs(upstreamBindings) do
 			if Type.of(value) ~= Type.Binding then
-				local message = ("Expected arg #1 to contain only bindings, but key %q had a non-binding value"):format(
-					tostring(key)
-				)
+				local message = ("Expected arg #1 to contain only bindings, but key %q had a non-binding value"):format(tostring(key))
 				error(message, 2)
 			end
 		end

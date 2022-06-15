@@ -1,5 +1,5 @@
 local Symbol = require(script.Parent.Parent.Symbol)
 
-local Portal = Symbol.named("Portal")
+local Portal = Symbol("Portal")
 
 return Portal

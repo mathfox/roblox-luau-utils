@@ -14,7 +14,7 @@ local ElementUtils = {}
 	This occurs when you return only one element from a function component or
 	stateful render function.
 ]]
-ElementUtils.UseParentKey = Symbol.named("UseParentKey")
+ElementUtils.UseParentKey = Symbol("UseParentKey")
 
 --[[
 	Returns an iterator over the children of an element.
