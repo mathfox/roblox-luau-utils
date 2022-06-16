@@ -18,11 +18,10 @@ local function resultHandler<R...>(message: string, co: thread, ok: boolean, ...
 	return ...
 end
 
--- provide nil in case message is not yet specified
 local function NoYield<T..., R...>(messageOrNil: string?, callback: (T...) -> R..., ...: T...)
 	local co = coroutine.create(callback)
 
-	return resultHandler(messageOrNil or 'provided "callback" (#2 argument) function attempted to yield', co, coroutine.resume(co, ...))
+	return resultHandler(messageOrNil or "provided function attempted to yield", co, coroutine.resume(co, ...))
 end
 
 return NoYield

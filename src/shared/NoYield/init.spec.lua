@@ -51,12 +51,6 @@ return function()
 		expect(err:find("foo")).to.be.ok()
 	end)
 
-	it("should throw an error when empty string provided as a message argument", function()
-		expect(function()
-			NoYield("", warn)
-		end).to.throw()
-	end)
-
 	it("should throw an error when invalid arguments provided", function()
 		expect(function()
 			NoYield(" ", " ")
