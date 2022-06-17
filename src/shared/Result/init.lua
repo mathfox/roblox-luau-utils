@@ -6,16 +6,16 @@ export type Result<T, E> = Types.Result<T, E>
 export type Err<E> = Types.Err<E>
 export type Ok<T> = Types.Ok<T>
 
-local Ok = {}
-local Err = {}
 local Result = {}
+local Err = {}
+local Ok = {}
 
 function Result:isOk()
 	return getmetatable(self) == Ok
 end
 
 function Result:isOkAnd<T>(f: (T) -> boolean)
-	return if getmetatable(self) == Err then false else f(self._v :: T)
+	return getmetatable(self) == Ok and f(self._v :: T)
 end
 
 function Result:isErr()
@@ -23,7 +23,7 @@ function Result:isErr()
 end
 
 function Result:isErrAnd<E>(f: (E) -> boolean)
-	return if getmetatable(self) == Ok then false else f(self._v :: E)
+	return getmetatable(self) == Err and f(self._v :: E)
 end
 
 function Result:ok<T>()
@@ -166,21 +166,9 @@ local ResultExport = {
 	Ok = function(value)
 		return table.freeze(setmetatable({ _v = value }, Ok))
 	end,
+
 	Err = function(err)
 		return table.freeze(setmetatable({ _v = err }, Err))
-	end,
-
-	_ok = Ok,
-	_err = Err,
-	_result = Result,
-
-	is = function(value)
-		if type(value) ~= "table" then
-			return false
-		end
-
-		local metatable = getmetatable(value)
-		return if metatable then metatable.__index == Result else false
 	end,
 }
 
@@ -189,5 +177,4 @@ table.freeze(ResultExport)
 return ResultExport :: {
 	Ok: <T>(T) -> Result<T, nil>,
 	Err: <E>(E) -> Result<nil, E>,
-	is: (value: any) -> boolean,
 }

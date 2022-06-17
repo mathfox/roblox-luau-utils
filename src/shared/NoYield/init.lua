@@ -7,7 +7,6 @@
 	given function will be returned.
 ]]
 
--- * important to note that NoYield will only return the tuple returned from the co thread
 local function resultHandler<R...>(message: string, co: thread, ok: boolean, ...: R...)
 	if not ok then
 		error(debug.traceback(co, (...)), 2)

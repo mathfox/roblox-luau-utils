@@ -71,11 +71,9 @@ export type Option<T> = {
 	orRes: (self: Option<T>, optb: Option<T>) -> Option<T>,
 	orElse: (self: Option<T>, f: () -> Option<T>) -> Option<T>,
 	xor: (self: Option<T>, optb: Option<T>) -> Option<T>,
-	take: (self: Option<T>) -> Option<T>,
-	replace: (self: Option<T>, value: T) -> Option<T>,
 	contains: <U>(self: Option<T>, x: U) -> boolean,
 	-- luau specific method in order to simulate match keyword from rust
-	match: <U>(self: Option<T>, onSome: (T) -> U, onNone: () -> U) -> U,
+	match: <U...>(self: Option<T>, onSome: (T) -> U..., onNone: () -> U...) -> U...,
 }
 
 export type Connection = {

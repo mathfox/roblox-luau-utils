@@ -1,144 +1,122 @@
 -- reference: https://doc.rust-lang.org/std/option/enum.Option.html
+
 local Types = require(script.Parent.Types)
 
 export type Option<T> = Types.Option<T>
 export type Some<T> = Types.Some<T>
 export type None = Types.None
 
+local Option = {}
 local None = {}
 local Some = {}
-local Option = {}
 
 function Option:isSome()
-	return getmetatable(self) == Some
+	return self ~= None
 end
 
-function Option:isSomeWith(f)
-	return getmetatable(self) == Some and f(self._v)
+function Option:isSomeWith<T>(f: (T) -> boolean)
+	return self ~= None and f(self._v :: T)
 end
 
 function Option:isNone()
-	return getmetatable(self) == None
+	return self == None
 end
 
-function Option:expect(msg)
-	if getmetatable(self) == None then
+function Option:expect<T>(msg: string)
+	if self == None then
 		error(msg, 2)
 	end
 
-	return self._v
+	return self._v :: T
 end
 
-function Option:unwrap()
-	if getmetatable(self) == None then
+function Option:unwrap<T>()
+	if self == None then
 		error(nil, 2)
 	end
 
-	return self._v
+	return self._v :: T
 end
 
-function Option:unwrapOr(default)
-	return if getmetatable(self) == None then default else self._v
+function Option:unwrapOr<T>(default: T)
+	return if self == None then default else self._v :: T
 end
 
-function Option:uwrapOrElse(f)
-	return if getmetatable(self) == None then f() else self._v
+function Option:uwrapOrElse<T>(f: () -> T)
+	return if self == None then f() else self._v :: T
 end
 
-function Option:map(f)
-	return if getmetatable(self) == None then self else setmetatable({ _v = f(self._v) }, Some)
+function Option:map<T, U>(f: (T) -> U)
+	return if self == None then self :: None else table.freeze(setmetatable({ _v = f(self._v) }, Some)) :: Some<U>
 end
 
-function Option:inspect(f)
-	if getmetatable(self) == Some then
-		f(self._v)
+function Option:inspect<T>(f: (T) -> ())
+	if self ~= None then
+		f(self._v :: T)
 	end
 end
 
-function Option:mapOr(default, f)
-	return if getmetatable(self) == None then default else f(self._v)
+function Option:mapOr<T, U>(default: U, f: (T) -> U)
+	return if self == None then default else f(self._v :: T)
 end
 
-function Option:mapOrElse(default, f)
-	return if getmetatable(self) == None then default() else f(self._v)
+function Option:mapOrElse<T, U>(default: () -> U, f: (T) -> U)
+	return if self == None then default() else f(self._v :: T)
 end
 
 function Option:okOr(err)
-	return if getmetatable(self) == None then require(script.Parent.Result).Err(err) else require(script.Parent.Result).Ok(self._v)
+	return if self == None then require(script.Parent.Result).Err(err) else require(script.Parent.Result).Ok(self._v)
 end
 
 function Option:okOrElse(err)
-	return if getmetatable(self) == None then require(script.Parent.Result).Err(err()) else require(script.Parent.Result).Ok(self._v)
+	return if self == None then require(script.Parent.Result).Err(err()) else require(script.Parent.Result).Ok(self._v)
 end
 
-function Option:andRes(self, optb)
-	return if getmetatable(self) == None then self else optb
+-- reference: https://doc.rust-lang.org/std/option/enum.Option.html#method.and
+function Option:andRes<U>(optb: Option<U>)
+	return if self == None then self :: None else optb
 end
 
-function Option:andThen(f)
-	return if getmetatable(self) == None then self else f(self._v)
+function Option:andThen<T, U>(f: (T) -> Option<U>)
+	return if self == None then self :: None else f(self._v :: T)
 end
 
-function Option:filter(predicate)
-	return if getmetatable(self) == None then self else if predicate(self._v) then self else None
+function Option:filter<T>(predicate: (T) -> boolean)
+	return if self == None then self :: None else if predicate(self._v :: T) then self else None :: None
 end
 
-function Option:orRes(self, optb)
-	return if getmetatable(self) == None then optb else self
+-- reference: https://doc.rust-lang.org/std/option/enum.Option.html#method.or
+function Option:orRes<T>(optb: Option<T>)
+	return if self == None then optb else self :: None
 end
 
-function Option:orElse(f)
-	return if getmetatable(self) == None then f() else self
+function Option:orElse<T>(f: () -> Option<T>)
+	return if self == None then f() else self :: None
 end
 
-function Option:xor(optb)
-	return if getmetatable(self) == None then optb ~= None else optb == None
-end
-
-function Option:take()
-	local opt = setmetatable({}, None)
-
-	if getmetatable(self) == None then
-		return opt
-	end
-
-	local v = self._v
-	self._v = nil
-	setmetatable(self, None)
-
-	return setmetatable({ _v = v }, Some)
-end
-
-function Option:replace(value)
-	if value == nil then
-		error(nil, 2)
-	end
-
-	local prev = if getmetatable(self) == None then setmetatable({}, None) else setmetatable({ _v = self._v }, Some)
-
-	self._v = value
-	setmetatable(self, Some)
-
-	return prev
+function Option:xor<T>(optb: Option<T>)
+	return if self == None then optb ~= None else optb == None
 end
 
 function Option:contains(x)
-	return getmetatable(self) == Some and self._v == x
+	return self ~= None and self._v == x
 end
 
-function Option:match(onSome, onNone)
-	return if getmetatable(self) == Some then onSome(self._v) else onNone()
+function Option:match<T, U...>(onSome: (T) -> U..., onNone: () -> U...)
+	return if self == None then onNone() else onSome(self._v)
 end
 
-None.__index = Option
+table.freeze(Option)
 
-function None:__tostring()
-	return "Option<_>"
-end
-
-function None:__eq(v)
-	return type(v) == "table" and getmetatable(v) == None
-end
+table.freeze(setmetatable(
+	None,
+	table.freeze({
+		__index = Option,
+		__tostring = function()
+			return "Option<_>"
+		end,
+	})
+))
 
 Some.__index = Option
 
@@ -150,16 +128,14 @@ function Some:__eq(v)
 	return type(v) == "table" and getmetatable(v) == Some and v == self._v
 end
 
+table.freeze(Some)
+
 local OptionExport = {
-	Some = function<T>(v: T): Option<T>
+	Some = function<T>(v: T): Some<T>
 		return table.freeze(setmetatable({ _v = v }, Some))
 	end,
 
-	None = table.freeze(setmetatable({}, None)) :: Option<nil>,
-
-	_option = Option,
-	_some = Some,
-	_none = None,
+	None = None,
 }
 
 table.freeze(OptionExport)
