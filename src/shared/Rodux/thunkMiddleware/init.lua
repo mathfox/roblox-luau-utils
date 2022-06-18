@@ -22,6 +22,7 @@ local function thunkMiddleware(nextDispatch, store)
 					message = "Caught error in thunk",
 					thrownValue = result,
 				})
+
 				return nil
 			end
 
