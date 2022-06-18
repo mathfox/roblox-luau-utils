@@ -37,4 +37,26 @@ return function()
 			assert(newSignal:wait() == "foo")
 		end).never.throw()
 	end)
+
+	describe(":once()", function()
+		it("should disconnect the connection before invoking the callback", function()
+			expect(function()
+				local resolveAwaitThread = coroutine.running()
+				local signal = Signal.new()
+				local connection = nil
+
+				connection = signal:once(function()
+					task.spawn(resolveAwaitThread)
+				end)
+
+				task.defer(function()
+					signal:fire()
+				end)
+
+				coroutine.yield()
+
+				assert(not connection.connected)
+			end).never.throw()
+		end)
+	end)
 end

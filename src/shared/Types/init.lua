@@ -82,6 +82,8 @@ export type Connection = {
 }
 export type Signal<T... = ...any> = {
 	connect: (self: Signal<T...>, fn: Proc<T...>) -> Connection,
+   -- reference: https://developer.roblox.com/en-us/resources/release-note/Release-Notes-for-531
+	once: (self: Signal<T...>, fn: Proc<T...>) -> Connection,
 	fire: (self: Signal<T...>, T...) -> (),
 	wait: (self: Signal<T...>) -> T...,
 	destroy: (self: Signal<T...>) -> (),

@@ -75,8 +75,29 @@ function Signal.new()
 	return setmetatable({}, Signal) :: Signal<...any>
 end
 
-function Signal.prototype:connect(fn: Proc<...any>, ...)
+function Signal.prototype:connect(fn: Proc<...any>)
 	local connection = setmetatable({ _signal = self, _fn = fn }, Connection) :: Connection
+
+	if self._last then
+		connection._next = self._last
+	end
+	self._last = connection
+
+	return connection
+end
+
+-- reference: https://developer.roblox.com/en-us/resources/release-note/Release-Notes-for-531
+function Signal.prototype:once(fn: Proc<...any>)
+	local connection: Connection = nil
+
+	connection = setmetatable({
+		_signal = self,
+		_fn = function(...)
+			connection:disconnect()
+
+			fn(...)
+		end,
+	}, Connection)
 
 	if self._last then
 		connection._next = self._last
