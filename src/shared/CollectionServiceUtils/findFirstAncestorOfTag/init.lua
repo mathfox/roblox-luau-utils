@@ -1,13 +1,11 @@
 local CollectionService = game:GetService("CollectionService")
 
 local function findFirstAncestorOfTag(child: Instance, tagName: string)
-	local parent = child.Parent
-
-	while parent do
-		if CollectionService:HasTag(parent, tagName) then
-			return parent
+	while child.Parent do
+		if CollectionService:HasTag(child.Parent, tagName) then
+			return child.Parent
 		else
-			parent = parent.Parent
+			child = child.Parent
 		end
 	end
 
