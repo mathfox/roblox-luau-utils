@@ -4,9 +4,9 @@ local function waitForChildWhichIsA(parent: Instance, className: string, timeOut
 	if child then
 		return child
 	elseif not timeOut then
-		while not child or not child:IsA(className) do
+		repeat
 			child = parent.ChildAdded:Wait()
-		end
+		until child and child:IsA(className)
 
 		return child
 	end
@@ -14,7 +14,7 @@ local function waitForChildWhichIsA(parent: Instance, className: string, timeOut
 	local waitingCoroutine = coroutine.running()
 	local childAddedConnection: RBXScriptConnection = nil
 
-	local function resumeWaitingCoroutine(child: Instance)
+	local function resumeWaitingCoroutine(child: Instance?)
 		childAddedConnection:Disconnect()
 
 		task.spawn(waitingCoroutine, child)

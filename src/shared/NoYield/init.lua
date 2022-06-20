@@ -7,7 +7,7 @@
 	given function will be returned.
 ]]
 
-local function resultHandler<R...>(message: string, co: thread, ok: boolean, ...: R...)
+local function resultHandler(message: string, co: thread, ok: boolean, ...)
 	if not ok then
 		error(debug.traceback(co, (...)), 2)
 	elseif coroutine.status(co) ~= "dead" then

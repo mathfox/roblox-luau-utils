@@ -2,8 +2,8 @@ local CollectionService = game:GetService("CollectionService")
 local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 
+local Janitor = require(script.Parent.Janitor)
 local Signal = require(script.Parent.Signal)
-local Maid = require(script.Parent.Maid)
 
 local Types = require(script.Parent.Types)
 
@@ -14,7 +14,7 @@ local function GET_NEXT_RENDER_NAME()
 end
 
 local function INVOKE_EXTENSIONS_FUNCTION(component, extensionList: { Types.CollectionComponentExtension }, name: string)
-	for _, extension in ipairs(extensionList) do
+	for _, extension in extensionList do
 		local fn = extension[name]
 		if type(fn) == "function" then
 			fn(component)
@@ -44,7 +44,7 @@ function CollectionComponent.new(description: Types.CollectionComponentDescripti
 		_extensions = description.extensions or {},
 		_instancesToComponents = {},
 		_components = {},
-		_maid = Maid.new(),
+		_janitor = Janitor.new(),
 	}, CollectionComponent)
 	self.__index = self
 
@@ -57,7 +57,7 @@ function CollectionComponent.new(description: Types.CollectionComponentDescripti
 
 		local component = setmetatable({
 			instance = instance,
-			_maid = Maid.new(),
+			_janitor = Janitor.new(),
 		}, self)
 
 		INVOKE_EXTENSIONS_FUNCTION(component, self._extensions, "constructing")
@@ -81,13 +81,13 @@ function CollectionComponent.new(description: Types.CollectionComponentDescripti
 				end
 
 				if typeof(component.heartbeatUpdate) == "function" then
-					component._maid:giveTask(RunService.Heartbeat:Connect(function(dt)
+					component._janitor:add(RunService.Heartbeat:Connect(function(dt)
 						component:heartbeatUpdate(dt)
 					end))
 				end
 
 				if typeof(component.steppedUpdate) == "function" then
-					component._maid:giveTask(RunService.Stepped:Connect(function(duration, dt)
+					component._janitor:add(RunService.Stepped:Connect(function(duration, dt)
 						component:steppedUpdate(dt, duration)
 					end))
 				end
@@ -102,11 +102,11 @@ function CollectionComponent.new(description: Types.CollectionComponentDescripti
 
 						RunService:BindToRenderStep(renderName, component.renderPriority, onRenderStepped)
 
-						component._maid:giveTask(function()
+						component._janitor:add(function()
 							RunService:UnbindFromRenderStep(renderName)
 						end)
 					else
-						component._maid:giveTask(RunService.RenderStepped:Connect(onRenderStepped))
+						component._janitor:add(RunService.RenderStepped:Connect(onRenderStepped))
 					end
 				end
 
@@ -127,7 +127,7 @@ function CollectionComponent.new(description: Types.CollectionComponentDescripti
 
 		if component._isStarted then
 			task.spawn(function()
-				component._maid:destroy()
+				component._janitor:destroy()
 
 				if type(component.stop) == "function" then
 					INVOKE_EXTENSIONS_FUNCTION(component, self._extensions, "stopping")
@@ -145,7 +145,7 @@ function CollectionComponent.new(description: Types.CollectionComponentDescripti
 			return
 		end
 
-		watchingInstances[instance] = self._maid:giveTask(instance.AncestryChanged:Connect(function()
+		watchingInstances[instance] = self._janitor:add(instance.AncestryChanged:Connect(function()
 			(if self:_isInstanceInAncestorList(instance) then constructComponent else deconstructComponent)(instance)
 		end))
 
@@ -154,15 +154,15 @@ function CollectionComponent.new(description: Types.CollectionComponentDescripti
 		end
 	end
 
-	self._maid:giveTask(CollectionService:GetInstanceAddedSignal(self.tag):Connect(onInstanceTagged))
-	self._maid:giveTask(CollectionService:GetInstanceRemovedSignal(self.tag):Connect(function(instance: Instance)
-		self._maid:finalizeTask(watchingInstances[instance])
+	self._janitor:add(CollectionService:GetInstanceAddedSignal(self.tag):Connect(onInstanceTagged))
+	self._janitor:add(CollectionService:GetInstanceRemovedSignal(self.tag):Connect(function(instance: Instance)
+		watchingInstances[instance]:Disconnect()
 		watchingInstances[instance] = nil
 
 		deconstructComponent(instance)
 	end))
 
-	for _, instance in ipairs(CollectionService:GetTagged(self.tag)) do
+	for _, instance in CollectionService:GetTagged(self.tag) do
 		task.defer(onInstanceTagged, instance)
 	end
 
@@ -170,7 +170,7 @@ function CollectionComponent.new(description: Types.CollectionComponentDescripti
 end
 
 function CollectionComponent.prototype:_isInstanceInAncestorList(instance: Instance)
-	for _, parent in ipairs(self._ancestors) do
+	for _, parent in self._ancestors do
 		if instance:IsDescendantOf(parent) then
 			return true
 		end
@@ -179,12 +179,12 @@ function CollectionComponent.prototype:_isInstanceInAncestorList(instance: Insta
 	return false
 end
 
-function CollectionComponent.prototype:fromInstance(instance: Instance): Types.CollectionComponentInstance?
+function CollectionComponent.prototype:fromInstance(instance: Instance): CollectionComponentInstance?
 	return self._instancesToComponents[instance]
 end
 
 function CollectionComponent.prototype:destroy()
-	self._maid:destroy()
+	self._janitor:destroy()
 end
 
 return CollectionComponent

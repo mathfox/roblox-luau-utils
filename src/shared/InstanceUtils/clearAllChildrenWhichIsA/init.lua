@@ -1,8 +1,8 @@
-local getChildrenWhichIsA = require(script.Parent.getChildrenWhichIsA)
-
 local function clearAllChildrenWhichIsA(parent: Instance, className: string)
-	for _, child in getChildrenWhichIsA(parent, className) do
-		child:Destroy()
+	for _, child in parent:GetChildren() do
+		if child:IsA(className) then
+			child:Destroy()
+		end
 	end
 end
 

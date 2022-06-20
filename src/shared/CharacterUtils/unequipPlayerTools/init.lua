@@ -1,11 +1,10 @@
---!strict
-
-local getPlayerHumanoid = require(script.Parent.getPlayerHumanoid)
-
 local function unequipPlayerTools(player: Player)
-	local humanoid = getPlayerHumanoid(player)
-	if humanoid then
-		humanoid:UnequipTools()
+	local character = player.Character
+	if character then
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			humanoid:UnequipTools()
+		end
 	end
 end
 

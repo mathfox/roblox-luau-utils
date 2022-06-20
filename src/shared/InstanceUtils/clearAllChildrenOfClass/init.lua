@@ -1,8 +1,8 @@
-local getChildrenOfClass = require(script.Parent.getChildrenOfClass)
-
 local function clearAllChildrenOfClass(parent: Instance, className: string)
-	for _, child in getChildrenOfClass(parent, className) do
-		child:Destroy()
+	for _, child in parent:GetChildren() do
+		if child.ClassName == className then
+			child:Destroy()
+		end
 	end
 end
 

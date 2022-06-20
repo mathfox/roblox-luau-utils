@@ -6,9 +6,9 @@ local function waitForDescendantWhichIsA(parent: Instance, className: string, ti
 	if descendant then
 		return descendant
 	elseif not timeOut then
-		while not descendant or not descendant:IsA(className) do
+		repeat
 			descendant = parent.DescendantAdded:Wait()
-		end
+		until descendant and descendant:IsA(className)
 
 		return descendant
 	end
@@ -16,7 +16,7 @@ local function waitForDescendantWhichIsA(parent: Instance, className: string, ti
 	local waitingCoroutine = coroutine.running()
 	local descendantAddedConnection: RBXScriptConnection = nil
 
-	local function resumeWaitingCoroutine(descendant: Instance)
+	local function resumeWaitingCoroutine(descendant: Instance?)
 		descendantAddedConnection:Disconnect()
 
 		task.spawn(waitingCoroutine, descendant)

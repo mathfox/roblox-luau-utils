@@ -82,7 +82,7 @@ export type Connection = {
 }
 export type Signal<T... = ...any> = {
 	connect: (self: Signal<T...>, fn: Proc<T...>) -> Connection,
-   -- reference: https://developer.roblox.com/en-us/resources/release-note/Release-Notes-for-531
+	-- reference: https://developer.roblox.com/en-us/resources/release-note/Release-Notes-for-531
 	once: (self: Signal<T...>, fn: Proc<T...>) -> Connection,
 	fire: (self: Signal<T...>, T...) -> (),
 	wait: (self: Signal<T...>) -> T...,
@@ -169,7 +169,7 @@ export type Janitor = {
 	addPromise: (self: Janitor, promise: Promise<...any>) -> Symbol,
 	get: (self: Janitor, index: any) -> any,
 	remove: (self: Janitor, index: any) -> Janitor,
-	linkToInstance: (self: Janitor, object: Instance, allowMultiple: true | nil) -> (),
+	linkToInstance: (self: Janitor, object: Instance, allowMultiple: true?) -> (),
 	linkToInstances: (self: Janitor, ...Instance) -> (),
 	cleanup: (self: Janitor) -> (),
 	destroy: (self: Janitor) -> (),
@@ -260,7 +260,8 @@ export type RoduxStore = {
 	destruct: (self: RoduxStore) -> (),
 }
 export type RoduxAction<Type = any> = AnyTable & { type: Type }
+export type AnyRoduxAction = RoduxAction
 export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: (any, Args...) -> Action & { type: Type } }))
-export type RoduxReducer<State = any, Action = RoduxAction> = (State?, Action) -> State
+export type RoduxReducer<State = any, Action = AnyRoduxAction> = (State?, Action) -> State
 
 return nil

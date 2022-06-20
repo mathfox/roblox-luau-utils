@@ -20,18 +20,6 @@ type Error = {
 	createdTrace: string,
 }
 
-local function outputHelper(...)
-	local length = select("#", ...)
-	local arr: Array<string> = table.create(length)
-
-	for index = 1, length do
-		local value = select(index, ...)
-		table.insert(arr, ('"%s": %s'):format(tostring(value), typeof(value)))
-	end
-
-	return table.concat(arr, ", ")
-end
-
 --[=[
 	An object to represent runtime errors that occur during execution.
 	Promises that experience an error like this will be rejected with
@@ -79,7 +67,7 @@ function Error:__tostring()
 		string.format("-- Promise.Error(%s) --", self.kind.name or "?"),
 	}
 
-	for _, runtimeError in ipairs(self:getErrorChain()) do
+	for _, runtimeError in self:getErrorChain() do
 		table.insert(
 			errorStrings,
 			table.concat({
@@ -482,10 +470,6 @@ end
 	```
 ]=]
 function Promise.some<T>(promises: Array<Promise<T>>, count: number): Promise<Array<T>>
-	if type(count) ~= "number" then
-		error(('"count" (#2 argument) must be a number, got (%s) instead'):format(outputHelper(count)), 2)
-	end
-
 	return Promise._all(debug.traceback(nil, 2), promises, count)
 end
 

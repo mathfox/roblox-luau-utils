@@ -1,13 +1,11 @@
 -- Returns the `parent` argument in case it was parented to it in time.
 local function waitUntilParentedTo(instance: Instance, parent: Instance?, timeout: number?)
-	local currentParent: Instance? = instance.Parent
-
-	if currentParent == parent then
+	if instance.Parent == parent then
 		return parent
 	elseif not timeout then
 		repeat
-			currentParent = select(2, instance.AncestryChanged:Wait())
-		until currentParent == parent
+			instance.AncestryChanged:Wait()
+		until instance.Parent == parent
 
 		return parent
 	else
@@ -20,8 +18,8 @@ local function waitUntilParentedTo(instance: Instance, parent: Instance?, timeou
 			task.spawn(waitingCoroutine, resultParent)
 		end
 
-		ancestryChangedConnection = instance.AncestryChanged:Connect(function(_, newParent: Instance?)
-			if newParent == parent then
+		ancestryChangedConnection = instance.AncestryChanged:Connect(function()
+			if instance.Parent == parent then
 				resumeWaitingCoroutine(parent)
 			end
 		end)
