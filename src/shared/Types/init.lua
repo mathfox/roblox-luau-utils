@@ -76,18 +76,27 @@ export type Option<T> = {
 	match: <U...>(self: Option<T>, onSome: (T) -> U..., onNone: () -> U...) -> U...,
 }
 
-export type Connection = {
+export type Connection = typeof(setmetatable({} :: {
 	connected: boolean,
-	disconnect: (self: Connection) -> (),
-}
-export type Signal<T... = ...any> = {
-	connect: (self: Signal<T...>, fn: Proc<T...>) -> Connection,
-	-- reference: https://developer.roblox.com/en-us/resources/release-note/Release-Notes-for-531
-	once: (self: Signal<T...>, fn: Proc<T...>) -> Connection,
-	fire: (self: Signal<T...>, T...) -> (),
-	wait: (self: Signal<T...>) -> T...,
-	destroy: (self: Signal<T...>) -> (),
-}
+}, {} :: {
+	__index: {
+		disconnect: (Connection) -> (),
+	},
+	__tostring: () -> "Connection",
+}))
+export type Signal<T... = ...any> = typeof(setmetatable(
+	{},
+	{} :: {
+		__index: {
+			connect: (Signal<T...>, fn: Proc<T...>) -> Connection,
+			once: (Signal<T...>, fn: Proc<T...>) -> Connection,
+			fire: (Signal<T...>, T...) -> (),
+			wait: (Signal<T...>) -> T...,
+			destroy: (Signal<T...>) -> (),
+		},
+		__tostring: () -> "Signal",
+	}
+))
 
 export type InstanceCache<T> = {
 	params: InstanceCacheParams<T>,

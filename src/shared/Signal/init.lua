@@ -1,41 +1,43 @@
+--!strict
+
 local Types = require(script.Parent.Types)
 
-export type Signal<T...> = Types.Signal<T...>
+export type Signal<T... = ...any> = Types.Signal<T...>
 export type Connection = Types.Connection
-type Proc<T...> = Types.Proc<T...>
+type Proc<T... = ...any> = Types.Proc<T...>
+
+type SignalConstructor = {
+	is: (object: any) -> boolean,
+	new: <T...>() -> Signal<T...>,
+	prototype: Signal,
+}
+type AnyConnection = Connection
 
 local freeRunnerThread: thread? = nil
-local runEventHandlerInFreeThread = nil
 
-do
-	local function acquireRunnerThreadAndCallEventHandler(fn: Proc<...any>, ...)
-		local acquiredRunnerThread = freeRunnerThread
-		freeRunnerThread = nil
-		fn(...)
-		freeRunnerThread = acquiredRunnerThread
-	end
+local function acquireRunnerThreadAndCallEventHandler(fn: Proc, ...)
+	local acquiredRunnerThread = freeRunnerThread
+	freeRunnerThread = nil
+	fn(...)
+	freeRunnerThread = acquiredRunnerThread
+end
 
-	function runEventHandlerInFreeThread(...)
-		acquireRunnerThreadAndCallEventHandler(...)
+local function runEventHandlerInFreeThread(...)
+	acquireRunnerThreadAndCallEventHandler(...)
 
-		while true do
-			acquireRunnerThreadAndCallEventHandler(coroutine.yield())
-		end
+	while true do
+		acquireRunnerThreadAndCallEventHandler(coroutine.yield())
 	end
 end
 
-local Connection = {} :: Connection & {
-	_signal: Signal<...any> & { _last: (Connection & { _next: Connection? })? },
-	_fn: Proc<...any>,
-}
-Connection.connected = true
+local Connection = {} :: { [any]: any, _next: any }
 Connection.__index = Connection
 
-function Connection:__tostring()
+function Connection.__tostring(): "Connection"
 	return "Connection"
 end
 
-function Connection:disconnect(...)
+function Connection:disconnect()
 	if self.connected then
 		self.connected = false
 
@@ -55,15 +57,11 @@ function Connection:disconnect(...)
 	end
 end
 
-type LastConnection = Connection & { _next: LastConnection? }
-
-local Signal = {}
-Signal.prototype = {} :: Signal<...any> & {
-	_last: LastConnection?,
-}
+local Signal = {} :: { [any]: any, _last: any }
+Signal.prototype = {}
 Signal.__index = Signal.prototype
 
-function Signal:__tostring()
+function Signal.__tostring(): "Signal"
 	return "Signal"
 end
 
@@ -71,15 +69,15 @@ function Signal.is(object)
 	return type(object) == "table" and getmetatable(object) == Signal
 end
 
-function Signal.new()
-	return setmetatable({}, Signal) :: Signal<...any>
+function Signal.new(): Signal
+	return setmetatable({}, Signal)
 end
 
-function Signal.prototype:connect(fn: Proc<...any>)
-	local connection = setmetatable({ _signal = self, _fn = fn }, Connection) :: Connection
+function Signal.prototype:connect(fn: Proc)
+	local connection = setmetatable({ connected = true, _signal = self, _fn = fn }, Connection) :: Connection
 
 	if self._last then
-		connection._next = self._last
+		(connection :: AnyConnection & { _next: any })._next = self._last
 	end
 	self._last = connection
 
@@ -87,10 +85,11 @@ function Signal.prototype:connect(fn: Proc<...any>)
 end
 
 -- reference: https://developer.roblox.com/en-us/resources/release-note/Release-Notes-for-531
-function Signal.prototype:once(fn: Proc<...any>)
+function Signal.prototype:once(fn: Proc)
 	local connection: Connection = nil
 
 	connection = setmetatable({
+		connected = true,
 		_signal = self,
 		_fn = function(...)
 			connection:disconnect()
@@ -100,7 +99,7 @@ function Signal.prototype:once(fn: Proc<...any>)
 	}, Connection)
 
 	if self._last then
-		connection._next = self._last
+		(connection :: AnyConnection & { _next: any })._next = self._last
 	end
 	self._last = connection
 
@@ -123,7 +122,7 @@ function Signal.prototype:fire(...)
 	end
 end
 
-function Signal.prototype:wait(...)
+function Signal.prototype:wait()
 	local waitingCoroutine = coroutine.running()
 
 	local connection: Connection = nil
@@ -136,7 +135,7 @@ function Signal.prototype:wait(...)
 	return coroutine.yield()
 end
 
-function Signal.prototype:destroy(...)
+function Signal.prototype:destroy()
 	local last = self._last
 
 	while last do
@@ -150,4 +149,4 @@ end
 table.freeze(Signal)
 table.freeze(Signal.prototype)
 
-return Signal
+return Signal :: SignalConstructor
