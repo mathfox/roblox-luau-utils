@@ -259,14 +259,21 @@ export type Friend = {
 }
 
 -- rodux related types, reference: https://roblox.github.io/rodux/
--- some types reference: https://github.com/Roblox/rodux/commit/07f634e1dffd173f9e160fed40e1f03b9d17e619
-export type RoduxStore = {
-	getState: (self: RoduxStore) -> {},
-	dispatch: (self: RoduxStore, action: RoduxAction) -> (),
-	flush: (self: RoduxStore) -> (),
-	destruct: (self: RoduxStore) -> (),
+-- some types references:
+-- https://github.com/Roblox/rodux/commit/07f634e1dffd173f9e160fed40e1f03b9d17e619
+-- https://github.com/Roblox/rodux/commit/ce63e3d57b55c6af9805a92cc04691e98c8027a8
+export type IRoduxDispatch<Store> = <Action>(self: Store, action: Action & RoduxAction) -> ()
+export type RoduxDispatch<State = any> = IRoduxDispatch<RoduxStore<State>>
+export type IRoduxStore<State, Dispatch> = {
+	dispatch: Dispatch,
+	getState: (self: IRoduxStore<State, Dispatch>) -> State,
+	destruct: (self: IRoduxStore<State, Dispatch>) -> (),
+	flush: (self: IRoduxStore<State, Dispatch>) -> (),
+	-- TODO: add proper changed field type
 }
-export type RoduxAction<Type = any> = AnyTable & { type: Type }
+export type RoduxStore<State = any> = IRoduxStore<State, RoduxDispatch<State>>
+export type IRoduxAction<Type> = { type: Type }
+export type RoduxAction<Type = any> = IRoduxAction<Type> & AnyTable
 export type AnyRoduxAction = RoduxAction
 export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: (any, Args...) -> Action & { type: Type } }))
 export type RoduxReducer<State = any, Action = AnyRoduxAction> = (State?, Action) -> State
