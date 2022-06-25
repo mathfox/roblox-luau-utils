@@ -272,8 +272,7 @@ export type IRoduxStore<State, Dispatch> = {
 	-- TODO: add proper changed field type
 }
 export type RoduxStore<State = any> = IRoduxStore<State, RoduxDispatch<State>>
-export type IRoduxAction<Type> = { type: Type }
-export type RoduxAction<Type = any> = IRoduxAction<Type> & AnyTable
+export type RoduxAction<Type = any> = { type: Type } & AnyTable
 export type AnyRoduxAction = RoduxAction
 export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: (any, Args...) -> Action & { type: Type } }))
 export type RoduxReducer<State = any, Action = AnyRoduxAction> = (State?, Action) -> State
