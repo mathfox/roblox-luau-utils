@@ -4,89 +4,88 @@ export type Array<T> = { T }
 export type EmptyTable = {}
 -- a type all of the tables can be downcasted to
 export type AnyTable = Record<any>
-
-export type Proc<T... = ...any> = (T...) -> ()
-
 -- the table returned by the table.pack function: https://create.roblox.com/docs/reference/engine/libraries/table#pack
 export type PackedValues<T = any> = { n: number, [number]: T }
+
+export type Proc<T... = ...any> = (T...) -> ()
 
 export type Symbol = typeof(setmetatable({}, {} :: { __tostring: () -> string }))
 
 -- reference: https://doc.rust-lang.org/std/result/enum.Result.html#
+type ResultIndexTable<self, T, E> = {
+	isOk: (self) -> boolean,
+	isOkAnd: (self, f: (T) -> boolean) -> boolean,
+	isErr: (self) -> boolean,
+	isErrAnd: (self, f: (E) -> boolean) -> boolean,
+	mapOr: <U>(self, default: U, f: (T) -> U) -> U,
+	mapOrElse: <U>(self, default: (E) -> U, f: (T) -> U) -> U,
+	inspect: (self, f: (T) -> ()) -> self,
+	inspectErr: (self, f: (E) -> ()) -> self,
+	expect: (self, msg: string) -> T,
+	unwrap: (self) -> T,
+	expectErr: (self, msg: string) -> E,
+	unwrapErr: (self) -> E,
+	unwrapOr: (self, default: T) -> T,
+	unwrapOrElse: (self, op: (E) -> T) -> T,
+	contains: <U>(self, x: U) -> boolean,
+	containsErr: <F>(self, f: F) -> boolean,
+	-- luau specific method in order to simulate match keyword from rust
+	match: <U>(self, onOk: (T) -> U, onErr: (E) -> U) -> U,
+}
 export type Ok<T> = Result<T, nil>
 export type Err<E> = Result<nil, E>
-export type Result<T, E> = {
-	isOk: (self: Result<T, E>) -> boolean,
-	isOkAnd: (self: Result<T, E>, f: (T) -> boolean) -> boolean,
-	isErr: (self: Result<T, E>) -> boolean,
-	isErrAnd: (self: Result<T, E>, f: (E) -> boolean) -> boolean,
-	ok: (self: Result<T, E>) -> None | Some<T>,
-	err: (self: Result<T, E>) -> None | Some<E>,
-	map: <U>(self: Result<T, E>, op: (T) -> U) -> Result<T, E> | Result<U, E>,
-	mapOr: <U>(self: Result<T, E>, default: U, f: (T) -> U) -> U,
-	mapOrElse: <U>(self: Result<T, E>, default: (E) -> U, f: (T) -> U) -> U,
-	mapErr: <F>(self: Result<T, E>, op: (E) -> F) -> Result<T, E> | Result<T, F>,
-	inspect: (self: Result<T, E>, f: (T) -> ()) -> Result<T, E>,
-	inspectErr: (self: Result<T, E>, f: (E) -> ()) -> Result<T, E>,
-	expect: (self: Result<T, E>, msg: string) -> T,
-	unwrap: (self: Result<T, E>) -> T,
-	expectErr: (self: Result<T, E>, msg: string) -> E,
-	unwrapErr: (self: Result<T, E>) -> E,
-	-- originally named "and": https://doc.rust-lang.org/std/result/enum.Result.html#method.and
-	andRes: <U>(self: Result<T, E>, res: Result<U, E>) -> Result<T, E> | Result<U, E>,
-	andThen: <U>(self: Result<T, E>, op: (T) -> Result<U, E>) -> Result<T, E> | Result<U, E>,
-	-- originally named "or": https://doc.rust-lang.org/std/result/enum.Result.html#method.or
-	orRes: <F>(self: Result<T, E>, res: Result<T, F>) -> Result<T, E> | Result<T, F>,
-	orElse: <F>(self: Result<T, E>, op: (E) -> Result<T, F>) -> Result<T, E> | Result<T, F>,
-	unwrapOr: (self: Result<T, E>, default: T) -> T,
-	unwrapOrElse: (self: Result<T, E>, op: (E) -> T) -> T,
-	contains: <U>(self: Result<T, E>, x: U) -> boolean,
-	containsErr: <F>(self: Result<T, E>, f: F) -> boolean,
-	-- luau specific method in order to simulate match keyword from rust
-	match: <U>(self: Result<T, E>, onOk: (T) -> U, onErr: (E) -> U) -> U,
-}
+export type Result<T, E> = typeof(setmetatable({}, {} :: {
+	__tostring: () -> string,
+	__eq: (any) -> boolean,
+	__index: ResultIndexTable<Result<T, E>, T, E>,
+}))
 
 -- reference: https://doc.rust-lang.org/std/option/enum.Option.html
-export type Some<T> = Option<T>
-export type None = Option<nil>
-export type Option<T> = {
-	isSome: (self: Option<T>) -> boolean,
-	isSomeWith: (self: Option<T>, f: (T) -> boolean) -> boolean,
-	isNone: (self: Option<T>) -> boolean,
-	expect: (self: Option<T>, msg: string) -> T,
-	unwrap: (self: Option<T>) -> T,
-	unwrapOr: (self: Option<T>, default: T) -> T,
-	unwrapOrElse: (self: Option<T>, f: () -> T) -> T,
-	map: <U>(self: Option<T>, f: (T) -> U) -> Option<U>,
-	inspect: (self: Option<T>, f: (T) -> ()) -> Option<T>,
-	mapOr: <U>(self: Option<T>, default: U, f: (T) -> U) -> U,
-	mapOrElse: <U>(self: Option<T>, default: () -> U, f: (T) -> U) -> U,
-	okOr: <E>(self: Option<T>, err: E) -> Result<T, E>,
-	okOrElse: <E>(self: Option<T>, err: () -> E) -> Result<T, E>,
-	-- originally named "and": https://doc.rust-lang.org/std/option/enum.Option.html#method.and
-	andRes: <U>(self: Option<T>, optb: Option<U>) -> Option<U>,
-	andThen: <U>(self: Option<T>, f: (T) -> Option<U>) -> Option<U>,
-	filter: (self: Option<T>, predicate: (T) -> boolean) -> Option<T>,
-	-- originally named "or": https://doc.rust-lang.org/std/option/enum.Option.html#method.or
-	orRes: (self: Option<T>, optb: Option<T>) -> Option<T>,
-	orElse: (self: Option<T>, f: () -> Option<T>) -> Option<T>,
-	xor: (self: Option<T>, optb: Option<T>) -> Option<T>,
-	contains: <U>(self: Option<T>, x: U) -> boolean,
+type OptionIndex<self, Type, Args...> = {
+	isSome: (self) -> boolean,
+	isSomeWith: (self, f: (Args...) -> boolean) -> boolean,
+	isNone: (self) -> boolean,
+	expect: (self, msg: string) -> Type,
+	unwrap: (self) -> Type,
+	unwrapOr: (self, default: Type) -> Type,
+	unwrapOrElse: (self, f: () -> Type) -> Type,
+	inspect: (self, f: (Args...) -> ()) -> self,
+	map: <U>(self, f: (Type) -> U) -> self,
+	mapOr: <U>(self, default: U, f: (Args...) -> U) -> U,
+	mapOrElse: <U>(self, default: () -> U, f: (Args...) -> U) -> U,
+	okOr: <E>(self, err: E) -> Result<Type, E>,
+	okOrElse: <E>(self, err: () -> E) -> Result<Type, E>,
+	filter: (self, predicate: (Args...) -> boolean) -> self,
+	contains: <U>(self, x: U) -> boolean,
 	-- luau specific method in order to simulate match keyword from rust
-	match: <U...>(self: Option<T>, onSome: (T) -> U..., onNone: () -> U...) -> U...,
+	match: <U...>(self, onSome: (Args...) -> U..., onNone: () -> U...) -> U...,
 }
+export type Some<T> = typeof(setmetatable({}, {} :: {
+	__tostring: () -> string,
+	__eq: (any) -> boolean,
+	__index: OptionIndex<Some<T>, T, (T)>,
+}))
+export type None = typeof(setmetatable({}, {} :: {
+	__tostring: () -> "Option<_>",
+	__index: OptionIndex<None, nil, ()>,
+}))
+export type Option<T> = typeof(setmetatable({}, {} :: {
+	__tostring: () -> string,
+	__index: OptionIndex<Option<T>, T, (T)>,
+}))
 
 export type Connection = typeof(setmetatable({} :: {
 	connected: boolean,
 }, {} :: {
+	__tostring: () -> "Connection",
 	__index: {
 		disconnect: (Connection) -> (),
 	},
-	__tostring: () -> "Connection",
 }))
 export type Signal<T... = ...any> = typeof(setmetatable(
 	{},
 	{} :: {
+		__tostring: () -> "Signal",
 		__index: {
 			connect: (Signal<T...>, fn: Proc<T...>) -> Connection,
 			once: (Signal<T...>, fn: Proc<T...>) -> Connection,
@@ -94,7 +93,6 @@ export type Signal<T... = ...any> = typeof(setmetatable(
 			wait: (Signal<T...>) -> T...,
 			destroy: (Signal<T...>) -> (),
 		},
-		__tostring: () -> "Signal",
 	}
 ))
 
