@@ -4,7 +4,7 @@ local function getClosestAlivePlayerInRadius(position: Vector3, radius: number, 
 	local closestPlayer: Player? = nil
 	local closestMagnitude: number? = nil
 
-	for _, tbl in ipairs(getPlayersAndTheirCharactersInRadiusList(position, radius, overlapParams)) do
+	for _, tbl in getPlayersAndTheirCharactersInRadiusList(position, radius, overlapParams) do
 		local humanoid: Humanoid? = tbl[2]:FindFirstChildOfClass("Humanoid")
 		if humanoid and humanoid.Health > 0 then
 			local rootPart = humanoid.RootPart

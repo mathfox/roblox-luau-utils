@@ -8,7 +8,7 @@ local function waitForDescendantOfClass(parent: Instance, className: string, tim
 	elseif not timeOut then
 		repeat
 			descendant = parent.DescendantAdded:Wait()
-		until descendant and descendant.ClassName == className
+		until descendant.ClassName == className
 
 		return descendant
 	end

@@ -4,6 +4,7 @@
 	Handlers are fired in order, and (dis)connections are properly handled when
 	executing an event.
 ]]
+
 local function immutableAppend(list, ...)
 	local new = {}
 	local len = #list
@@ -35,21 +36,13 @@ local Signal = {}
 Signal.__index = Signal
 
 function Signal.new(store)
-	local self = {
+	return setmetatable({
 		_listeners = {},
 		_store = store,
-	}
-
-	setmetatable(self, Signal)
-
-	return self
+	}, Signal)
 end
 
 function Signal:connect(callback)
-	if typeof(callback) ~= "function" then
-		error("Expected the listener to be a function.")
-	end
-
 	if self._store and self._store._isDispatching then
 		error(
 			"You may not call store.changed:connect() while the reducer is executing. "
@@ -89,9 +82,18 @@ end
 function Signal:fire(...)
 	for _, listener in self._listeners do
 		if not listener.disconnected then
-			listener.callback(...)
+			local co = coroutine.create(listener.callback)
+			local ok, message = coroutine.resume(co, ...)
+			if not ok then
+				error(message, 2)
+			elseif coroutine.status(co) ~= "dead" then
+				-- TODO: proper debug traceback to the place where connection was created
+				error('Attempted to yield inside a "changed" connection which was connected at: %s', 2)
+			end
 		end
 	end
 end
+
+table.freeze(Signal)
 
 return Signal

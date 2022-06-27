@@ -2,9 +2,9 @@ local Types = require(script.Parent.Parent.Types)
 
 type Array<T> = Types.Array<T>
 
-local function getDescendantsOfClass(parent: Instance, className: string)
+local function getDescendantsOfClass(parent: Instance, className: string): Array<Instance>
 	local descendants = parent:GetDescendants()
-	local arr: Array<Instance> = table.create(#descendants)
+	local arr = table.create(#descendants)
 
 	for _, descendant in descendants do
 		if descendant.ClassName == className then

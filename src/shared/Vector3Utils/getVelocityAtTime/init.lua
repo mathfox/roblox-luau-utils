@@ -1,4 +1,4 @@
-local function getVelocityAtTime(time: number, initialVelocity: Vector3, acceleration: Vector3): Vector3
+local function getVelocityAtTime(time: number, initialVelocity: Vector3, acceleration: Vector3)
 	return initialVelocity + acceleration * time
 end
 

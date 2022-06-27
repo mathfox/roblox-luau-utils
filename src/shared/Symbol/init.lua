@@ -1,5 +1,3 @@
---!strict
-
 --[[
 	A 'Symbol' is an opaque marker type that can be used to signify unique
 	statuses. Symbols have the type 'table', but when printed to the console,
@@ -17,23 +15,18 @@ local SymbolConstructor = table.freeze(setmetatable(
 	table.freeze({
 		__call = function(_, name: string?)
 			return (
-				if name
-					then table.freeze(setmetatable(
-						{},
-						table.freeze({
-							__tostring = function()
+				table.freeze(setmetatable(
+					{},
+					table.freeze({
+						__tostring = if name
+							then function()
 								return "Symbol(" .. name .. ")"
-							end,
-						})
-					))
-					else table.freeze(setmetatable(
-						{},
-						table.freeze({
-							__tostring = function()
+							end
+							else function()
 								return "Symbol()"
 							end,
-						})
-					))
+					})
+				))
 			) :: Symbol
 		end,
 	})

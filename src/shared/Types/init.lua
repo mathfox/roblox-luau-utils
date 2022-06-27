@@ -274,7 +274,7 @@ export type IRoduxStore<State, Dispatch> = {
 export type RoduxStore<State = any> = IRoduxStore<State, RoduxDispatch<State>>
 export type RoduxAction<Type = any> = { type: Type } & AnyTable
 export type AnyRoduxAction = RoduxAction
-export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: (any, Args...) -> Action & { type: Type } }))
+export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: <self>(self, Args...) -> Action & { type: Type } }))
 export type RoduxReducer<State = any, Action = AnyRoduxAction> = (State?, Action) -> State
 
 return nil

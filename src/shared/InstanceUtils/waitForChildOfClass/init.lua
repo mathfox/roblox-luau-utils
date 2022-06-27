@@ -6,7 +6,7 @@ local function waitForChildOfClass(parent: Instance, className: string, timeOut:
 	elseif not timeOut then
 		repeat
 			child = parent.ChildAdded:Wait()
-		until child and child.ClassName == className
+		until child.ClassName == className
 
 		return child
 	end

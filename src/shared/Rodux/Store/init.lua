@@ -1,7 +1,5 @@
 local RunService = game:GetService("RunService")
 
-local NoYield = require(script.Parent.Parent.NoYield)
-
 local Signal = require(script.Parent.Signal)
 
 local ACTION_LOG_LENGTH = 3
@@ -40,9 +38,6 @@ Store.__index = Store
 	valid.
 ]]
 function Store.new(reducer, initialState, middlewares, errorReporter)
-	assert(typeof(reducer) == "function", "Bad argument #1 to Store.new, expected function.")
-	assert(middlewares == nil or typeof(middlewares) == "table", "Bad argument #3 to Store.new, expected nil or table.")
-
 	if middlewares ~= nil then
 		for i = 1, #middlewares, 1 do
 			assert(typeof(middlewares[i]) == "function", ("Expected the middleware ('%s') at index %d to be a function."):format(tostring(middlewares[i]), i))
@@ -51,7 +46,7 @@ function Store.new(reducer, initialState, middlewares, errorReporter)
 
 	local self = {}
 
-	self._errorReporter = errorReporter or rethrowErrorReporter
+	self._errorReporter = if errorReporter then errorReporter else rethrowErrorReporter
 	self._isDispatching = false
 	self._reducer = reducer
 
@@ -63,6 +58,7 @@ function Store.new(reducer, initialState, middlewares, errorReporter)
 	local ok, result = xpcall(function()
 		self._state = reducer(initialState, initAction)
 	end, tracebackReporter)
+
 	if not ok then
 		self._errorReporter.reportReducerError(initialState, initAction, {
 			message = "Caught error in reducer with init",
@@ -104,9 +100,7 @@ function Store.new(reducer, initialState, middlewares, errorReporter)
 	return self
 end
 
---[[
-	Get the current state of the Store. Do not mutate this!
-]]
+-- Get the current state of the Store.
 function Store:getState()
 	if self._isDispatching then
 		error(
@@ -129,14 +123,6 @@ end
 	changes, but not necessarily on every Dispatch.
 ]]
 function Store:dispatch(action)
-	if typeof(action) ~= "table" then
-		error(("Actions must be tables. " .. "Use custom middleware for %q actions."):format(typeof(action)), 2)
-	end
-
-	if action.type == nil then
-		error("Actions may not have an undefined 'type' property. " .. "Have you misspelled a constant? \n" .. tostring(action), 2)
-	end
-
 	if self._isDispatching then
 		error("Reducers may not dispatch actions.")
 	end
@@ -162,9 +148,7 @@ function Store:dispatch(action)
 	table.insert(self._actionLog, action)
 end
 
---[[
-	Marks the store as deleted, disconnecting any outstanding connections.
-]]
+-- Marks the store as deleted, disconnecting any outstanding connections.
 function Store:destruct()
 	for _, connection in self._connections do
 		connection:Disconnect()
@@ -173,9 +157,7 @@ function Store:destruct()
 	self._connections = nil
 end
 
---[[
-	Flush all pending actions since the last change event was dispatched.
-]]
+-- Flush all pending actions since the last change event was dispatched.
 function Store:flush()
 	if not self._mutatedSinceFlush then
 		return
@@ -189,11 +171,7 @@ function Store:flush()
 	local state = self._state
 
 	local ok, errorResult = xpcall(function()
-		-- If a changed listener yields, *very* surprising bugs can ensue.
-		-- Because of that, changed listeners cannot yield.
-		NoYield("attempted to yield inside changed event", function()
-			self.changed:fire(state, self._lastState)
-		end)
+		self.changed:fire(state, self._lastState)
 	end, tracebackReporter)
 
 	if not ok then
@@ -205,5 +183,7 @@ function Store:flush()
 
 	self._lastState = state
 end
+
+table.freeze(Store)
 
 return Store

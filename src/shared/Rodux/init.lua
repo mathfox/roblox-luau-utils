@@ -1,4 +1,3 @@
-
 local loggerMiddleware = require(script.loggerMiddleware)
 
 local Rodux = {
