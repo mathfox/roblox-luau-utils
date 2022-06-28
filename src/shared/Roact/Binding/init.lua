@@ -94,7 +94,7 @@ function BindingInternalApi.join(upstreamBindings)
 	if config.typeChecks then
 		assert(typeof(upstreamBindings) == "table", "Expected arg #1 to be of type table")
 
-		for key, value in pairs(upstreamBindings) do
+		for key, value in upstreamBindings do
 			if Type.of(value) ~= Type.Binding then
 				local message = ("Expected arg #1 to contain only bindings, but key %q had a non-binding value"):format(tostring(key))
 				error(message, 2)
@@ -107,7 +107,7 @@ function BindingInternalApi.join(upstreamBindings)
 	local function getValue()
 		local value = {}
 
-		for key, upstream in pairs(upstreamBindings) do
+		for key, upstream in upstreamBindings do
 			value[key] = upstream:getValue()
 		end
 
@@ -117,7 +117,7 @@ function BindingInternalApi.join(upstreamBindings)
 	function impl.subscribe(callback)
 		local disconnects = {}
 
-		for key, upstream in pairs(upstreamBindings) do
+		for key, upstream in upstreamBindings do
 			disconnects[key] = BindingInternalApi.subscribe(upstream, function(_newValue)
 				callback(getValue())
 			end)
@@ -128,7 +128,7 @@ function BindingInternalApi.join(upstreamBindings)
 				return
 			end
 
-			for _, disconnect in pairs(disconnects) do
+			for _, disconnect in disconnects do
 				disconnect()
 			end
 

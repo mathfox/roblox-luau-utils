@@ -23,7 +23,7 @@ end
 function InstanceCache:setParent(parent: Instance?)
 	self.parent = parent
 
-	for _, instance in ipairs(self._available) do
+	for _, instance in self._available do
 		instance.Parent = parent
 	end
 end
@@ -37,11 +37,11 @@ function InstanceCache:expand(amount: number)
 end
 
 function InstanceCache:destroy()
-	for _, instance in ipairs(self._available) do
+	for _, instance in self._available do
 		instance:Destroy()
 	end
 
-	for _, instance in ipairs(self._inUse) do
+	for _, instance in self._inUse do
 		instance:Destroy()
 	end
 

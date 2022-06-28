@@ -123,7 +123,9 @@ end
 	changes, but not necessarily on every Dispatch.
 ]]
 function Store:dispatch(action)
-	if self._isDispatching then
+	if action.type == nil then
+		error("Actions may not have an undefined 'type' property. " .. "Have you misspelled a constant? \n" .. tostring(action), 2)
+	elseif self._isDispatching then
 		error("Reducers may not dispatch actions.")
 	end
 

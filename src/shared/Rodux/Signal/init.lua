@@ -43,7 +43,9 @@ function Signal.new(store)
 end
 
 function Signal:connect(callback)
-	if self._store and self._store._isDispatching then
+	if type(callback) ~= "function" then
+		error("invalid #1 argument, expected a function", 2)
+	elseif self._store and self._store._isDispatching then
 		error(
 			"You may not call store.changed:connect() while the reducer is executing. "
 				.. "If you would like to be notified after the store has been updated, subscribe from a "

@@ -26,7 +26,7 @@ local defaultConfig = {
 
 -- Build a list of valid configuration values up for debug messages.
 local defaultConfigKeys = {}
-for key in pairs(defaultConfig) do
+for key in defaultConfig do
 	table.insert(defaultConfigKeys, key)
 end
 
@@ -66,7 +66,7 @@ end
 function Config:set(configValues)
 	-- Validate values without changing any configuration.
 	-- We only want to apply this configuration if it's valid!
-	for key, value in pairs(configValues) do
+	for key, value in configValues do
 		if defaultConfig[key] == nil then
 			local message = ("Invalid global configuration key %q (type %s). Valid configuration keys are: %s"):format(tostring(key), typeof(key), table.concat(defaultConfigKeys, ", "))
 
@@ -90,7 +90,7 @@ end
 
 function Config:scoped(configValues, callback)
 	local previousValues = {}
-	for key, value in pairs(self._currentConfig) do
+	for key, value in self._currentConfig do
 		previousValues[key] = value
 	end
 

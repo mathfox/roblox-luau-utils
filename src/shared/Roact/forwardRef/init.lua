@@ -1,6 +1,7 @@
 local assign = require(script.Parent.Parent.TableUtils.assign)
-local Ref = require(script.Parent.PropMarkers.Ref)
 local Option = require(script.Parent.Parent.Option)
+
+local Ref = require(script.Parent.PropMarkers.Ref)
 
 local config = require(script.Parent.GlobalConfig).get()
 

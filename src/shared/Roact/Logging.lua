@@ -125,7 +125,7 @@ end
 function Logging.warn(messageTemplate, ...)
 	local message = messageTemplate:format(...)
 
-	for collector in pairs(collectors) do
+	for collector in collectors do
 		table.insert(collector.warnings, message)
 	end
 

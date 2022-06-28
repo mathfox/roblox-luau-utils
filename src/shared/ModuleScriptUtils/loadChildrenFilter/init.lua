@@ -2,8 +2,8 @@ local Types = require(script.Parent.Parent.Types)
 
 type Array<T> = Types.Array<T>
 
-local function loadChildrenFilter(parent: Instance, predicate: (ModuleScript) -> boolean)
-	local modules: Array<any> = {}
+local function loadChildrenFilter(parent: Instance, predicate: (ModuleScript) -> boolean): Array<any>
+	local modules = {}
 
 	for _, child in parent:GetChildren() do
 		if child:IsA("ModuleScript") and predicate(child :: ModuleScript) then

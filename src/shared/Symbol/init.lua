@@ -10,28 +10,21 @@ local Types = require(script.Parent.Types)
 
 export type Symbol = Types.Symbol
 
-local SymbolConstructor = table.freeze(setmetatable(
-	{},
-	table.freeze({
-		__call = function(_, name: string?)
-			return (
-				table.freeze(setmetatable(
-					{},
-					table.freeze({
-						__tostring = if name
-							then function()
-								return "Symbol(" .. name .. ")"
-							end
-							else function()
-								return "Symbol()"
-							end,
-					})
-				))
-			) :: Symbol
-		end,
-	})
-))
+local function SymbolConstructor(name: string?): Symbol
+	return (
+		table.freeze(setmetatable(
+			{},
+			table.freeze({
+				__tostring = if name
+					then function()
+						return "Symbol(" .. name .. ")"
+					end
+					else function()
+						return "Symbol()"
+					end,
+			})
+		))
+	)
+end
 
-type SymbolConstructor = typeof(SymbolConstructor)
-
-return SymbolConstructor :: SymbolConstructor
+return SymbolConstructor

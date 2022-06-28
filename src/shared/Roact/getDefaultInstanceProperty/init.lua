@@ -11,10 +11,10 @@
 local Symbol = require(script.Parent.Parent.Symbol)
 
 local Nil = Symbol("Nil")
-local _cachedPropertyValues = {}
+local cachedPropertyValues = {}
 
 local function getDefaultInstanceProperty(className, propertyName)
-	local classCache = _cachedPropertyValues[className]
+	local classCache = cachedPropertyValues[className]
 
 	if classCache then
 		local propValue = classCache[propertyName]
@@ -30,7 +30,7 @@ local function getDefaultInstanceProperty(className, propertyName)
 		end
 	else
 		classCache = {}
-		_cachedPropertyValues[className] = classCache
+		cachedPropertyValues[className] = classCache
 	end
 
 	local created = Instance.new(className)

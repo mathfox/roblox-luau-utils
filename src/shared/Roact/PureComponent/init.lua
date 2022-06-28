@@ -23,13 +23,13 @@ function PureComponent:shouldUpdate(newProps, newState)
 		return false
 	end
 
-	for key, value in pairs(newProps) do
+	for key, value in newProps do
 		if self.props[key] ~= value then
 			return true
 		end
 	end
 
-	for key, value in pairs(self.props) do
+	for key, value in self.props do
 		if newProps[key] ~= value then
 			return true
 		end

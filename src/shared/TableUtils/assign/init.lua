@@ -18,6 +18,7 @@ local function assign<K, V>(target: Record<K, V>, ...: Record<K, V>?)
 			end
 		end
 	end
+
 	return target
 end
 

@@ -79,7 +79,7 @@ local function createReconciler(renderer)
 		local removeKeys = {}
 
 		-- Changed or removed children
-		for childKey, childNode in pairs(virtualNode.children) do
+		for childKey, childNode in virtualNode.children do
 			local newElement = ElementUtils.getElementByKey(newChildElements, childKey)
 			local newNode = updateVirtualNode(childNode, newElement)
 
@@ -100,7 +100,7 @@ local function createReconciler(renderer)
 			end
 		end
 
-		for childKey in pairs(removeKeys) do
+		for childKey in removeKeys do
 			virtualNode.children[childKey] = nil
 		end
 
@@ -162,17 +162,17 @@ local function createReconciler(renderer)
 		if kind == ElementKind.Host then
 			renderer.unmountHostNode(reconciler, virtualNode)
 		elseif kind == ElementKind.Function then
-			for _, childNode in pairs(virtualNode.children) do
+			for _, childNode in virtualNode.children do
 				unmountVirtualNode(childNode)
 			end
 		elseif kind == ElementKind.Stateful then
 			virtualNode.instance:__unmount()
 		elseif kind == ElementKind.Portal then
-			for _, childNode in pairs(virtualNode.children) do
+			for _, childNode in virtualNode.children do
 				unmountVirtualNode(childNode)
 			end
 		elseif kind == ElementKind.Fragment then
-			for _, childNode in pairs(virtualNode.children) do
+			for _, childNode in virtualNode.children do
 				unmountVirtualNode(childNode)
 			end
 		else

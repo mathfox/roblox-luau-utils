@@ -46,7 +46,7 @@ local function createSignal()
 
 	local function fire(_self, ...)
 		firing = true
-		for callback, connection in pairs(connections) do
+		for callback, connection in connections do
 			if not connection.disconnected and not suspendedConnections[callback] then
 				callback(...)
 			end
@@ -54,7 +54,7 @@ local function createSignal()
 
 		firing = false
 
-		for callback, _ in pairs(suspendedConnections) do
+		for callback, _ in suspendedConnections do
 			suspendedConnections[callback] = nil
 		end
 	end

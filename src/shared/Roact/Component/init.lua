@@ -50,7 +50,7 @@ function Component:extend(name)
 
 	local class = {}
 
-	for key, value in pairs(self) do
+	for key, value in self do
 		-- Roact opts to make consumers use composition over inheritance, which
 		-- lines up with React.
 		-- https://reactjs.org/docs/composition-vs-inheritance.html
@@ -347,7 +347,7 @@ function Component:__unmount()
 		self:willUnmount()
 	end
 
-	for _, childNode in pairs(virtualNode.children) do
+	for _, childNode in virtualNode.children do
 		reconciler.unmountVirtualNode(childNode)
 	end
 end
