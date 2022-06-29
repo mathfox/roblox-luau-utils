@@ -1,5 +1,6 @@
 return function()
 	local assertDeepEqual = require(script.Parent.Parent.Parent.assertDeepEqual)
+
 	local createSpy = require(script.Parent.Parent.createSpy)
 	local Logging = require(script.Parent.Parent.Logging)
 

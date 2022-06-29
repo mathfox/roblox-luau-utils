@@ -13,36 +13,38 @@ local function getIndices(part)
 	elseif part:IsA("CornerWedgePart") then
 		return CORNER_WEDGE
 	end
+
 	return BLOCK
 end
 
 local function getCorners(cf, size2, indices)
 	local corners = {}
-	for j, i in pairs(indices) do
-		corners[j] = cf
-			* (size2 * Vector3.new(2 * (math.floor(i / 4) % 2) - 1, 2 * (math.floor(i / 2) % 2) - 1, 2 * (i % 2) - 1))
+	for j, i in indices do
+		corners[j] = cf * (size2 * Vector3.new(2 * (math.floor(i / 4) % 2) - 1, 2 * (math.floor(i / 2) % 2) - 1, 2 * (i % 2) - 1))
 	end
 	return corners
 end
 
 local function getModelPointCloud(model)
 	local points = {}
-	for _, part in pairs(model:GetDescendants()) do
+
+	for _, part in model:GetDescendants() do
 		if part:IsA("BasePart") then
 			local indices = getIndices(part)
 			local corners = getCorners(part.CFrame, part.Size / 2, indices)
-			for _, wp in pairs(corners) do
+			for _, wp in corners do
 				table.insert(points, wp)
 			end
 		end
 	end
+
 	return points
 end
 
 local function viewProjectionEdgeHits(cloud, axis, depth, tanFov2)
 	local max, min = -math.huge, math.huge
 
-	for _, lp in pairs(cloud) do
+	for _, lp in cloud do
 		local distance = depth - lp.Z
 		local halfSpan = tanFov2 * distance
 
@@ -146,10 +148,7 @@ function ViewportModelClass:GetMinimumFitCFrame(orientation)
 	local hMax, hMin = viewProjectionEdgeHits(cloud, "X", furthest, self._viewport.tanxFov2)
 	local vMax, vMin = viewProjectionEdgeHits(cloud, "Y", furthest, self._viewport.tanyFov2)
 
-	local distance = math.max(
-		((hMax - hMin) / 2) / self._viewport.tanxFov2,
-		((vMax - vMin) / 2) / self._viewport.tanyFov2
-	)
+	local distance = math.max(((hMax - hMin) / 2) / self._viewport.tanxFov2, ((vMax - vMin) / 2) / self._viewport.tanyFov2)
 
 	return orientation * CFrame.new((hMax + hMin) / 2, (vMax + vMin) / 2, furthest + distance)
 end

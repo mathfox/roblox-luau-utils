@@ -1,21 +1,16 @@
 local Types = require(script.Parent.Parent.Types)
 
-type Record<K, V> = Types.Record<K, V>
-type Reducer = Types.RoduxReducer
-type Action = Types.RoduxAction
+type Reducer<State, Action> = Types.RoduxReducer<State, Action>
+type AnyAction = Types.RoduxAnyAction
 
--- Create a composite reducer from a map of keys and sub-reducers.
-local function combineReducers(map: Record<any, Reducer>)
-	return function(state, action: Action)
-		if state == nil then
-			state = {}
-		end
-
+-- Creates a composite reducer from a map of keys and sub-reducers.
+local function combineReducers(map: { [any]: Reducer<any, AnyAction> }): Reducer<any, AnyAction>
+	return function(state: { [any]: any }?, action: AnyAction)
 		local newState = {}
 
 		for key, reducer in map do
 			-- Each reducer gets its own state, not the entire state table
-			newState[key] = reducer(state[key], action)
+			newState[key] = reducer(if state then state[key] else nil, action)
 		end
 
 		return newState

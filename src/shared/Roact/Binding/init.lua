@@ -1,5 +1,6 @@
-local createSignal = require(script.Parent.createSignal)
 local Symbol = require(script.Parent.Parent.Symbol)
+
+local createSignal = require(script.Parent.createSignal)
 local Type = require(script.Parent.Type)
 
 local config = require(script.Parent.GlobalConfig).get()

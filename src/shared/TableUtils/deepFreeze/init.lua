@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Record<K, V = K> = Types.Record<K, V>
-
-local function deepFreeze(target: Record<any>)
+local function deepFreeze(target: { [any]: any })
 	table.freeze(target)
 
 	for _, source in target do

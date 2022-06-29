@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Record<K, V = K> = Types.Record<K, V>
-
-local function length(source: Record<any>)
+local function length(source: { [any]: any })
 	local amount = 0
 
 	for _ in source do

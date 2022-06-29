@@ -1,6 +1,7 @@
-local Roact = require(script.Parent.Parent.Roact)
-local shallowEqual = require(script.Parent.shallowEqual)
 local join = require(script.Parent.Parent.TableUtils.join)
+local Roact = require(script.Parent.Parent.Roact)
+
+local shallowEqual = require(script.Parent.shallowEqual)
 local StoreContext = require(script.Parent.StoreContext)
 
 --[[

@@ -4,4 +4,6 @@
 
 local Config = require(script.Parent.Config)
 
-return Config.new()
+local GlobalConfig = Config.new()
+
+return GlobalConfig

@@ -36,9 +36,14 @@ Instead, consider using a utility function to merge tables of children together:
 ]]
 local function createElement(component, props, children)
 	if config.typeChecks then
-		assert(component ~= nil, "`component` is required")
-		assert(typeof(props) == "table" or props == nil, "`props` must be a table or nil")
-		assert(typeof(children) == "table" or children == nil, "`children` must be a table or nil")
+		-- @NOTE: changed from typeof to type
+		if component == nil then
+			error('"component" argument is required')
+		elseif type(props) ~= "table" and props ~= nil then
+			error('"props" must be either a table or nil')
+		elseif type(children) ~= "table" and children ~= nil then
+			error('"children" must be either a table or nil')
+		end
 	end
 
 	if props == nil then

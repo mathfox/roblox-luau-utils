@@ -5,10 +5,10 @@ local StoreContext = require(script.Parent.StoreContext)
 local StoreProvider = Roact.Component:extend("StoreProvider")
 
 function StoreProvider.validateProps(props)
-	local store = props.store
-	if store == nil then
+	if props.store == nil then
 		return false, "Error initializing StoreProvider. Expected a `store` prop to be a Rodux store."
 	end
+
 	return true
 end
 

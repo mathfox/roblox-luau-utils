@@ -2,12 +2,11 @@ local Players = game:GetService("Players")
 
 local Types = require(script.Parent.Parent.Types)
 
-type Array<T> = Types.Array<T>
 type Friend = Types.Friend
 
-local function getOnlineFriendsList(userId: number)
+local function getOnlineFriendsList(userId: number): { Friend }
 	local friendPages = Players:GetFriendsAsync(userId)
-	local friendsList: Array<Friend> = {}
+	local friendsList = {}
 
 	while true do
 		for _, item in friendPages:GetCurrentPage() do

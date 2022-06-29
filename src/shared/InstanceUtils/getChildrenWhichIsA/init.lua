@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Array<T> = Types.Array<T>
-
-local function getChildrenWhichIsA(parent: Instance, className: string): Array<Instance>
+local function getChildrenWhichIsA(parent: Instance, className: string): { Instance }
 	local children = parent:GetChildren()
 	local arr = table.create(#children)
 

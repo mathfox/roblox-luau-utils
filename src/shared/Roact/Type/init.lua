@@ -11,7 +11,7 @@
 
 local Symbol = require(script.Parent.Parent.Symbol)
 
-local Type = newproxy(true)
+local Type = {}
 
 local TypeInternal = {}
 
@@ -29,19 +29,19 @@ addType("VirtualNode")
 addType("VirtualTree")
 
 function TypeInternal.of(value)
-	if typeof(value) ~= "table" then
-		return nil
-	end
-
-	return value[Type]
+	return if typeof(value) ~= "table" then nil else value[Type]
 end
 
-getmetatable(Type).__index = TypeInternal
+setmetatable(
+	Type,
+	table.freeze({
+		__index = TypeInternal,
+		__tostring = function()
+			return "RoactType"
+		end,
+	})
+)
 
-getmetatable(Type).__tostring = function()
-	return "RoactType"
-end
-
-table.freeze(TypeInternal)
+table.freeze(Type)
 
 return Type

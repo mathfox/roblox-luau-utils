@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Record<K, V = K> = Types.Record<K, V>
-
-local function deepSafeFreeze(source: Record<any>)
+local function deepSafeFreeze(source: { [any]: any })
 	if not table.isfrozen(source) then
 		table.freeze(source)
 	end

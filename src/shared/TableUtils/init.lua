@@ -13,7 +13,6 @@ local TableUtils = {
 	keys = require(script.keys),
 	length = require(script.length),
 	map = require(script.map),
-	override = require(script.override),
 	random = require(script.random),
 	reverse = require(script.reverse),
 	safeFreeze = require(script.safeFreeze),

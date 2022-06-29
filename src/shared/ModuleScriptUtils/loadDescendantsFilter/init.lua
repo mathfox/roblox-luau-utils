@@ -1,17 +1,13 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Array<T> = Types.Array<T>
-
-local function loadDescendantsFilter(parent: Instance, predicate: (ModuleScript) -> boolean): Array<any>
-	local modules = {}
+local function loadDescendantsFilter(parent: Instance, predicate: (ModuleScript) -> boolean): { any }
+	local arr = {}
 
 	for _, descendant in parent:GetDescendants() do
-		if descendant:IsA("ModuleScript") and predicate(descendant :: ModuleScript) then
-			table.insert(modules, require(descendant :: ModuleScript))
+		if descendant:IsA("ModuleScript") and predicate(descendant) then
+			table.insert(arr, require(descendant))
 		end
 	end
 
-	return modules
+	return arr
 end
 
 return loadDescendantsFilter

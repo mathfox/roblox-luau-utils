@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Array<T> = Types.Array<T>
-
-local function getDescendantsWhichIsA(parent: Instance, className: string): Array<Instance>
+local function getDescendantsWhichIsA(parent: Instance, className: string): { Instance }
 	local descendants = parent:GetDescendants()
 	local arr = table.create(#descendants)
 

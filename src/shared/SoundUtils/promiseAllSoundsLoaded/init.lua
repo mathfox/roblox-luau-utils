@@ -4,9 +4,8 @@ local Types = require(script.Parent.Parent.Types)
 local promiseSoundLoaded = require(script.Parent.promiseSoundLoaded)
 
 type Promise<T...> = Types.Promise<T...>
-type Array<T> = Types.Array<T>
 
-local function promiseAllSoundsLoaded(sounds: Array<Sound>): Promise<Array<Sound>>
+local function promiseAllSoundsLoaded(sounds: { Sound }): Promise<{ Sound }>
 	local promises = {}
 
 	for _, sound in sounds do

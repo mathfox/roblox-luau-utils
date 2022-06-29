@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Array<T> = Types.Array<T>
-
-local function joinArray(...: Array<any>?): Array<any>
+local function joinArray<V>(...: { V }?): { V }
 	local result = {}
 
 	for index = 1, select("#", ...) do

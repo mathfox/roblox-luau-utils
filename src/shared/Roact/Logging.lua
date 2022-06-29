@@ -34,7 +34,7 @@ end
 local function indentLines(lines, indentLevel)
 	local outputBuffer = {}
 
-	for _, line in ipairs(lines) do
+	for _, line in lines do
 		table.insert(outputBuffer, indent(line, indentLevel))
 	end
 

@@ -9,7 +9,6 @@ local Types = require(script.Parent.Types)
 type EnumeratorItem<T> = Types.EnumeratorItem<T>
 export type Promise<T...> = Types.Promise<T...>
 type PromiseExecutor<T...> = Types.PromiseExecutor<T...>
-type Array<T> = Types.Array<T>
 type Error = {
 	error: string,
 	trace: string?,
@@ -328,7 +327,7 @@ end
 		* is resolved when all input promises resolve
 		* is rejected if ANY input promises reject
 ]]
-function Promise._all<T>(traceback: string, promises: Array<Promise<T>>, amount: number?): Promise<Array<T>>
+function Promise._all<T>(traceback: string, promises: { Promise<T> }, amount: number?): Promise<{ T }>
 	-- If there are no values then return an already resolved promise.
 	return if #promises == 0 or amount == 0
 		then Promise.resolve({})
@@ -418,7 +417,7 @@ end
 	return Promise.all(promises)
 	```
 ]=]
-function Promise.all<T>(promises: Array<Promise<T>>): Promise<Array<T>>
+function Promise.all<T>(promises: { Promise<T> }): Promise<{ T }>
 	return Promise._all(debug.traceback(nil, 2), promises)
 end
 
@@ -442,7 +441,7 @@ end
 	end, 0)
 	```
 ]=]
-function Promise.fold<V, U>(list: Array<V | Promise<V>>, reducer: (accumulator: U, value: V, index: number) -> U | Promise<U>, initialValue: U): Promise<U>
+function Promise.fold<V, U>(list: { V | Promise<V> }, reducer: (accumulator: U, value: V, index: number) -> U | Promise<U>, initialValue: U): Promise<U>
 	local accumulator = Promise.resolve(initialValue)
 
 	return Promise.each(list, function(resolvedElement, i)
@@ -469,7 +468,7 @@ end
 	return Promise.some(promises, 2) -- Only resolves with first 2 promises to resolve
 	```
 ]=]
-function Promise.some<T>(promises: Array<Promise<T>>, count: number): Promise<Array<T>>
+function Promise.some<T>(promises: { Promise<T> }, count: number): Promise<{ T }>
 	return Promise._all(debug.traceback(nil, 2), promises, count)
 end
 
@@ -488,7 +487,7 @@ end
 	return Promise.any(promises) -- Resolves with first value to resolve (only rejects if all 3 rejected)
 	```
 ]=]
-function Promise.any<T>(promises: Array<Promise<T>>): Promise<T>
+function Promise.any<T>(promises: { Promise<T> }): Promise<T>
 	return Promise._all(debug.traceback(nil, 2), promises, 1):andThen(function(values)
 		return values[1]
 	end)
@@ -507,7 +506,7 @@ end
 	return Promise.allSettled(promises)
 	```
 ]=]
-function Promise.allSettled(promises: Array<Promise<...any>>): Promise<Array<EnumeratorItem<string>>>
+function Promise.allSettled(promises: { Promise<...any> }): Promise<{ EnumeratorItem<string> }>
 	-- If there are no values then return an already resolved promise.
 	return if #promises == 0
 		then Promise.resolve({})
@@ -569,7 +568,7 @@ end
 	return Promise.race(promises) -- Only returns 1st value to resolve or reject
 	```
 ]=]
-function Promise.race<T...>(promises: Array<Promise<T...>>): Promise<T...>
+function Promise.race<T...>(promises: { Promise<T...> }): Promise<T...>
 	return Promise._new(debug.traceback(nil, 2), function(resolve, reject, onCancel)
 		local newPromises = {}
 		local finished = false
@@ -653,7 +652,7 @@ end
 	- Any Promises within the array of values will now be cancelled if they have no other consumers.
 	- The Promise returned from the currently active predicate will be cancelled if it hasn't resolved yet.
 ]=]
-function Promise.each<V, U>(list: Array<V | Promise<V>>, predicate: (value: V, index: number) -> (U | Promise<U>)): Promise<Array<U>>
+function Promise.each<V, U>(list: { V | Promise<V> }, predicate: (value: V, index: number) -> (U | Promise<U>)): Promise<{ U }>
 	return Promise._new(debug.traceback(nil, 2), function(resolve, reject, onCancel)
 		local results = {}
 		local promisesToCancel = {}

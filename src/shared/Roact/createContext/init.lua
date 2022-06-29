@@ -1,7 +1,8 @@
 local Symbol = require(script.Parent.Parent.Symbol)
+
+local Children = require(script.Parent.PropMarkers.Children)
 local createFragment = require(script.Parent.createFragment)
 local createSignal = require(script.Parent.createSignal)
-local Children = require(script.Parent.PropMarkers.Children)
 local Component = require(script.Parent.Component)
 
 --[[

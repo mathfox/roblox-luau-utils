@@ -1,4 +1,5 @@
 local Symbol = require(script.Parent.Parent.Symbol)
+
 local Type = require(script.Parent.Type)
 
 local function noop()

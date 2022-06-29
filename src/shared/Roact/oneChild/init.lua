@@ -5,6 +5,7 @@
 
 	Throws an error if passed more than one child.
 ]]
+
 local function oneChild(children)
 	if not children then
 		return nil

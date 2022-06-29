@@ -5,6 +5,7 @@
 	The indentation may seem odd, but it's necessary to avoid introducing extra
 	whitespace into the error messages themselves.
 ]]
+
 local ComponentLifecyclePhase = require(script.Parent.ComponentLifecyclePhase)
 
 local invalidSetStateMessages = {}
@@ -34,5 +35,7 @@ which part of the lifecycle this component is in.
 This is a bug in Roact.
 It was triggered by the component %q.
 ]]
+
+table.freeze(invalidSetStateMessages)
 
 return invalidSetStateMessages

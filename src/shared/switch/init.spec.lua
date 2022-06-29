@@ -1,30 +1,30 @@
 return function()
-	local Switch = require(script.Parent)
+	local switch = require(script.Parent)
 
 	it("should return the correct value", function()
-		expect(Switch("none", {
+		expect(switch("none", {
 			none = "expected",
 			default = "unexpected",
 		})).to.be.equal("expected")
 
-		expect(Switch(false, {
+		expect(switch(false, {
 			[false] = "expected",
 			default = "unexpected",
 		})).to.be.equal("expected")
 
-		expect(Switch(nil, {
+		expect(switch(nil, {
 			default = "expected",
 		})).to.be.equal("expected")
 	end)
 
 	it("should return function result", function()
-		expect(Switch(nil, {
+		expect(switch(nil, {
 			default = function()
 				return "expected"
 			end,
 		})).to.be.equal("expected")
 
-		expect(Switch(false, {
+		expect(switch(false, {
 			[false] = function()
 				return "expected"
 			end,
@@ -34,7 +34,7 @@ return function()
 
 	it("should error when wront input provided", function()
 		expect(function()
-			Switch()
+			switch()
 		end).to.throw()
 	end)
 end

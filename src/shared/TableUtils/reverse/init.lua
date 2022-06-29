@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Array = Types.Array<T>
-
-local function reverse<V>(arr: Array<V>): Array<V>
+local function reverse<V>(arr: { V }): { V }
 	local length = #arr
 	local new = table.create(length)
 

@@ -1,17 +1,13 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Array<T> = Types.Array<T>
-
-local function loadChildren(parent: Instance): Array<any>
-	local modules = {}
+local function loadChildren(parent: Instance): { any }
+	local arr = {}
 
 	for _, child in parent:GetChildren() do
 		if child:IsA("ModuleScript") then
-			table.insert(modules, require(child :: ModuleScript))
+			table.insert(arr, require(child))
 		end
 	end
 
-	return modules
+	return arr
 end
 
 return loadChildren

@@ -1,9 +1,3 @@
--- reference: https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type
-export type Record<K, V = K> = { [K]: V }
-export type Array<T> = { T }
-export type EmptyTable = {}
--- a type all of the tables can be downcasted to
-export type AnyTable = Record<any>
 -- the table returned by the table.pack function: https://create.roblox.com/docs/reference/engine/libraries/table#pack
 export type PackedValues<T = any> = { n: number, [number]: T }
 
@@ -272,9 +266,9 @@ export type IRoduxStore<State, Dispatch> = {
 	-- TODO: add proper changed field type
 }
 export type RoduxStore<State = any> = IRoduxStore<State, RoduxDispatch<State>>
-export type RoduxAction<Type = any> = { type: Type } & AnyTable
-export type AnyRoduxAction = RoduxAction
+export type RoduxAction<Type = any> = { type: Type, [any]: any }
+export type RoduxAnyAction = RoduxAction
 export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: <self>(self, Args...) -> Action & { type: Type } }))
-export type RoduxReducer<State = any, Action = AnyRoduxAction> = (State?, Action) -> State
+export type RoduxReducer<State = any, Action = RoduxAnyAction> = (State?, Action) -> State
 
 return nil

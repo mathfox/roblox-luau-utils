@@ -9,9 +9,10 @@
 ]]
 
 local Symbol = require(script.Parent.Parent.Symbol)
+
 local Portal = require(script.Parent.Portal)
 
-local ElementKind = newproxy(true)
+local ElementKind = {}
 
 local ElementKindInternal = {
 	Portal = Symbol("Portal"),
@@ -22,11 +23,7 @@ local ElementKindInternal = {
 }
 
 function ElementKindInternal.of(value)
-	if typeof(value) ~= "table" then
-		return nil
-	end
-
-	return value[ElementKind]
+	return if typeof(value) ~= "table" then nil else value[ElementKind]
 end
 
 local componentTypesToKinds = {
@@ -36,15 +33,15 @@ local componentTypesToKinds = {
 }
 
 function ElementKindInternal.fromComponent(component)
-	if component == Portal then
-		return ElementKind.Portal
-	else
-		return componentTypesToKinds[typeof(component)]
-	end
+	return if component == Portal then ElementKind.Portal else componentTypesToKinds[typeof(component)]
 end
 
-getmetatable(ElementKind).__index = ElementKindInternal
+local elementKindMetatable = { __index = ElementKindInternal }
 
-table.freeze(ElementKindInternal)
+table.freeze(elementKindMetatable)
+
+setmetatable(ElementKind, elementKindMetatable)
+
+table.freeze(ElementKind)
 
 return ElementKind

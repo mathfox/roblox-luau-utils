@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Array<T> = Types.Array<T>
-
-local function filterArray<T>(arr: Array<T>, predicate: (T, number, Array<T>) -> boolean): Array<T>
+local function filterArray<V>(arr: { V }, predicate: (V, number, { V }) -> boolean): { V }
 	local new = table.create(#arr)
 
 	for index, value in arr do

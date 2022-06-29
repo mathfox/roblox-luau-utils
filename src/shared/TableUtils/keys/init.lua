@@ -1,9 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Record<K, V> = Types.Record<K, V>
-type Array<T> = Types.Array<T>
-
-local function keys<K>(source: Record<K, any>): Array<K>
+local function keys<K>(source: { [K]: any }): { K }
 	local result = table.create(#source)
 
 	for key in source do

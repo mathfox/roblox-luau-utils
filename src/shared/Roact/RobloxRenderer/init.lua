@@ -4,14 +4,14 @@
 	renderer that does anything.
 ]]
 
-local Binding = require(script.Parent.Binding)
+local getDefaultInstanceProperty = require(script.Parent.getDefaultInstanceProperty)
+local SingleEventManager = require(script.Parent.SingleEventManager)
+local internalAssert = require(script.Parent.internalAssert)
 local Children = require(script.Parent.PropMarkers.Children)
 local ElementKind = require(script.Parent.ElementKind)
-local SingleEventManager = require(script.Parent.SingleEventManager)
-local getDefaultInstanceProperty = require(script.Parent.getDefaultInstanceProperty)
 local Ref = require(script.Parent.PropMarkers.Ref)
+local Binding = require(script.Parent.Binding)
 local Type = require(script.Parent.Type)
-local internalAssert = require(script.Parent.internalAssert)
 
 local config = require(script.Parent.GlobalConfig).get()
 

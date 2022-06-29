@@ -1,9 +1,10 @@
 local assign = require(script.Parent.Parent.TableUtils.assign)
-local ComponentLifecyclePhase = require(script.Parent.ComponentLifecyclePhase)
-local Type = require(script.Parent.Type)
 local Symbol = require(script.Parent.Parent.Symbol)
+
+local ComponentLifecyclePhase = require(script.Parent.ComponentLifecyclePhase)
 local invalidSetStateMessages = require(script.Parent.invalidSetStateMessages)
 local internalAssert = require(script.Parent.internalAssert)
+local Type = require(script.Parent.Type)
 
 local config = require(script.Parent.GlobalConfig).get()
 
@@ -44,8 +45,11 @@ Component.__componentName = "Component"
 ]]
 function Component:extend(name)
 	if config.typeChecks then
-		assert(Type.of(self) == Type.StatefulComponentClass, "Invalid `self` argument to `extend`.")
-		assert(typeof(name) == "string", "Component class name must be a string")
+		if Type.of(self) ~= Type.StatefulComponentClass then
+			error('invalid "self" argument to "extend"')
+		elseif type(name) ~= "string" then
+			error("Component class name must be a string")
+		end
 	end
 
 	local class = {}

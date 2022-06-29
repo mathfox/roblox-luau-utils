@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Record<K, V> = Types.Record<K, V>
-
-local function copy<K, V>(source: Record<K, V>): Record<K, V>
+local function copy<K, V>(source: { [K]: V }): { [K]: V }
 	local result = table.create(#source)
 
 	for key, value in source do

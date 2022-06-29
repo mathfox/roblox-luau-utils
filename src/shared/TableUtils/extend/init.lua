@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Array<T> = Types.Array<T>
-
-local function extend(target: Array<any>, ...: Array<any>?)
+local function extend<V>(target: { V }, ...: { V }?): { V }
 	for index = 1, select("#", ...) do
 		local source = select(index, ...)
 		if source ~= nil then

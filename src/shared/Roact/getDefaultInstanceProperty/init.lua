@@ -11,6 +11,7 @@
 local Symbol = require(script.Parent.Parent.Symbol)
 
 local Nil = Symbol("Nil")
+
 local cachedPropertyValues = {}
 
 local function getDefaultInstanceProperty(className, propertyName)

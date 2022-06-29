@@ -1,8 +1,4 @@
-local Types = require(script.Parent.Parent.Types)
-
-type Record<K, V = K> = Types.Record<K, V>
-
-local function join(...: Record<any>?): Record<any>
+local function join<K, V>(...: { [K]: V }?): { [K]: V }
 	local result = {}
 
 	for index = 1, select("#", ...) do

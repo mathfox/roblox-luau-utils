@@ -1,22 +1,12 @@
 local Types = require(script.Parent.Parent.Types)
 
-type Record<K, V> = Types.Record<K, V>
-type Reducer = Types.RoduxReducer
-type Action = Types.RoduxAction
+type Reducer<State, Action> = Types.RoduxReducer<State, Action>
+type AnyAction = Types.RoduxAnyAction
 
-local function createReducer<State>(initialState: State, handlers: Record<any, Reducer>, ...): Reducer<State>
-	return function(state: any, action: Action)
-		if state == nil then
-			state = initialState
-		end
-
+local function createReducer<State>(initialState: State, handlers: { [any]: (State, AnyAction) -> State }): Reducer<State, AnyAction>
+	return function(state: State?, action: AnyAction)
 		local handler = handlers[action.type]
-
-		if handler then
-			return handler(state, action)
-		end
-
-		return state
+		return if handler then handler(if state == nil then initialState else state, action) else if state == nil then initialState else state
 	end
 end
 
