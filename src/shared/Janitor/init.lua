@@ -85,7 +85,7 @@ end
 
 local function getNextTask(self)
 	return function()
-		for object, methodName in self do
+		for object, methodName in pairs(self) do
 			if object ~= IndicesReference then
 				return object, methodName
 			end
