@@ -96,7 +96,7 @@ end
 
 local function detachAllBindings(virtualNode)
 	if virtualNode.bindings ~= nil then
-		for _, disconnect in pairs(virtualNode.bindings) do
+		for _, disconnect in virtualNode.bindings do
 			disconnect()
 		end
 		virtualNode.bindings = nil
@@ -146,21 +146,21 @@ local function applyProp(virtualNode, key, newValue, oldValue)
 end
 
 local function applyProps(virtualNode, props)
-	for propKey, value in pairs(props) do
+	for propKey, value in props do
 		applyProp(virtualNode, propKey, value, nil)
 	end
 end
 
 local function updateProps(virtualNode, oldProps, newProps)
 	-- Apply props that were added or updated
-	for propKey, newValue in pairs(newProps) do
+	for propKey, newValue in newProps do
 		local oldValue = oldProps[propKey]
 
 		applyProp(virtualNode, propKey, newValue, oldValue)
 	end
 
 	-- Clean up props that were removed
-	for propKey, oldValue in pairs(oldProps) do
+	for propKey, oldValue in oldProps do
 		local newValue = newProps[propKey]
 
 		if newValue == nil then
@@ -229,7 +229,7 @@ function RobloxRenderer.unmountHostNode(reconciler, virtualNode)
 
 	applyRef(element.props[Ref], nil)
 
-	for _, childNode in pairs(virtualNode.children) do
+	for _, childNode in virtualNode.children do
 		reconciler.unmountVirtualNode(childNode)
 	end
 

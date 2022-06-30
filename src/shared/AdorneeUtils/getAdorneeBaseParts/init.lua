@@ -4,7 +4,7 @@ local function getAdorneeBaseParts(adornee: Instance)
 	local searchParent: Instance? = if adornee:IsA("Humanoid") then adornee.Parent else adornee
 
 	if searchParent then
-		for _, part in ipairs(searchParent:GetDescendants()) do
+		for _, part in searchParent:GetDescendants() do
 			if part:IsA("BasePart") then
 				table.insert(parts, part)
 			end

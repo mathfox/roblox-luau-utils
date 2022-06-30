@@ -12,7 +12,7 @@ local function deepEqual(a, b)
 	if typeof(a) == "table" then
 		local visitedKeys = {}
 
-		for key, value in pairs(a) do
+		for key, value in a do
 			visitedKeys[key] = true
 
 			local success, innerMessage = deepEqual(value, b[key])
@@ -23,7 +23,7 @@ local function deepEqual(a, b)
 			end
 		end
 
-		for key, value in pairs(b) do
+		for key, value in b do
 			if not visitedKeys[key] then
 				local success, innerMessage = deepEqual(value, a[key])
 

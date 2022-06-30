@@ -888,7 +888,7 @@ return function()
 
 			local combinedPromise = Promise.all(promises)
 
-			for _, resolve in ipairs(resolveFunctions) do
+			for _, resolve in resolveFunctions do
 				expect(combinedPromise:getStatus()).to.equal(Promise.Status.Started)
 				resolve[1](resolve[2])
 			end

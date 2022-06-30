@@ -470,7 +470,7 @@ return function()
 				{ type = "Increment", amount = 3 },
 				{ type = "Increment", amount = 10 },
 			}
-			for _, action in ipairs(actions) do
+			for _, action in actions do
 				store:dispatch(action)
 			end
 			store:flush()

@@ -16,11 +16,6 @@ return function()
 			setGlobalConfig = "function",
 			createContext = "function",
 
-			-- These functions are deprecated and throw warnings!
-			reify = "function",
-			teardown = "function",
-			reconcile = "function",
-
 			Component = true,
 			PureComponent = true,
 			Portal = true,
@@ -28,12 +23,11 @@ return function()
 			Event = true,
 			Change = true,
 			Ref = true,
-			UNSTABLE = true,
 		}
 
 		expect(Roact).to.be.ok()
 
-		for key, valueType in pairs(publicApi) do
+		for key, valueType in publicApi do
 			local success
 			if typeof(valueType) == "string" then
 				success = typeof(Roact[key]) == valueType
@@ -43,17 +37,13 @@ return function()
 
 			if not success then
 				local existence = typeof(valueType) == "boolean" and "present" or "of type " .. valueType
-				local message = ("Expected public API member %q to be %s, but instead it was of type %s"):format(
-					tostring(key),
-					existence,
-					typeof(Roact[key])
-				)
+				local message = ("Expected public API member %q to be %s, but instead it was of type %s"):format(tostring(key), existence, typeof(Roact[key]))
 
 				error(message)
 			end
 		end
 
-		for key in pairs(Roact) do
+		for key in Roact do
 			if publicApi[key] == nil then
 				local message = ("Found unknown public API key %q!"):format(tostring(key))
 

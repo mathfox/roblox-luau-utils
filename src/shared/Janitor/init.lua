@@ -85,7 +85,7 @@ end
 
 local function getNextTask(self)
 	return function()
-		for object, methodName in pairs(self) do
+		for object, methodName in self do
 			if object ~= IndicesReference then
 				return object, methodName
 			end
@@ -159,7 +159,7 @@ end
 function Janitor:linkToInstances(...: Instance)
 	local linkJanitor = Janitor.new()
 
-	for _, object in ipairs({ ... }) do
+	for _, object in { ... } do
 		linkJanitor:add(self:linkToInstance(object, true), true)
 	end
 

@@ -2,6 +2,7 @@ return function()
 	local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 	local assertDeepEqual = require(script.Parent.Parent.Parent.assertDeepEqual)
+
 	local Binding = require(script.Parent.Parent.Binding)
 	local Children = require(script.Parent.Parent.PropMarkers.Children)
 	local Component = require(script.Parent.Parent.Component)
@@ -750,7 +751,7 @@ return function()
 
 			local childValues = {}
 
-			for _, child in pairs(parentChildren) do
+			for _, child in parentChildren do
 				expect(child.ClassName).to.equal("StringValue")
 				childValues[child.Value] = 1 + (childValues[child.Value] or 0)
 			end
@@ -1245,7 +1246,7 @@ return function()
 
 			reconciler.unmountVirtualNode(instance)
 
-			for _, value in pairs(unmountCounts) do
+			for _, value in unmountCounts do
 				expect(value).to.equal(1)
 			end
 		end)

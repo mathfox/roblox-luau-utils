@@ -344,7 +344,7 @@ function Promise._all<T>(traceback: string, promises: { Promise<T> }, amount: nu
 				local done = false
 
 				local function cancel()
-					for _, promise in ipairs(newPromises) do
+					for _, promise in newPromises do
 						promise:cancel()
 					end
 				end
@@ -373,7 +373,7 @@ function Promise._all<T>(traceback: string, promises: { Promise<T> }, amount: nu
 
 				onCancel(cancel)
 
-				for i, promise in ipairs(promises) do
+				for i, promise in promises do
 					newPromises[i] = promise:andThen(function(firstReturnValue)
 						resolveOne(i, firstReturnValue)
 					end, function(...)
@@ -532,7 +532,7 @@ function Promise.allSettled(promises: { Promise<...any> }): Promise<{ Enumerator
 				end
 
 				onCancel(function()
-					for _, promise in ipairs(newPromises) do
+					for _, promise in newPromises do
 						promise:cancel()
 					end
 				end)
@@ -574,7 +574,7 @@ function Promise.race<T...>(promises: { Promise<T...> }): Promise<T...>
 		local finished = false
 
 		local function cancel()
-			for _, promise in ipairs(newPromises) do
+			for _, promise in newPromises do
 				promise:cancel()
 			end
 		end
@@ -591,7 +591,7 @@ function Promise.race<T...>(promises: { Promise<T...> }): Promise<T...>
 			return
 		end
 
-		for i, promise in ipairs(promises) do
+		for i, promise in promises do
 			newPromises[i] = promise:andThen(finalize(resolve), finalize(reject))
 		end
 
@@ -660,7 +660,7 @@ function Promise.each<V, U>(list: { V | Promise<V> }, predicate: (value: V, inde
 		local cancelled = false
 
 		local function cancel()
-			for _, promiseToCancel in ipairs(promisesToCancel) do
+			for _, promiseToCancel in promisesToCancel do
 				promiseToCancel:cancel()
 			end
 		end
@@ -679,7 +679,7 @@ function Promise.each<V, U>(list: { V | Promise<V> }, predicate: (value: V, inde
 
 		local preprocessedList = {}
 
-		for index, value in ipairs(list) do
+		for index, value in list do
 			if Promise.is(value) then
 				if value:getStatus() == Promise.Status.Cancelled then
 					cancel()
@@ -710,7 +710,7 @@ function Promise.each<V, U>(list: { V | Promise<V> }, predicate: (value: V, inde
 			end
 		end
 
-		for index, value in ipairs(preprocessedList) do
+		for index, value in preprocessedList do
 			if Promise.is(value) then
 				local success
 				success, value = value:await()
@@ -1033,7 +1033,7 @@ function Promise.prototype:cancel()
 		self._parent:_consumerCancelled(self)
 	end
 
-	for child in pairs(self._consumers) do
+	for child in self._consumers do
 		child:cancel()
 	end
 
@@ -1309,7 +1309,7 @@ function Promise.prototype:_resolve(...)
 	self._valuesLength, self._values = select("#", ...), { ... }
 
 	-- We assume that these callbacks will not throw errors.
-	for _, callback in ipairs(self._queuedResolve) do
+	for _, callback in self._queuedResolve do
 		task.spawn(callback, ...)
 	end
 
@@ -1327,7 +1327,7 @@ function Promise.prototype:_reject(...)
 	-- If there are any rejection handlers, call those!
 	if next(self._queuedReject) then
 		-- We assume that these callbacks will not throw errors.
-		for _, callback in ipairs(self._queuedReject) do
+		for _, callback in self._queuedReject do
 			task.spawn(callback, ...)
 		end
 	else
@@ -1361,7 +1361,7 @@ end
 	failure, *and* cancellation.
 ]]
 function Promise.prototype:_finalize()
-	for _, callback in ipairs(self._queuedFinally) do
+	for _, callback in self._queuedFinally do
 		-- Purposefully not passing values to callbacks here, as it could be the
 		-- resolved values, or rejected errors. If the developer needs the values,
 		-- they should use :andThen or :catch explicitly.

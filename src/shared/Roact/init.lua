@@ -2,14 +2,12 @@
 	Packages up the internals of Roact and exposes a public API for it.
 ]]
 
-local createReconcilerCompat = require(script.createReconcilerCompat)
 local createReconciler = require(script.createReconciler)
 local RobloxRenderer = require(script.RobloxRenderer)
 local GlobalConfig = require(script.GlobalConfig)
 local Binding = require(script.Binding)
 
 local robloxReconciler = createReconciler(RobloxRenderer)
-local reconcilerCompat = createReconcilerCompat(robloxReconciler)
 
 local Roact = {
 	Component = require(script.Component),
@@ -33,14 +31,7 @@ local Roact = {
 	unmount = robloxReconciler.unmountVirtualTree,
 	update = robloxReconciler.updateVirtualTree,
 
-	reify = reconcilerCompat.reify,
-	teardown = reconcilerCompat.teardown,
-	reconcile = reconcilerCompat.reconcile,
-
 	setGlobalConfig = GlobalConfig.set,
-
-	-- APIs that may change in the future without warning
-	UNSTABLE = {},
 }
 
 table.freeze(Roact)

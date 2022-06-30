@@ -136,7 +136,7 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 			if mapDispatchType == "table" then
 				mappedStoreDispatch = {}
 
-				for key, actionCreator in pairs(mapDispatchToProps) do
+				for key, actionCreator in mapDispatchToProps do
 					assert(typeof(actionCreator) == "function", "mapDispatchToProps must contain function values")
 
 					mappedStoreDispatch[key] = function(...)
@@ -169,7 +169,7 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 
 			local extraState = stateUpdater(self.props.innerProps, self.state, mappedStoreState)
 
-			for key, value in pairs(extraState) do
+			for key, value in extraState do
 				self.state[key] = value
 			end
 		end
