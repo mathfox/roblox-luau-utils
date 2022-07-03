@@ -5,6 +5,8 @@
 	executing an event.
 ]]
 
+local config = require(script.Parent.GlobalConfig).get()
+
 local function immutableAppend(list, ...)
 	local new = {}
 	local len = #list
@@ -35,17 +37,14 @@ end
 local Signal = {}
 Signal.__index = Signal
 
-function Signal.new(store)
-	return setmetatable({
-		_listeners = {},
-		_store = store,
-	}, Signal)
-end
-
 function Signal:connect(callback)
-	if type(callback) ~= "function" then
-		error("invalid #1 argument, expected a function", 2)
-	elseif self._store and self._store._isDispatching then
+	if config.typeChecks then
+		if type(callback) ~= "function" then
+			error("invalid #1 argument, expected a function", 2)
+		end
+	end
+
+	if self._store and self._store._isDispatching then
 		error(
 			"You may not call store.changed:connect() while the reducer is executing. "
 				.. "If you would like to be notified after the store has been updated, subscribe from a "
@@ -56,7 +55,7 @@ function Signal:connect(callback)
 	local listener = {
 		callback = callback,
 		disconnected = false,
-		connectTraceback = debug.traceback(),
+		connectTraceback = debug.traceback(nil, 2),
 		disconnectTraceback = nil,
 	}
 
@@ -90,12 +89,21 @@ function Signal:fire(...)
 				error(message, 2)
 			elseif coroutine.status(co) ~= "dead" then
 				-- TODO: proper debug traceback to the place where connection was created
-				error('Attempted to yield inside a "changed" connection which was connected at: %s', 2)
+				error(('Attempted to yield inside a "changed" connection which was connected at:\n%s'):format(listener.connectTraceback), 2)
 			end
 		end
 	end
 end
 
-table.freeze(Signal)
+local SignalExport = {}
 
-return Signal
+function SignalExport.new(store)
+	return setmetatable({
+		_listeners = {},
+		_store = store,
+	}, Signal)
+end
+
+table.freeze(SignalExport)
+
+return SignalExport

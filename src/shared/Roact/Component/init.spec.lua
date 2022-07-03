@@ -1,9 +1,10 @@
 return function()
 	local assertDeepEqual = require(script.Parent.Parent.Parent.assertDeepEqual)
-	local createElement = require(script.Parent.Parent.createElement)
+
 	local createReconciler = require(script.Parent.Parent.createReconciler)
-	local createSpy = require(script.Parent.Parent.createSpy)
+	local createElement = require(script.Parent.Parent.createElement)
 	local NoopRenderer = require(script.Parent.Parent.NoopRenderer)
+	local createSpy = require(script.Parent.Parent.createSpy)
 	local Type = require(script.Parent.Parent.Type)
 
 	local Component = require(script.Parent.Parent.Component)

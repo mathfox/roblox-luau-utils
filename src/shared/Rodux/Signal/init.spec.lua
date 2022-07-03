@@ -1,11 +1,7 @@
 return function()
+	local GlobalConfig = require(script.Parent.Parent.GlobalConfig)
+
 	local Signal = require(script.Parent)
-
-	it("should construct from nothing", function()
-		local signal = Signal.new()
-
-		expect(signal).to.be.ok()
-	end)
 
 	it("should fire connected callbacks", function()
 		local callCount = 0
@@ -113,7 +109,12 @@ return function()
 	end)
 
 	it("should throw an error if the argument to `connect` is not a function", function()
+		GlobalConfig.set({
+			typeChecks = true,
+		})
+
 		local signal = Signal.new()
+
 		expect(function()
 			signal:connect("not a function")
 		end).to.throw()

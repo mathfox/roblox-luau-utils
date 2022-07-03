@@ -2,6 +2,8 @@ local RunService = game:GetService("RunService")
 
 local Signal = require(script.Parent.Signal)
 
+local config = require(script.Parent.GlobalConfig).get()
+
 local ACTION_LOG_LENGTH = 3
 
 local rethrowErrorReporter = {
@@ -38,9 +40,13 @@ Store.__index = Store
 	valid.
 ]]
 function Store.new(reducer, initialState, middlewares, errorReporter)
-	if middlewares ~= nil then
-		for i = 1, #middlewares, 1 do
-			assert(typeof(middlewares[i]) == "function", ("Expected the middleware ('%s') at index %d to be a function."):format(tostring(middlewares[i]), i))
+	if config.typeChecks then
+		assert(typeof(reducer) == "function", "Bad argument #1 to Store.new, expected function.")
+		assert(middlewares == nil or typeof(middlewares) == "table", "Bad argument #3 to Store.new, expected nil or table.")
+		if middlewares ~= nil then
+			for i = 1, #middlewares, 1 do
+				assert(typeof(middlewares[i]) == "function", ("Expected the middleware ('%s') at index %d to be a function."):format(tostring(middlewares[i]), i))
+			end
 		end
 	end
 

@@ -1,3 +1,4 @@
+local noop = require(script.Parent.Parent.FunctionUtils.noop)
 local join = require(script.Parent.Parent.TableUtils.join)
 local Roact = require(script.Parent.Parent.Roact)
 
@@ -9,10 +10,6 @@ local StoreContext = require(script.Parent.StoreContext)
 ]]
 local function formatMessage(lines, parameters)
 	return table.concat(lines, "\n"):format(unpack(parameters or {}))
-end
-
-local function noop()
-	return nil
 end
 
 --[[

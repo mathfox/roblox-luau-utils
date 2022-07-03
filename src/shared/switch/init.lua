@@ -1,5 +1,5 @@
-local function switch(condition, results: { [any]: any, default: any })
-	local exists = results[condition] or results.default
+local function switch(condition, results: { [any]: any, _: any })
+	local exists = results[condition] or results._
 	return if type(exists) == "function" then exists() else exists
 end
 

@@ -1,5 +1,6 @@
 return function()
 	local Store = require(script.Parent.Parent.Store)
+
 	local loggerMiddleware = require(script.Parent)
 
 	it("should print whenever an action is dispatched", function()

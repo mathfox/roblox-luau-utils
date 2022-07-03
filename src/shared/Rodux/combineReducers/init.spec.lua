@@ -7,10 +7,10 @@ return function()
 
 		local reducer = combineReducers({
 			a = function(state, action)
-				aCount = aCount + 1
+				aCount += 1
 			end,
 			b = function(state, action)
-				bCount = bCount + 1
+				bCount += 1
 			end,
 		})
 

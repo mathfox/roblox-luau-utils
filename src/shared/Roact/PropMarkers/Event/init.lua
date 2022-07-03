@@ -24,7 +24,7 @@ local eventMetatable = {
 }
 
 setmetatable(Event, {
-	__index = function(_self, eventName)
+	__index = function(_, eventName)
 		local event = {
 			[Type] = Type.HostEvent,
 			name = eventName,

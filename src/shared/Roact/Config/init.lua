@@ -24,20 +24,26 @@ local defaultConfig = {
 	propValidation = false,
 }
 
-type ConfigTable<T = boolean> = {
+type RoactConfigTable = {
 	internalTypeChecks: boolean,
 	typeChecks: boolean,
 	elementTracing: boolean,
 	propValidation: boolean,
 }
-type Config = {
-	get: () -> ConfigTable,
-	set: (configValues: ConfigTable<boolean?>) -> (),
-	scoped: (configValues: ConfigTable<boolean?>, callback: () -> ()) -> (),
+type PartialRoactConfigTable = {
+	internalTypeChecks: boolean?,
+	typeChecks: boolean?,
+	elementTracing: boolean?,
+	propValidation: boolean?,
+}
+type RoactConfig = {
+	get: () -> RoactConfigTable,
+	set: (configValues: PartialRoactConfigTable) -> (),
+	scoped: (configValues: PartialRoactConfigTable, callback: () -> ()) -> (),
 }
 
 -- Build a list of valid configuration values up for debug messages.
-local defaultConfigKeys = {}
+local defaultConfigKeys: { string } = {}
 
 for key in defaultConfig do
 	table.insert(defaultConfigKeys, key)
@@ -45,7 +51,7 @@ end
 
 local Config = {}
 
-function Config:set(configValues)
+function Config:set(configValues: PartialRoactConfigTable)
 	-- Validate values without changing any configuration.
 	-- We only want to apply this configuration if it's valid!
 	for key, value in configValues do
@@ -59,11 +65,11 @@ function Config:set(configValues)
 	end
 end
 
-function Config:get()
+function Config:get(): RoactConfigTable
 	return self._currentConfig
 end
 
-function Config:scoped(configValues, callback)
+function Config:scoped(configValues: PartialRoactConfigTable, callback: () -> ())
 	local previousValues = {}
 
 	for key, value in self._currentConfig do
@@ -83,14 +89,14 @@ end
 
 local ConfigExport = {}
 
-function ConfigExport.new(): Config
-	local self = {}
-
-	self._currentConfig = setmetatable({}, {
-		__index = function(_, key)
-			error(("Invalid global configuration key %q. Valid configuration keys are: %s"):format(tostring(key), table.concat(defaultConfigKeys, ", ")), 3)
-		end,
-	})
+function ConfigExport.new(): RoactConfig
+	local self = {
+		_currentConfig = setmetatable({}, {
+			__index = function(_, key)
+				error(("Invalid global configuration key %q. Valid configuration keys are: %s"):format(tostring(key), table.concat(defaultConfigKeys, ", ")), 3)
+			end,
+		}),
+	}
 
 	-- We manually bind these methods here so that the Config's methods can be
 	-- used without passing in self, since they eventually get exposed on the
@@ -111,5 +117,7 @@ function ConfigExport.new(): Config
 
 	return self
 end
+
+table.freeze(ConfigExport)
 
 return ConfigExport

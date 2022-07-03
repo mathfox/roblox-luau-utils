@@ -13,21 +13,23 @@ local function createRef()
 		A ref is just redirected to a binding via its metatable
 	]]
 	setmetatable(ref, {
-		__index = function(_self, key)
+		__index = function(_, key)
 			if key == "current" then
 				return binding:getValue()
 			else
 				return binding[key]
 			end
 		end,
-		__newindex = function(_self, key, value)
+
+		__newindex = function(_, key, value)
 			if key == "current" then
 				error("Cannot assign to the 'current' property of refs", 2)
 			end
 
 			binding[key] = value
 		end,
-		__tostring = function(_self)
+
+		__tostring = function()
 			return ("RoactRef(%s)"):format(tostring(binding:getValue()))
 		end,
 	})

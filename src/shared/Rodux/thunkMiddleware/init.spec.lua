@@ -1,5 +1,6 @@
 return function()
 	local Store = require(script.Parent.Parent.Store)
+
 	local thunkMiddleware = require(script.Parent)
 
 	it("should dispatch thunks", function()

@@ -1,10 +1,7 @@
+local noop = require(script.Parent.Parent.FunctionUtils.noop)
 local Symbol = require(script.Parent.Parent.Symbol)
 
 local Type = require(script.Parent.Type)
-
-local function noop()
-	return nil
-end
 
 local ElementUtils = {}
 
