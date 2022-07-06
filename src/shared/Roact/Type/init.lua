@@ -15,7 +15,7 @@ local Type = {}
 
 local TypeInternal = {}
 
-local function addType(name)
+local function addType(name: string)
 	TypeInternal[name] = Symbol("Roact" .. name)
 end
 

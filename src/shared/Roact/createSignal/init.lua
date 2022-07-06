@@ -12,13 +12,19 @@
 		disconnect()
 ]]
 
+local config = require(script.Parent.GlobalConfig).get()
+
 local function createSignal()
 	local connections = {}
 	local suspendedConnections = {}
 	local firing = false
 
-	local function subscribe(_self, callback)
-		assert(typeof(callback) == "function", "Can only subscribe to signals with a function.")
+	local function subscribe(_, callback)
+		if config.internalTypeChecks then
+			if typeof(callback) ~= "function" then
+				error("Can only subscribe to signals with a function.", 2)
+			end
+		end
 
 		local connection = {
 			callback = callback,
@@ -34,7 +40,9 @@ local function createSignal()
 		connections[callback] = connection
 
 		local function disconnect()
-			assert(not connection.disconnected, "Listeners can only be disconnected once.")
+			if connection.disconnected then
+				error("Listeners can only be disconnected once.", 2)
+			end
 
 			connection.disconnected = true
 			connections[callback] = nil
@@ -44,7 +52,7 @@ local function createSignal()
 		return disconnect
 	end
 
-	local function fire(_self, ...)
+	local function fire(_, ...)
 		firing = true
 		for callback, connection in connections do
 			if not connection.disconnected and not suspendedConnections[callback] then

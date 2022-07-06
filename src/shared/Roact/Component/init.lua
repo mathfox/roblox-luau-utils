@@ -97,7 +97,9 @@ end
 
 function Component:setState(mapState)
 	if config.typeChecks then
-		assert(Type.of(self) == Type.StatefulComponentInstance, "Invalid `self` argument to `extend`.")
+		if Type.of(self) ~= Type.StatefulComponentInstance then
+			error("Invalid `self` argument to `extend`.", 2)
+		end
 	end
 
 	local internalData = self[InternalData]

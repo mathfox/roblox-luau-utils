@@ -1,7 +1,11 @@
+local Types = require(script.Parent.Parent.Types)
+
 local ElementKind = require(script.Parent.ElementKind)
 local Type = require(script.Parent.Type)
 
-local function createFragment(elements)
+type Element = Types.RoactElement
+
+local function createFragment(elements: { [any]: Element })
 	return {
 		[Type] = Type.Element,
 		[ElementKind] = ElementKind.Fragment,

@@ -1,7 +1,13 @@
+local Types = require(script.Parent.Parent.Types)
+
 local Children = require(script.Parent.PropMarkers.Children)
 local ElementKind = require(script.Parent.ElementKind)
 local Logging = require(script.Parent.Logging)
 local Type = require(script.Parent.Type)
+
+type FunctionComponent = Types.RoactFunctionComponent
+type StatefulComponent = Types.RoactStatefulComponent
+type Element = Types.RoactElement
 
 local config = require(script.Parent.GlobalConfig).get()
 
@@ -34,9 +40,8 @@ Instead, consider using a utility function to merge tables of children together:
 	Children is a shorthand for specifying `Roact.Children` as a key inside
 	props. If specified, the passed `props` table is mutated!
 ]]
-local function createElement(component, props, children)
+local function createElement(component: string | FunctionComponent | StatefulComponent, props: { [any]: any }?, children: { [any]: any }?): Element
 	if config.typeChecks then
-		-- @NOTE: changed from typeof to type
 		if component == nil then
 			error('"component" argument is required')
 		elseif type(props) ~= "table" and props ~= nil then
@@ -58,11 +63,9 @@ local function createElement(component, props, children)
 		props[Children] = children
 	end
 
-	local elementKind = ElementKind.fromComponent(component)
-
 	local element = {
 		[Type] = Type.Element,
-		[ElementKind] = elementKind,
+		[ElementKind] = ElementKind.fromComponent(component),
 		component = component,
 		props = props,
 	}

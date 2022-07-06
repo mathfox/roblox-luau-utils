@@ -15,10 +15,6 @@ return function()
 		end).to.throw()
 	end)
 
-	it("should construct Enumerator when valid arguments provided", function()
-		return
-	end)
-
 	it("should implement __tostring metamethod", function()
 		expect(function()
 			local enumerator = Enumerator("a", { "a" })

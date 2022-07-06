@@ -14,7 +14,7 @@ local Nil = Symbol("Nil")
 
 local cachedPropertyValues = {}
 
-local function getDefaultInstanceProperty(className, propertyName)
+local function getDefaultInstanceProperty(className: string, propertyName: string)
 	local classCache = cachedPropertyValues[className]
 
 	if classCache then

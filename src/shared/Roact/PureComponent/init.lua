@@ -1,7 +1,4 @@
---[[
-	A version of Component with a `shouldUpdate` method that forces the
-	resulting component to be pure.
-]]
+--	A version of Component with a `shouldUpdate` method that forces the resulting component to be pure.
 
 local Component = require(script.Parent.Component)
 

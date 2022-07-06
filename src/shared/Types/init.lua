@@ -256,17 +256,33 @@ export type Friend = {
 -- https://github.com/Roblox/rodux/commit/ce63e3d57b55c6af9805a92cc04691e98c8027a8
 export type IRoduxDispatch<Store> = <Action>(self: Store, action: Action & RoduxAction) -> ()
 export type RoduxDispatch<State = any> = IRoduxDispatch<RoduxStore<State>>
+type RoduxStoreSignal<State> = {
+	connect: (self: RoduxStoreSignal<State>, callback: (State) -> ()) -> (),
+}
 export type IRoduxStore<State, Dispatch> = {
 	dispatch: Dispatch,
 	getState: (self: IRoduxStore<State, Dispatch>) -> State,
 	destruct: (self: IRoduxStore<State, Dispatch>) -> (),
 	flush: (self: IRoduxStore<State, Dispatch>) -> (),
-	-- TODO: add proper changed field type
+	changed: RoduxStoreSignal<State>,
 }
 export type RoduxStore<State = any> = IRoduxStore<State, RoduxDispatch<State>>
 export type RoduxAction<Type = any> = { type: Type, [any]: any }
 export type RoduxAnyAction = RoduxAction
 export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: <self>(self, Args...) -> Action & { type: Type } }))
 export type RoduxReducer<State = any, Action = RoduxAnyAction> = (State?, Action) -> State
+
+export type RoactFunctionComponent = ({ [any]: any }) -> RoactElement
+export type RoactStatefulComponent = {}
+export type RoactElement = {
+	props: { [any]: any }?,
+	component: string | RoactFunctionComponent | RoactStatefulComponent | RoactFragment | RoactPortal,
+}
+export type RoactFragment = {}
+export type RoactPortal = {}
+export type RoactContext = {
+	Consumer: {},
+	Provider: {},
+}
 
 return nil

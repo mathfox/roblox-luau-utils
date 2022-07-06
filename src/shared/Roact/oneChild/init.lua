@@ -6,7 +6,7 @@
 	Throws an error if passed more than one child.
 ]]
 
-local function oneChild(children)
+local function oneChild(children: { [any]: any }?)
 	if not children then
 		return nil
 	end

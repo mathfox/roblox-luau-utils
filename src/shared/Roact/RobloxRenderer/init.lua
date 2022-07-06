@@ -183,9 +183,13 @@ function RobloxRenderer.mountHostNode(reconciler, virtualNode)
 	if config.internalTypeChecks then
 		internalAssert(ElementKind.of(element) == ElementKind.Host, "Element at given node is not a host Element")
 	end
+
 	if config.typeChecks then
-		assert(element.props.Name == nil, "Name can not be specified as a prop to a host component in Roact.")
-		assert(element.props.Parent == nil, "Parent can not be specified as a prop to a host component in Roact.")
+		if element.props.Name ~= nil then
+			error("Name can not be specified as a prop to a host component in Roact.", 2)
+		elseif element.props.Parent ~= nil then
+			error("Parent can not be specified as a prop to a host component in Roact.", 22)
+		end
 	end
 
 	local instance = Instance.new(element.component)
@@ -202,8 +206,7 @@ function RobloxRenderer.mountHostNode(reconciler, virtualNode)
 			source = "<enable element tracebacks>"
 		end
 
-		local fullMessage = applyPropsError:format(errorMessage, source)
-		error(fullMessage, 0)
+		error(applyPropsError:format(errorMessage, source), 0)
 	end
 
 	instance.Name = tostring(hostKey)

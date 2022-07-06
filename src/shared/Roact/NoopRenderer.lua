@@ -11,11 +11,11 @@ function NoopRenderer.isHostObject(target)
 	return target == nil
 end
 
-function NoopRenderer.mountHostNode(_reconciler, _node) end
+function NoopRenderer.mountHostNode() end
 
-function NoopRenderer.unmountHostNode(_reconciler, _node) end
+function NoopRenderer.unmountHostNode() end
 
-function NoopRenderer.updateHostNode(_reconciler, node, _newElement)
+function NoopRenderer.updateHostNode(_, node)
 	return node
 end
 
