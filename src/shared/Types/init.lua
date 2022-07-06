@@ -279,7 +279,7 @@ export type RoactElement = {
 	component: string | RoactFunctionComponent | RoactStatefulComponent | RoactFragment | RoactPortal,
 }
 export type RoactFragment = {}
-export type RoactPortal = {}
+export type RoactPortal = Symbol
 export type RoactContext = {
 	Consumer: {},
 	Provider: {},

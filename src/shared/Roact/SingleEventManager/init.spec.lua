@@ -6,14 +6,6 @@ return function()
 
 	local SingleEventManager = require(script.Parent)
 
-	describe("new", function()
-		it("should create a SingleEventManager", function()
-			local manager = SingleEventManager.new()
-
-			expect(manager).to.be.ok()
-		end)
-	end)
-
 	describe("connectEvent", function()
 		it("should connect to events", function()
 			local instance = Instance.new("BindableEvent")
