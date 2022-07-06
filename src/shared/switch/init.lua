@@ -1,6 +1,8 @@
 local function switch(condition, results: { [any]: any, _: any })
-	local exists = results[condition] or results._
-	return if type(exists) == "function" then exists() else exists
+	return if results[condition] ~= nil
+		then if type(results[condition]) == "function" then results[condition]() else results[condition]
+		elseif type(results._) == "function" then results._()
+		else results._
 end
 
 return switch

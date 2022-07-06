@@ -2,7 +2,6 @@ local Types = require(script.Parent.Types)
 
 export type Signal<T... = ...any> = Types.Signal<T...>
 export type Connection = Types.Connection
-type Proc<T... = ...any> = Types.Proc<T...>
 
 type SignalConstructor = {
 	is: (object: any) -> boolean,
@@ -13,7 +12,7 @@ type AnyConnection = Connection
 
 local freeRunnerThread: thread? = nil
 
-local function acquireRunnerThreadAndCallEventHandler(fn: Proc, ...)
+local function acquireRunnerThreadAndCallEventHandler(fn: (...any) -> (), ...)
 	local acquiredRunnerThread = freeRunnerThread
 	freeRunnerThread = nil
 	fn(...)
@@ -71,7 +70,7 @@ function Signal.new(): Signal
 	return setmetatable({}, Signal)
 end
 
-function Signal.prototype:connect(fn: Proc)
+function Signal.prototype:connect(fn: (...any) -> ())
 	local connection = setmetatable({ connected = true, _signal = self, _fn = fn }, Connection) :: Connection
 
 	if self._last then
@@ -83,7 +82,7 @@ function Signal.prototype:connect(fn: Proc)
 end
 
 -- reference: https://developer.roblox.com/en-us/resources/release-note/Release-Notes-for-531
-function Signal.prototype:once(fn: Proc)
+function Signal.prototype:once(fn: (...any) -> ())
 	local connection: Connection = nil
 
 	connection = setmetatable({
