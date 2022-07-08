@@ -1,8 +1,4 @@
-local StarterGuiUtils = {
-	setAllCoreGuiTypesEnabledIgnore = require(script.setAllCoreGuiTypesEnabledIgnore),
-	setCoreGuiTypesEnabled = require(script.setCoreGuiTypesEnabled),
-}
-
-table.freeze(StarterGuiUtils)
-
-return StarterGuiUtils
+return table.freeze({
+	setAllCoreGuisEnabledIgnore = require(script.setAllCoreGuisEnabledIgnore),
+	setCoreGuisEnabled = require(script.setCoreGuisEnabled),
+})
