@@ -71,7 +71,7 @@ export type Connection = typeof(setmetatable({} :: {
 }, {} :: {
 	__tostring: () -> "Connection",
 	__index: {
-		disconnect: (Connection) -> (),
+		disconnect: (self: Connection) -> (),
 	},
 }))
 export type Signal<T... = ...any> = typeof(setmetatable(
@@ -79,11 +79,11 @@ export type Signal<T... = ...any> = typeof(setmetatable(
 	{} :: {
 		__tostring: () -> "Signal",
 		__index: {
-			connect: (Signal<T...>, fn: (T...) -> ()) -> Connection,
-			once: (Signal<T...>, fn: (T...) -> ()) -> Connection,
-			fire: (Signal<T...>, T...) -> (),
-			wait: (Signal<T...>) -> T...,
-			destroy: (Signal<T...>) -> (),
+			connect: (self: Signal<T...>, fn: (T...) -> ()) -> Connection,
+			once: (self: Signal<T...>, fn: (T...) -> ()) -> Connection,
+			fire: (self: Signal<T...>, T...) -> (),
+			wait: (self: Signal<T...>) -> T...,
+			destroy: (self: Signal<T...>) -> (),
 		},
 	}
 ))
