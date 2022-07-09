@@ -18,10 +18,7 @@ local function createSpy(inner)
 		self.values = { ... }
 		self.valuesLength = select("#", ...)
 
-		if inner ~= nil then
-			return inner(...)
-		end
-		return nil
+		return if inner ~= nil then inner(...) else nil
 	end
 
 	self.assertCalledWith = function(_, ...)
@@ -32,9 +29,9 @@ local function createSpy(inner)
 		end
 
 		for i = 1, len do
-			local expected = select(i, ...)
-
-			assert(self.values[i] == expected, "value differs")
+			if self.values[i] ~= select(i, ...) then
+				error("value differs", 2)
+			end
 		end
 	end
 
@@ -46,9 +43,7 @@ local function createSpy(inner)
 		end
 
 		for i = 1, len do
-			local expected = select(i, ...)
-
-			assertDeepEqual(self.values[i], expected)
+			assertDeepEqual(self.values[i], select(i, ...))
 		end
 	end
 
@@ -56,7 +51,9 @@ local function createSpy(inner)
 		local len = select("#", ...)
 		local result = {}
 
-		assert(self.valuesLength == len, "length of expected values differs from stored values")
+		if self.valuesLength ~= len then
+			error("length of expected values differs from stored values", 2)
+		end
 
 		for i = 1, len do
 			local key = select(i, ...)

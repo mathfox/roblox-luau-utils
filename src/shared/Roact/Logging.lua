@@ -114,7 +114,9 @@ function Logging.capture(callback)
 	collectors[collector] = nil
 	outputEnabled = wasOutputEnabled
 
-	assert(success, result)
+	if not success then
+		error(result, 2)
+	end
 
 	return collector
 end

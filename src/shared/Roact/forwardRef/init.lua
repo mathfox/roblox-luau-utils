@@ -15,7 +15,9 @@ local excludeRef = {
 ]]
 local function forwardRef(render)
 	if config.typeChecks then
-		assert(typeof(render) == "function", "Expected arg #1 to be a function")
+		if type(render) ~= "function" then
+			error("Expected arg #1 to be a function", 2)
+		end
 	end
 
 	return function(props)

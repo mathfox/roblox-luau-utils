@@ -41,11 +41,17 @@ Store.__index = Store
 ]]
 function Store.new(reducer, initialState, middlewares, errorReporter)
 	if config.typeChecks then
-		assert(typeof(reducer) == "function", "Bad argument #1 to Store.new, expected function.")
-		assert(middlewares == nil or typeof(middlewares) == "table", "Bad argument #3 to Store.new, expected nil or table.")
+		if type(reducer) ~= "function" then
+			error("Bad argument #1 to Store.new, expected function.", 2)
+		elseif middlewares ~= nil and type(middlewares) ~= "table" then
+			error("Bad argument #3 to Store.new, expected nil or table.", 2)
+		end
+
 		if middlewares ~= nil then
 			for i = 1, #middlewares, 1 do
-				assert(typeof(middlewares[i]) == "function", ("Expected the middleware ('%s') at index %d to be a function."):format(tostring(middlewares[i]), i))
+				if type(middlewares[i]) ~= "function" then
+					error(("Expected the middleware ('%s') at index %d to be a function."):format(tostring(middlewares[i]), i), 2)
+				end
 			end
 		end
 	end

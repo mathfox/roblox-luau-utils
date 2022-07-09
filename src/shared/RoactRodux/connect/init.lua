@@ -49,14 +49,18 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 	local connectTrace = debug.traceback()
 
 	if mapStateToPropsOrThunk ~= nil then
-		assert(typeof(mapStateToPropsOrThunk) == "function", "mapStateToProps must be a function or nil!")
+		if type(mapStateToPropsOrThunk) ~= "function" then
+			error("mapStateToProps must be a function or nil!", 2)
+		end
 	else
 		mapStateToPropsOrThunk = noop
 	end
 
-	local mapDispatchType = typeof(mapDispatchToProps)
+	local mapDispatchType = type(mapDispatchToProps)
 	if mapDispatchToProps ~= nil then
-		assert(mapDispatchType == "function" or mapDispatchType == "table", "mapDispatchToProps must be a function, table, or nil!")
+		if mapDispatchType ~= "function" and mapDispatchType ~= "table" then
+			error("mapDispatchToProps must be a function, table, or nil!")
+		end
 	else
 		mapDispatchToProps = noop
 	end
@@ -108,12 +112,12 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 			-- value. In this variant, we keep that value as mapStateToProps
 			-- instead of the original mapStateToProps. This matches react-redux
 			-- and enables connectors to keep instance-level state.
-			if typeof(mappedStoreState) == "function" then
+			if type(mappedStoreState) == "function" then
 				mapStateToProps = mappedStoreState
 				mappedStoreState = mapStateToProps(storeState, self.props.innerProps)
 			end
 
-			if mappedStoreState ~= nil and typeof(mappedStoreState) ~= "table" then
+			if mappedStoreState ~= nil and type(mappedStoreState) ~= "table" then
 				local message = formatMessage({
 					"mapStateToProps must either return a table, or return another function that returns a table.",
 					"Instead, it returned %q, which is of type %s.",
@@ -134,7 +138,9 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 				mappedStoreDispatch = {}
 
 				for key, actionCreator in mapDispatchToProps do
-					assert(typeof(actionCreator) == "function", "mapDispatchToProps must contain function values")
+					if type(actionCreator) ~= "function" then
+						error("mapDispatchToProps must contain function values", 2)
+					end
 
 					mappedStoreDispatch[key] = function(...)
 						dispatch(actionCreator(...))

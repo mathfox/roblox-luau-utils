@@ -65,8 +65,11 @@ end
 
 function BindingInternalApi.map(upstreamBinding, predicate)
 	if config.typeChecks then
-		assert(Type.of(upstreamBinding) == Type.Binding, "Expected arg #1 to be a binding")
-		assert(typeof(predicate) == "function", "Expected arg #1 to be a function")
+		if Type.of(upstreamBinding) ~= Type.Binding then
+			error("Expected arg #1 to be a binding", 2)
+		elseif type(predicate) ~= "function" then
+			error("Expected arg #1 to be a function", 2)
+		end
 	end
 
 	local impl = {}

@@ -85,7 +85,9 @@ function Component:__getDerivedState(incomingProps, incomingState)
 
 		if derivedState ~= nil then
 			if config.typeChecks then
-				assert(typeof(derivedState) == "table", "getDerivedStateFromProps must return a table!")
+				if type(derivedState) ~= "table" then
+					error("getDerivedStateFromProps must return a table!", 2)
+				end
 			end
 
 			return derivedState
@@ -123,14 +125,14 @@ function Component:setState(mapState)
 	local pendingState = internalData.pendingState
 
 	local partialState
-	if typeof(mapState) == "function" then
+	if type(mapState) == "function" then
 		partialState = mapState(pendingState or self.state, self.props)
 
 		-- Abort the state update if the given state updater function returns nil
 		if partialState == nil then
 			return
 		end
-	elseif typeof(mapState) == "table" then
+	elseif type(mapState) == "table" then
 		partialState = mapState
 	else
 		error("Invalid argument to setState, expected function or table", 2)
@@ -161,9 +163,7 @@ function Component:setState(mapState)
 	else
 		local messageTemplate = invalidSetStateMessages.default
 
-		local message = messageTemplate:format(tostring(internalData.componentClass))
-
-		error(message, 2)
+		error(messageTemplate:format(tostring(internalData.componentClass)), 2)
 	end
 end
 
@@ -187,9 +187,7 @@ end
 function Component:render()
 	local internalData = self[InternalData]
 
-	local message = componentMissingRenderMessage:format(tostring(internalData.componentClass))
-
-	error(message, 0)
+	error(componentMissingRenderMessage:format(tostring(internalData.componentClass)), 0)
 end
 
 --[[
@@ -250,8 +248,8 @@ function Component:__validateProps(props)
 		return
 	end
 
-	if typeof(validator) ~= "function" then
-		error(("validateProps must be a function, but it is a %s.\nCheck the definition of the component %q."):format(typeof(validator), self.__componentName))
+	if type(validator) ~= "function" then
+		error(("validateProps must be a function, but it is a %s.\nCheck the definition of the component %q."):format(type(validator), self.__componentName))
 	end
 
 	local success, failureReason = validator(props)
@@ -368,7 +366,7 @@ function Component:__update(updatedElement, updatedState)
 	if config.internalTypeChecks then
 		internalAssert(Type.of(self) == Type.StatefulComponentInstance, "Invalid use of `__update`")
 		internalAssert(Type.of(updatedElement) == Type.Element or updatedElement == nil, "Expected arg #1 to be of type Element or nil")
-		internalAssert(typeof(updatedState) == "table" or updatedState == nil, "Expected arg #2 to be of type table or nil")
+		internalAssert(type(updatedState) == "table" or updatedState == nil, "Expected arg #2 to be of type table or nil")
 	end
 
 	local internalData = self[InternalData]
