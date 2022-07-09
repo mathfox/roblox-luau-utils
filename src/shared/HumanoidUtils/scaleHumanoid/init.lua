@@ -1,8 +1,7 @@
 local function scaleHumanoid(humanoid: Humanoid, scale: number)
-	for _, valueObjectName in { "HeadScale", "BodyDepthScale", "BodyWidthScale", "BodyHeightScale" } do
-		local valueObject = humanoid:FindFirstChild(valueObjectName)
-		if valueObject then
-			valueObject.Value *= scale
+	for _, child in humanoid:GetChildren() do
+		if child:IsA("NumberValue") then
+			child.Value *= scale
 		end
 	end
 end
