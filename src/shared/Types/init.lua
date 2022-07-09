@@ -79,8 +79,8 @@ export type Signal<T... = ...any> = typeof(setmetatable(
 	{} :: {
 		__tostring: () -> "Signal",
 		__index: {
-			connect: (Signal<T...>, fn: Proc<T...>) -> Connection,
-			once: (Signal<T...>, fn: Proc<T...>) -> Connection,
+			connect: (Signal<T...>, fn: (T...) -> ()) -> Connection,
+			once: (Signal<T...>, fn: (T...) -> ()) -> Connection,
 			fire: (Signal<T...>, T...) -> (),
 			wait: (Signal<T...>) -> T...,
 			destroy: (Signal<T...>) -> (),
