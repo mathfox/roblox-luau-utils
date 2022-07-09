@@ -93,12 +93,13 @@ end
 
 function BindingInternalApi.join(upstreamBindings)
 	if config.typeChecks then
-		assert(typeof(upstreamBindings) == "table", "Expected arg #1 to be of type table")
+		if type(upstreamBindings) ~= "table" then
+			error("Expected arg #1 to be of type table")
+		end
 
 		for key, value in upstreamBindings do
 			if Type.of(value) ~= Type.Binding then
-				local message = ("Expected arg #1 to contain only bindings, but key %q had a non-binding value"):format(tostring(key))
-				error(message, 2)
+				error(("Expected arg #1 to contain only bindings, but key %q had a non-binding value"):format(tostring(key)), 2)
 			end
 		end
 	end

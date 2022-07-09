@@ -104,9 +104,6 @@ export type InstanceCacheParams<T> = {
 	parent: Instance?,
 }
 
-export type SerializedColor3 = { number }
-export type SerializedCFrame = { number }
-
 export type EnumeratorItem<T = string> = { name: string, value: T, type: Enumerator<T> }
 export type Enumerator<T = string> = {
 	fromRawValue: (rawValue: T) -> EnumeratorItem<T>?,
