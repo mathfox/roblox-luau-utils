@@ -33,37 +33,33 @@ function Config:set(configValues: PartialRoduxConfigTable)
 			error(("Invalid value %q (type %s) for global configuration key %q. Valid values are: true, false"):format(tostring(value), typeof(value), tostring(key)), 3)
 		end
 
-		self._currentConfig[key] = value
+		self[key] = value
 	end
-end
-
-function Config:get(): RoduxConfigTable
-	return self._currentConfig
 end
 
 local ConfigExport = {}
 
 function ConfigExport.new(): RoduxConfig
-	local self = {
-		_currentConfig = setmetatable({}, {
-			__index = function(_, key)
-				error(("Invalid global configuration key %q. Valid configuration keys are: %s"):format(tostring(key), table.concat(defaultConfigKeys, ", ")), 3)
-			end,
-		}),
-	}
+	local innerSelf = setmetatable(table.clone(defaultConfig), {
+		__index = function(_, key)
+			error(("Invalid global configuration key %q. Valid configuration keys are: %s"):format(tostring(key), table.concat(defaultConfigKeys, ", ")), 3)
+		end,
+	})
+
+	local self = {}
 
 	-- We manually bind these methods here so that the Config's methods can be
 	-- used without passing in self, since they eventually get exposed on the
 	-- root Roact object.
 	self.set = function(...)
-		Config.set(self, ...)
+		Config.set(innerSelf, ...)
 	end
 
-	self.get = function(...)
-		return Config.get(self, ...)
+	self.get = function()
+		return innerSelf
 	end
 
-	self.set(defaultConfig)
+	table.freeze(self)
 
 	return self
 end

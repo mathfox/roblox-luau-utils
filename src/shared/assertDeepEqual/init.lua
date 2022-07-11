@@ -17,9 +17,7 @@ local function deepEqual(a, b)
 
 			local success, innerMessage = deepEqual(value, b[key])
 			if not success then
-				local message = innerMessage:gsub("{1}", ("{1}[%s]"):format(tostring(key))):gsub("{2}", ("{2}[%s]"):format(tostring(key)))
-
-				return false, message
+				return false, innerMessage:gsub("{1}", ("{1}[%s]"):format(tostring(key))):gsub("{2}", ("{2}[%s]"):format(tostring(key)))
 			end
 		end
 
@@ -28,9 +26,7 @@ local function deepEqual(a, b)
 				local success, innerMessage = deepEqual(value, a[key])
 
 				if not success then
-					local message = innerMessage:gsub("{1}", ("{1}[%s]"):format(tostring(key))):gsub("{2}", ("{2}[%s]"):format(tostring(key)))
-
-					return false, message
+					return false, innerMessage:gsub("{1}", ("{1}[%s]"):format(tostring(key))):gsub("{2}", ("{2}[%s]"):format(tostring(key)))
 				end
 			end
 		end
@@ -49,9 +45,7 @@ local function assertDeepEqual(a, b)
 	local success, innerMessageTemplate = deepEqual(a, b)
 
 	if not success then
-		local innerMessage = innerMessageTemplate:gsub("{1}", "first"):gsub("{2}", "second")
-
-		error(("Values were not deep-equal.\n%s"):format(innerMessage), 2)
+		error(("Values were not deep-equal.\n%s"):format(innerMessageTemplate:gsub("{1}", "first"):gsub("{2}", "second")), 2)
 	end
 end
 
