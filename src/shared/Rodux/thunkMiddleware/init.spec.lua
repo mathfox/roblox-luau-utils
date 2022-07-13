@@ -3,6 +3,10 @@ return function()
 
 	local thunkMiddleware = require(script.Parent)
 
+	it("should be a function", function()
+		expect(thunkMiddleware).to.be.a("function")
+	end)
+
 	it("should dispatch thunks", function()
 		local function reducer(state, action)
 			return state

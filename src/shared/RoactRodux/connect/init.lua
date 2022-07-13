@@ -67,15 +67,16 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 
 	return function(innerComponent)
 		if innerComponent == nil then
-			local message = formatMessage({
-				"connect returns a function that must be passed a component.",
-				"Check the connection at:",
-				"%s",
-			}, {
-				connectTrace,
-			})
-
-			error(message, 2)
+			error(
+				formatMessage({
+					"connect returns a function that must be passed a component.",
+					"Check the connection at:",
+					"%s",
+				}, {
+					connectTrace,
+				}),
+				2
+			)
 		end
 
 		local componentName = ("RoduxConnection(%s)"):format(tostring(innerComponent))
@@ -198,13 +199,14 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 			updateStateWithStore(self.store:getState())
 
 			-- Connect state updater to the Rodux store
-			self.storeChangedConnection = self.store.changed:connect(updateStateWithStore)
+			self.disconnectStoreChangedConnection = self.store.changed:connect(updateStateWithStore)
 		end
 
 		function Connection:willUnmount()
-			if self.storeChangedConnection then
-				self.storeChangedConnection:disconnect()
-				self.storeChangedConnection = nil
+			local disconnectStoreChangedConnection = self.disconnectStoreChangedConnection
+			if disconnectStoreChangedConnection then
+				self.disconnectStoreChangedConnection = nil
+				disconnectStoreChangedConnection()
 			end
 		end
 

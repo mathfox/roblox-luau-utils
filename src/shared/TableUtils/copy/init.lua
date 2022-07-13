@@ -1,8 +1,10 @@
 local function copy<K, V>(source: { [K]: V }): { [K]: V }
-	local result = table.create(#source)
+	local result = table.clone(source)
 
-	for key, value in source do
-		result[key] = if type(value) == "table" then copy(value) else value
+	for key, value in result do
+		if type(value) == "table" then
+			result[key] = copy(value)
+		end
 	end
 
 	return result

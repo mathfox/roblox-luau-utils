@@ -3,6 +3,7 @@
 --
 -- We fix it this weird shape in init.lua.
 local prettyPrint = require(script.Parent.prettyPrint)
+
 local loggerMiddleware = {
 	outputFunction = print,
 }

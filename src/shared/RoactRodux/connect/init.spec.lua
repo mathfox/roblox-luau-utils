@@ -78,7 +78,8 @@ return function()
 
 		local ConnectedSomeComponent = connect(mapStateToProps)(NoopComponent)
 
-		local store = Rodux.Store.new(reducer)
+		local store = Rodux.createStore(reducer)
+
 		local tree = Roact.createElement(StoreProvider, {
 			store = store,
 		}, {
@@ -99,7 +100,7 @@ return function()
 
 		local ConnectedSomeComponent = connect(mapStateToProps)(NoopComponent)
 
-		local store = Rodux.Store.new(reducer)
+		local store = Rodux.createStore(reducer)
 		local tree = Roact.createElement(StoreProvider, {
 			store = store,
 		}, {
@@ -118,7 +119,7 @@ return function()
 
 		local ConnectedSomeComponent = connect(mapStateToProps)(NoopComponent)
 
-		local store = Rodux.Store.new(reducer)
+		local store = Rodux.createStore(reducer)
 		local tree = Roact.createElement(StoreProvider, {
 			store = store,
 		}, {
@@ -144,7 +145,7 @@ return function()
 
 		local ConnectedSomeComponent = connect(mapStateToProps)(SomeComponent)
 
-		local store = Rodux.Store.new(reducer)
+		local store = Rodux.createStore(reducer)
 		local tree = Roact.createElement(StoreProvider, {
 			store = store,
 		}, {
@@ -187,7 +188,7 @@ return function()
 
 		local ConnectedSomeComponent = connect(nil, mapDispatchToProps)(SomeComponent)
 
-		local store = Rodux.Store.new(reducer)
+		local store = Rodux.createStore(reducer)
 		local tree = Roact.createElement(StoreProvider, {
 			store = store,
 		}, {
@@ -229,7 +230,7 @@ return function()
 
 		local ConnectedSomeComponent = connect(nil, mapDispatchToProps)(SomeComponent)
 
-		local store = Rodux.Store.new(reducer)
+		local store = Rodux.createStore(reducer)
 		local tree = Roact.createElement(StoreProvider, {
 			store = store,
 		}, {
@@ -268,7 +269,7 @@ return function()
 		local ConnectedSomeComponent = connect(nil, mapDispatchToProps)(SomeComponent)
 
 		-- We'll use the thunk middleware, as it should always return its result
-		local store = Rodux.Store.new(reducer, nil, { Rodux.thunkMiddleware })
+		local store = Rodux.createStore(reducer, nil, { Rodux.thunkMiddleware })
 		local tree = Roact.createElement(StoreProvider, {
 			store = store,
 		}, {
@@ -317,7 +318,7 @@ return function()
 		end
 		local ConnectedComponent = connect(mapStateToProps)(NoopComponent)
 
-		local store = Rodux.Store.new(reducer)
+		local store = Rodux.createStore(reducer)
 		local tree = Roact.createElement(StoreProvider, {
 			store = store,
 		}, {

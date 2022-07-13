@@ -3,6 +3,14 @@ return function()
 
 	local loggerMiddleware = require(script.Parent)
 
+	it("should be a table", function()
+		expect(loggerMiddleware).to.be.a("table")
+	end)
+
+	it("should not contain a metatable", function()
+		expect(getmetatable(loggerMiddleware)).to.equal(nil)
+	end)
+
 	it("should print whenever an action is dispatched", function()
 		local outputCount = 0
 		local outputMessage
@@ -21,7 +29,7 @@ return function()
 		})
 
 		loggerMiddleware.outputFunction = function(message)
-			outputCount = outputCount + 1
+			outputCount += 1
 			outputMessage = message
 		end
 

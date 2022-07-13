@@ -1,6 +1,10 @@
 return function()
 	local makeActionCreator = require(script.Parent)
 
+	it("should be a function", function()
+		expect(makeActionCreator).to.be.a("function")
+	end)
+
 	it("should set the name of the actionCreator creator", function()
 		local FooAction = makeActionCreator("foo", function()
 			return {}

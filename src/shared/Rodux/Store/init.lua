@@ -39,7 +39,7 @@ Store.__index = Store
 	Reducers do not mutate the state object, so the original state is still
 	valid.
 ]]
-function Store.new(reducer, initialState, middlewares, errorReporter)
+function Store.new(reducer, initialState, middlewares: { (...any) -> (...any) }, errorReporter)
 	if config.typeChecks then
 		if type(reducer) ~= "function" then
 			error("Bad argument #1 to Store.new, expected function.", 2)

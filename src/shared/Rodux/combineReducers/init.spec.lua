@@ -1,6 +1,10 @@
 return function()
 	local combineReducers = require(script.Parent)
 
+	it("should be a function", function()
+		expect(combineReducers).to.be.a("function")
+	end)
+
 	it("should invoke each sub-reducer for every action", function()
 		local aCount = 0
 		local bCount = 0

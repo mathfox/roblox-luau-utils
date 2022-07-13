@@ -1,7 +1,7 @@
 local loggerMiddleware = require(script.loggerMiddleware)
 
 local Rodux = {
-	Store = require(script.Store),
+	createStore = require(script.Store).new,
 	createReducer = require(script.createReducer),
 	combineReducers = require(script.combineReducers),
 	makeActionCreator = require(script.makeActionCreator),

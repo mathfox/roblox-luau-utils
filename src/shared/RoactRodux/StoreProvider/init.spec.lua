@@ -6,7 +6,7 @@ return function()
 	local StoreProvider = require(script.Parent)
 
 	it("should be instantiable as a component", function()
-		local store = Rodux.Store.new(function()
+		local store = Rodux.createStore(function()
 			return 0
 		end)
 		local element = Roact.createElement(StoreProvider, {
@@ -32,7 +32,7 @@ return function()
 	end)
 
 	it("should accept a single child", function()
-		local store = Rodux.Store.new(function()
+		local store = Rodux.createStore(function()
 			return 0
 		end)
 

@@ -3,6 +3,24 @@ return function()
 
 	local Signal = require(script.Parent)
 
+	it("should expose a table", function()
+		expect(Signal).to.be.a("table")
+	end)
+
+	it("should not contain a metatable", function()
+		expect(getmetatable(Signal)).to.equal(nil)
+	end)
+
+	it("should throw an error on attempt to modify the export table", function()
+		expect(function()
+			Signal._ = {}
+		end).to.throw()
+
+		expect(function()
+			setmetatable(Signal, {})
+		end).to.throw()
+	end)
+
 	it("should fire connected callbacks", function()
 		local callCount = 0
 		local value1 = "Hello World"
@@ -11,17 +29,17 @@ return function()
 		local callback = function(arg1, arg2)
 			expect(arg1).to.equal(value1)
 			expect(arg2).to.equal(value2)
-			callCount = callCount + 1
+			callCount += 1
 		end
 
 		local signal = Signal.new()
 
-		local connection = signal:connect(callback)
+		local disconnect = signal:connect(callback)
 		signal:fire(value1, value2)
 
 		expect(callCount).to.equal(1)
 
-		connection:disconnect()
+		disconnect()
 		signal:fire(value1, value2)
 
 		expect(callCount).to.equal(1)
@@ -34,8 +52,8 @@ return function()
 
 		local signal = Signal.new()
 
-		local connection = signal:connect(callback)
-		connection:disconnect()
+		local disconnect = signal:connect(callback)
+		disconnect()
 
 		signal:fire()
 	end)
@@ -48,13 +66,13 @@ return function()
 		local callback1 = function()
 			expect(x).to.equal(0)
 			expect(y).to.equal(0)
-			x = x + 1
+			x += 1
 		end
 
 		local callback2 = function()
 			expect(x).to.equal(1)
 			expect(y).to.equal(0)
-			y = y + 1
+			y += 1
 		end
 
 		signal:connect(callback1)
@@ -70,9 +88,9 @@ return function()
 		local countA = 0
 		local countB = 0
 
-		local connectionA
-		connectionA = signal:connect(function()
-			connectionA:disconnect()
+		local disconnect
+		disconnect = signal:connect(function()
+			disconnect()
 			countA = countA + 1
 		end)
 
@@ -91,15 +109,14 @@ return function()
 		local countA = 0
 		local countB = 0
 
-		local connectionB
-
+		local disconnect
 		signal:connect(function()
-			countA = countA + 1
-			connectionB:disconnect()
+			countA += 1
+			disconnect()
 		end)
 
-		connectionB = signal:connect(function()
-			countB = countB + 1
+		disconnect = signal:connect(function()
+			countB += 1
 		end)
 
 		signal:fire()
@@ -123,12 +140,13 @@ return function()
 	it("should throw an error when disconnecting more than once", function()
 		local signal = Signal.new()
 
-		local connection = signal:connect(function() end)
+		local disconnect = signal:connect(function() end)
+
 		-- Okay to disconnect once
-		expect(connection.disconnect).never.to.throw()
+		expect(disconnect).never.to.throw()
 
 		-- Throw an error if we disconnect twice
-		expect(connection.disconnect).to.throw()
+		expect(disconnect).to.throw()
 	end)
 
 	it("should throw an error when subscribing during dispatch", function()

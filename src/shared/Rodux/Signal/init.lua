@@ -5,7 +5,11 @@
 	executing an event.
 ]]
 
+local Types = require(script.Parent.Parent.Types)
+
 local config = require(script.Parent.GlobalConfig).get()
+
+type RoduxStore<State = any> = Types.RoduxStore
 
 local function immutableAppend(list, ...)
 	local new = {}
@@ -48,7 +52,8 @@ function Signal:connect(callback)
 		error(
 			"You may not call store.changed:connect() while the reducer is executing. "
 				.. "If you would like to be notified after the store has been updated, subscribe from a "
-				.. "component and invoke store:getState() in the callback to access the latest state. "
+				.. "component and invoke store:getState() in the callback to access the latest state. ",
+			2
 		)
 	end
 
@@ -61,7 +66,7 @@ function Signal:connect(callback)
 
 	self._listeners = immutableAppend(self._listeners, listener)
 
-	local function disconnect()
+	return function()
 		if listener.disconnected then
 			error(("Listener connected at: \n%s\n" .. "was already disconnected at: \n%s\n"):format(tostring(listener.connectTraceback), tostring(listener.disconnectTraceback)))
 		end
@@ -74,10 +79,6 @@ function Signal:connect(callback)
 		listener.disconnectTraceback = debug.traceback()
 		self._listeners = immutableRemoveValue(self._listeners, listener)
 	end
-
-	return {
-		disconnect = disconnect,
-	}
 end
 
 function Signal:fire(...)
@@ -88,16 +89,22 @@ function Signal:fire(...)
 			if not ok then
 				error(message, 2)
 			elseif coroutine.status(co) ~= "dead" then
-				-- TODO: proper debug traceback to the place where connection was created
 				error(('Attempted to yield inside a "changed" connection which was connected at:\n%s'):format(listener.connectTraceback), 2)
 			end
 		end
 	end
 end
 
+export type RoduxInnerSignalImpl = {
+	__index: RoduxInnerSignalImpl,
+	connect: (self: RoduxInnerSignalImpl) -> (),
+	fire: (self: RoduxInnerSignalImpl) -> (),
+}
+export type RoduxInnerSignal = typeof(setmetatable({}, {} :: RoduxInnerSignalImpl))
+
 local SignalExport = {}
 
-function SignalExport.new(store)
+function SignalExport.new(store: RoduxStore): RoduxInnerSignal
 	return setmetatable({
 		_listeners = {},
 		_store = store,

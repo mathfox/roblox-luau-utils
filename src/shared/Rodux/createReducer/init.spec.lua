@@ -1,6 +1,10 @@
 return function()
 	local createReducer = require(script.Parent)
 
+	it("should be a function", function()
+		expect(createReducer).to.be.a("function")
+	end)
+
 	it("should handle actions", function()
 		local reducer = createReducer({
 			a = 0,

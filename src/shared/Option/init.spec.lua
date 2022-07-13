@@ -1,21 +1,21 @@
 return function()
-	local StarterGuiUtils = require(script.Parent)
+	local Option = require(script.Parent)
 
 	it("should be a table", function()
-		expect(StarterGuiUtils).to.be.a("table")
+		expect(Option).to.be.a("table")
 	end)
 
 	it("should not contain a metatable", function()
-		expect(getmetatable(StarterGuiUtils)).to.equal(nil)
+		expect(getmetatable(Option)).to.equal(nil)
 	end)
 
 	it("should throw an error on attempt to modify the export table", function()
 		expect(function()
-			StarterGuiUtils.NEW_FIELD = {}
+			Option._ = {}
 		end).to.throw()
 
 		expect(function()
-			setmetatable(StarterGuiUtils, {})
+			setmetatable(Option, {})
 		end).to.throw()
 	end)
 end

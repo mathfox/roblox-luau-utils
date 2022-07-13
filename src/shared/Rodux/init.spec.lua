@@ -1,21 +1,21 @@
 return function()
-	local StarterGuiUtils = require(script.Parent)
+	local Rodux = require(script.Parent)
 
 	it("should be a table", function()
-		expect(StarterGuiUtils).to.be.a("table")
+		expect(Rodux).to.be.a("table")
 	end)
 
 	it("should not contain a metatable", function()
-		expect(getmetatable(StarterGuiUtils)).to.equal(nil)
+		expect(getmetatable(Rodux)).to.equal(nil)
 	end)
 
 	it("should throw an error on attempt to modify the export table", function()
 		expect(function()
-			StarterGuiUtils.NEW_FIELD = {}
+			Rodux._ = {}
 		end).to.throw()
 
 		expect(function()
-			setmetatable(StarterGuiUtils, {})
+			setmetatable(Rodux, {})
 		end).to.throw()
 	end)
 end

@@ -1,12 +1,21 @@
 return function()
 	local returnArgs = require(script.Parent.Parent.FunctionUtils.returnArgs)
 	local void = require(script.Parent.Parent.FunctionUtils.void)
+
 	local Result = require(script.Parent)
 
 	local RETURN_TRUE = returnArgs(true)
 	local RETURN_FALSE = returnArgs(false)
 	local RETURN_NIL = returnArgs(nil)
 	local function UNREACHABLE() end
+
+	it("should be a table", function()
+		expect(Result).to.be.a("table")
+	end)
+
+	it("should not contain a metatable", function()
+		expect(getmetatable(Result)).to.equal(nil)
+	end)
 
 	it("should throw an error to modify the exported table", function()
 		expect(function()
