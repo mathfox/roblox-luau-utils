@@ -3,6 +3,25 @@ export type PackedValues<T> = { n: number, [number]: T }
 
 export type Symbol = typeof(setmetatable({}, {} :: { __tostring: () -> string }))
 
+export type EnumeratorItem<T = string> = typeof(setmetatable({} :: {
+	name: string,
+	value: T,
+	type: Enumerator<T>,
+}, {} :: {
+	__tostring: () -> string,
+}))
+export type Enumerator<T = string> = typeof(setmetatable(
+	{} :: {
+		fromRawValue: (rawValue: T) -> EnumeratorItem<T>?,
+		isEnumeratorItem: (value: any) -> boolean,
+		getEnumeratorItems: () -> { EnumeratorItem<T> },
+	},
+	{} :: {
+		__tostring: () -> string,
+		__index: { [string]: EnumeratorItem<T> },
+	}
+))
+
 -- reference: https://doc.rust-lang.org/std/result/enum.Result.html#
 type ResultImpl<T, E> = {
 	__tostring: () -> string,
@@ -28,9 +47,9 @@ type ResultImpl<T, E> = {
 	-- luau specific method in order to simulate match keyword from rust
 	match: <S, F>(self: Result<T, E>, onOk: (T) -> S, onErr: (E) -> F) -> S | F,
 }
+export type Result<T, E> = typeof(setmetatable({}, {} :: ResultImpl<T, E>))
 export type Ok<T> = Result<T, nil>
 export type Err<E> = Result<nil, E>
-export type Result<T, E> = typeof(setmetatable({}, {} :: ResultImpl<T, E>))
 
 -- reference: https://doc.rust-lang.org/std/option/enum.Option.html
 type OptionImpl<T> = {
@@ -56,8 +75,8 @@ type OptionImpl<T> = {
 	match: <U...>(self: Option<T>, onSome: (T) -> U..., onNone: () -> U...) -> U...,
 }
 export type Option<T> = typeof(setmetatable({}, {} :: OptionImpl<T>))
-export type None = Option<nil>
 export type Some<T> = Option<T>
+export type None = Option<nil>
 
 export type Connection = typeof(setmetatable({} :: {
 	connected: boolean,
@@ -95,13 +114,6 @@ export type InstanceCacheParams<T> = {
 	instance: T,
 	amount: { initial: number, expansion: number },
 	parent: Instance?,
-}
-
-export type EnumeratorItem<T = string> = { name: string, value: T, type: Enumerator<T> }
-export type Enumerator<T = string> = {
-	fromRawValue: (rawValue: T) -> EnumeratorItem<T>?,
-	isEnumeratorItem: (value: any) -> boolean,
-	getEnumeratorItems: () -> { EnumeratorItem<T> },
 }
 
 export type CollectionComponentDescription = {
