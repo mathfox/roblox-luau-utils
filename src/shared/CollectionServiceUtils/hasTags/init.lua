@@ -1,7 +1,7 @@
 local CollectionService = game:GetService("CollectionService")
 
-local function hasTags(instance: Instance, tagNamesList: { string })
-	for _, tagName in tagNamesList do
+local function hasTags(instance: Instance, tagsList: { string })
+	for _, tagName in tagsList do
 		if not CollectionService:HasTag(instance, tagName) then
 			return false
 		end
