@@ -26,9 +26,11 @@ return function()
 			removeAllTags = "function",
 		}
 
-		for key, value in CollectionServiceUtils do
-			assert(APIS[key] ~= nil)
-			assert(type(value) == APIS[key])
-		end
+		expect(function()
+			for key, value in CollectionServiceUtils do
+				assert(APIS[key] ~= nil)
+				assert(type(value) == APIS[key])
+			end
+		end).never.throw()
 	end)
 end
