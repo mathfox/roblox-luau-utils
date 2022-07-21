@@ -100,6 +100,39 @@ export type Signal<T... = ...any> = typeof(setmetatable(
 	}
 ))
 
+export type PromiseExecutor<T...> = (resolve: (T...) -> (), reject: (...any) -> (), onCancel: (cancellationHook: (() -> ())?) -> boolean) -> ()
+-- reference: https://eryn.io/roblox-lua-promise/api/Promise
+export type Promise<T...> = {
+	andThen: <R...>(self: Promise<T...>, successHandler: (T...) -> R..., failureHandler: (...any) -> R...) -> Promise<R...>,
+	andThenCall: <V..., R...>(self: Promise<T...>, callback: (V...) -> R..., V...) -> Promise<R...>,
+	andThenReturn: <R...>(self: Promise<T...>, R...) -> Promise<R...>,
+	await: (self: Promise<T...>) -> (boolean, T...),
+	awaitStatus: (self: Promise<T...>) -> (EnumeratorItem<string>, T...),
+	cancel: (self: Promise<T...>) -> (),
+	catch: (self: Promise<T...>, failureHandler: <R...>(...any) -> R...) -> Promise<R...>,
+	expect: (self: Promise<T...>) -> T...,
+	finally: (self: Promise<T...>, finallyHandler: (status: EnumeratorItem<string>) -> ...any) -> Promise<T...>,
+	finallyCall: <R...>(self: Promise<T...>, callback: (R...) -> ...any, R...) -> Promise<T...>,
+	finallyReturn: <R...>(self: Promise<T...>, R...) -> Promise<T...>,
+	getStatus: (self: Promise<T...>) -> EnumeratorItem<string>,
+	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#now
+	now: <E...>(self: Promise<T...>, E...) -> Promise<T...> | Promise<E...>,
+	tap: (self: Promise<T...>, tapHandler: (T...) -> ...any) -> Promise<T...>,
+	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#timeout
+	timeout: <E...>(self: Promise<T...>, seconds: number, E...) -> Promise<T...> | Promise<E...>,
+}
+
+export type Janitor = {
+	add: <T>(self: Janitor, object: T, methodName: string?, index: any) -> T,
+	addPromise: (self: Janitor, promise: Promise<...any>) -> Symbol,
+	get: (self: Janitor, index: any) -> any,
+	remove: (self: Janitor, index: any) -> Janitor,
+	linkToInstance: (self: Janitor, object: Instance, allowMultiple: true?) -> (),
+	linkToInstances: (self: Janitor, ...Instance) -> (),
+	cleanup: (self: Janitor) -> (),
+	destroy: (self: Janitor) -> (),
+}
+
 export type InstanceCache<T> = {
 	params: InstanceCacheParams<T>,
 	parent: Instance?,
@@ -141,39 +174,6 @@ export type CollectionComponentExtension = {
 	started: (CollectionComponentInstance) -> (),
 	stopping: (CollectionComponentInstance) -> (),
 	stopped: (CollectionComponentInstance) -> (),
-}
-
-export type PromiseExecutor<T...> = (resolve: (T...) -> (), reject: (...any) -> (), onCancel: (cancellationHook: (() -> ())?) -> boolean) -> ()
--- reference: https://eryn.io/roblox-lua-promise/api/Promise
-export type Promise<T...> = {
-	andThen: <R...>(self: Promise<T...>, successHandler: (T...) -> R..., failureHandler: (...any) -> R...) -> Promise<R...>,
-	andThenCall: <V..., R...>(self: Promise<T...>, callback: (V...) -> R..., V...) -> Promise<R...>,
-	andThenReturn: <R...>(self: Promise<T...>, R...) -> Promise<R...>,
-	await: (self: Promise<T...>) -> (boolean, T...),
-	awaitStatus: (self: Promise<T...>) -> (EnumeratorItem<string>, T...),
-	cancel: (self: Promise<T...>) -> (),
-	catch: (self: Promise<T...>, failureHandler: <R...>(...any) -> R...) -> Promise<R...>,
-	expect: (self: Promise<T...>) -> T...,
-	finally: (self: Promise<T...>, finallyHandler: (status: EnumeratorItem<string>) -> ...any) -> Promise<T...>,
-	finallyCall: <R...>(self: Promise<T...>, callback: (R...) -> ...any, R...) -> Promise<T...>,
-	finallyReturn: <R...>(self: Promise<T...>, R...) -> Promise<T...>,
-	getStatus: (self: Promise<T...>) -> EnumeratorItem<string>,
-	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#now
-	now: <E...>(self: Promise<T...>, E...) -> Promise<T...> | Promise<E...>,
-	tap: (self: Promise<T...>, tapHandler: (T...) -> ...any) -> Promise<T...>,
-	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#timeout
-	timeout: <E...>(self: Promise<T...>, seconds: number, E...) -> Promise<T...> | Promise<E...>,
-}
-
-export type Janitor = {
-	add: <T>(self: Janitor, object: T, methodName: string?, index: any) -> T,
-	addPromise: (self: Janitor, promise: Promise<...any>) -> Symbol,
-	get: (self: Janitor, index: any) -> any,
-	remove: (self: Janitor, index: any) -> Janitor,
-	linkToInstance: (self: Janitor, object: Instance, allowMultiple: true?) -> (),
-	linkToInstances: (self: Janitor, ...Instance) -> (),
-	cleanup: (self: Janitor) -> (),
-	destroy: (self: Janitor) -> (),
 }
 
 export type Caster = {
