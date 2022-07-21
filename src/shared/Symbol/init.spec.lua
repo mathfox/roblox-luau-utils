@@ -1,6 +1,10 @@
 return function()
 	local Symbol = require(script.Parent)
 
+	it("should expose a function", function()
+		expect(Symbol).to.be.a("function")
+	end)
+
 	it("should give an opaque object", function()
 		expect(Symbol("foo")).to.be.a("table")
 	end)
