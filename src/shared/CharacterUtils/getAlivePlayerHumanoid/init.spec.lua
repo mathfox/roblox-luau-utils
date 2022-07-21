@@ -1,6 +1,10 @@
 return function()
 	local getAlivePlayerHumanoid = require(script.Parent)
 
+	it("should be a function", function()
+		expect(getAlivePlayerHumanoid).to.be.a("function")
+	end)
+
 	it("should return renamed alive humanoid", function()
 		expect(function()
 			local character = Instance.new("Folder")
