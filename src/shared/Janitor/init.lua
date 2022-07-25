@@ -11,14 +11,19 @@ local DEFAULT_METHOD_NAMES = {
 	["function"] = true,
 }
 
+type JanitorImpl = Types.JanitorImpl
 type Promise<T...> = Types.Promise<T...>
 export type Janitor = Types.Janitor
 type Symbol = Types.Symbol
 
-local Janitor = {}
+local Janitor = {} :: JanitorImpl
 Janitor.__index = Janitor
 
-function Janitor:add<T>(object: T, methodName: string?, index): T
+function Janitor.__tostring()
+	return "Janitor"
+end
+
+function Janitor:add<T>(object: T, methodNameOrTrue, index): T
 	if index then
 		local this = self:remove(index)[IndicesReference]
 		if not this then
@@ -29,12 +34,12 @@ function Janitor:add<T>(object: T, methodName: string?, index): T
 		this[index] = object
 	end
 
-	self[object] = if methodName then methodName else DEFAULT_METHOD_NAMES[typeof(object)]
+	self[object] = if methodNameOrTrue then methodNameOrTrue else DEFAULT_METHOD_NAMES[typeof(object)]
 
 	return object
 end
 
-function Janitor:addPromise(promise: Promise<...any>): Symbol
+function Janitor:addPromise(promise): Symbol
 	if promise:getStatus() ~= Promise.Status.Started then
 		error("provided Promise must have Started status!", 2)
 	end
@@ -56,18 +61,15 @@ end
 
 function Janitor:remove(index)
 	local this = self[IndicesReference]
-
 	if this then
 		local object = this[index]
-
 		if object then
-			local methodName = self[object]
-
-			if methodName then
-				if methodName == true then
+			local methodNameOrTrue: (string | true)? = self[object]
+			if methodNameOrTrue then
+				if methodNameOrTrue == true then
 					object()
 				else
-					local objectMethod = object[methodName]
+					local objectMethod = (object :: string | { [any]: any } | Instance)[methodNameOrTrue :: string]
 					if objectMethod then
 						objectMethod(object)
 					end
@@ -126,34 +128,14 @@ function Janitor:destroy()
 	table.clear(self)
 end
 
-function Janitor:linkToInstance(object: Instance, allowMultiple: true | nil)
-	local isNilParented = object.Parent == nil
-	local isConnected = true
-
-	local function onAncestryChanged(_, newParent: Instance?)
-		if isConnected then
-			isNilParented = newParent == nil
-
-			if isNilParented then
-				task.defer(function()
-					if isConnected then
-						isConnected = false
-						self:cleanup()
-					end
-				end)
-			end
-		end
-	end
-
-	local ancestryConnection = object.AncestryChanged:Connect(onAncestryChanged)
-
-	if isNilParented then
-		onAncestryChanged(nil, object.Parent)
-	end
-
-	return self:add(function()
-		ancestryConnection:Disconnect()
-	end, true, if allowMultiple then newproxy(false) else LinkToInstanceIndex)
+function Janitor:linkToInstance(object, allowMultiple)
+	return self:add(
+		object.Destroying:Connect(function()
+			self:cleanup()
+		end),
+		"Disconnect",
+		allowMultiple and newproxy(false) or LinkToInstanceIndex
+	)
 end
 
 function Janitor:linkToInstances(...: Instance)
