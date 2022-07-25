@@ -126,16 +126,23 @@ export type Promise<T...> = {
 	timeout: <E...>(self: Promise<T...>, seconds: number, E...) -> Promise<T...> | Promise<E...>,
 }
 
-export type Janitor = {
-	add: <T>(self: Janitor, object: T, methodName: string?, index: any) -> T,
+type JanitorIndex = boolean | number | string | (...any) -> ...any | { [any]: any } | thread
+-- * this type is not supposed to be used externally
+export type JanitorImpl = {
+	__index: JanitorImpl,
+	__tostring: () -> "Janitor",
+	__call: (self: Janitor) -> (),
+
+	add: <T>(self: Janitor, object: T, methodNameOrTrue: (string | true)?, index: JanitorIndex) -> T,
 	addPromise: (self: Janitor, promise: Promise<...any>) -> Symbol,
-	get: (self: Janitor, index: any) -> any,
-	remove: (self: Janitor, index: any) -> Janitor,
-	linkToInstance: (self: Janitor, object: Instance, allowMultiple: true?) -> (),
+	get: (self: Janitor, index: JanitorIndex) -> any,
+	remove: (self: Janitor, index: JanitorIndex) -> Janitor,
+	linkToInstance: (self: Janitor, object: Instance, allowMultiple: true?) -> RBXScriptConnection,
 	linkToInstances: (self: Janitor, ...Instance) -> (),
 	cleanup: (self: Janitor) -> (),
 	destroy: (self: Janitor) -> (),
 }
+export type Janitor = typeof(setmetatable({}, {} :: JanitorImpl))
 
 export type InstanceCache<T> = {
 	params: InstanceCacheParams<T>,
