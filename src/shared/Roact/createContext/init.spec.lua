@@ -1,13 +1,13 @@
 return function()
 	local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-	local Component = require(script.Parent.Parent.Component)
-	local NoopRenderer = require(script.Parent.Parent.NoopRenderer)
-	local Children = require(script.Parent.Parent.PropMarkers.Children)
-	local createElement = require(script.Parent.Parent.createElement)
-	local createFragment = require(script.Parent.Parent.createFragment)
 	local createReconciler = require(script.Parent.Parent.createReconciler)
+	local Children = require(script.Parent.Parent.PropMarkers.Children)
+	local createFragment = require(script.Parent.Parent.createFragment)
 	local RobloxRenderer = require(script.Parent.Parent.RobloxRenderer)
+	local createElement = require(script.Parent.Parent.createElement)
+	local NoopRenderer = require(script.Parent.Parent.NoopRenderer)
+	local Component = require(script.Parent.Parent.Component)
 	local createSpy = require(script.Parent.Parent.createSpy)
 
 	local createContext = require(script.Parent)
@@ -16,10 +16,26 @@ return function()
 
 	local robloxReconciler = createReconciler(RobloxRenderer)
 
+	it("should expose a function", function()
+		expect(createContext).to.be.a("function")
+	end)
+
 	it("should return a table", function()
 		local context = createContext("Test")
 		expect(context).to.be.ok()
 		expect(type(context)).to.equal("table")
+	end)
+
+	it("should throw on attempt to modify the returned table", function()
+		local context = createContext("Test")
+
+		expect(function()
+			context.new = {}
+		end).to.throw()
+
+		expect(function()
+			setmetatable(context, {})
+		end).to.throw()
 	end)
 
 	it("should contain a Provider and a Consumer", function()

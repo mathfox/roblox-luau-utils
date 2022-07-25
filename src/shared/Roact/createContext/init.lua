@@ -1,9 +1,12 @@
 local Symbol = require(script.Parent.Parent.Symbol)
+local Types = require(script.Parent.Parent.Types)
 
 local Children = require(script.Parent.PropMarkers.Children)
 local createFragment = require(script.Parent.createFragment)
 local createSignal = require(script.Parent.createSignal)
 local Component = require(script.Parent.Component)
+
+type Context = Types.RoactContext
 
 --[[
 	Construct the value that is assigned to Roact's context storage.
@@ -67,7 +70,7 @@ local function createConsumer(context)
 		end
 	end
 
-	function Consumer:init(_props)
+	function Consumer:init()
 		-- This value may be nil, which indicates that our consumer is not a
 		-- descendant of a provider for this context item.
 		self.contextEntry = self:__getContext(context.key)
@@ -141,13 +144,13 @@ function Context:__tostring()
 	return "RoactContext"
 end
 
-local function createContext(defaultValue)
+local function createContext(defaultValue): Context
 	local context = Context.new(defaultValue)
 
-	return {
+	return table.freeze({
 		Provider = createProvider(context),
 		Consumer = createConsumer(context),
-	}
+	})
 end
 
 return createContext

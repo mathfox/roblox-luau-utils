@@ -4,6 +4,10 @@ return function()
 
 	local createRef = require(script.Parent)
 
+	it("should expose a function", function()
+		expect(createRef).to.be.a("function")
+	end)
+
 	it("should create refs, which are specialized bindings", function()
 		local ref = createRef()
 

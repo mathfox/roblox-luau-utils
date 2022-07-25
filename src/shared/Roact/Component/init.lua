@@ -43,7 +43,7 @@ Component.__componentName = "Component"
 	Components can not be extended beyond this point, with the exception of
 	PureComponent.
 ]]
-function Component:extend(name)
+function Component:extend(name: string)
 	if config.typeChecks then
 		if Type.of(self) ~= Type.StatefulComponentClass then
 			error('invalid "self" argument to "extend"')
@@ -185,9 +185,7 @@ end
 	TODO (#199): Accept props and state as arguments.
 ]]
 function Component:render()
-	local internalData = self[InternalData]
-
-	error(componentMissingRenderMessage:format(tostring(internalData.componentClass)), 0)
+	error(componentMissingRenderMessage:format(tostring(self[InternalData].componentClass)), 0)
 end
 
 --[[
