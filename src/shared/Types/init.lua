@@ -1,3 +1,5 @@
+--!strict
+
 -- the table returned by the table.pack function: https://create.roblox.com/docs/reference/engine/libraries/table#pack
 export type PackedValues<T> = { n: number, [number]: T }
 
@@ -287,28 +289,79 @@ export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :
 
 -- roact related types, reference: https://roblox.github.io/roact/
 export type RoactFunctionComponent = ({ [any]: any }) -> RoactElement
-export type RoactStatefulComponent = {
-	-- reference: https://roblox.github.io/roact/api-reference/#didmount
-	didMount: (self: RoactStatefulComponent) -> (),
-	-- reference: https://roblox.github.io/roact/api-reference/#willunmount
-	willUnmount: (self: RoactStatefulComponent) -> (),
-	-- reference: https://roblox.github.io/roact/api-reference/#willupdate
-	willUpdate: (self: RoactStatefulComponent, nextProps: { [any]: any }, nextState: { [any]: any }) -> (),
-	-- reference: https://roblox.github.io/roact/api-reference/#didupdate
-	didUpdate: (self: RoactStatefulComponent, previousProps: { [any]: any }, previousState: { [any]: any }) -> (),
-	-- reference: https://roblox.github.io/roact/api-reference/#getderivedstatefromprops
-	-- * static lifecycle function
-	getDerivedStateFromProps: (nextProps: { [any]: any }, lastState: { [any]: any }) -> { [any]: any }?,
+type RoactStatefulComponentImpl = {
+	__index: RoactStatefulComponentImpl,
+	__tostring: (self: RoactStatefulComponent) -> string,
+
+	-- reference: https://roblox.github.io/roact/api-reference/#setstate
+	setState: (self: RoactStatefulComponent, mapState: { [any]: any } | (previousState: { [any]: any }, props: { [any]: any }) -> ()) -> (),
+	-- reference: https://roblox.github.io/roact/api-reference/#getelementtraceback
+	getElementTraceback: (self: RoactStatefulComponent) -> string?,
+
+	-- * must be overriden, otherwise an error will be thrown when attempting to render
+	render: (self: RoactStatefulComponent) -> (),
 }
+export type RoactStatefulComponent = typeof(setmetatable(
+	{} :: {
+		-- reference: https://roblox.github.io/roact/api-reference/#defaultprops
+		defaultProps: { [any]: any }?,
+
+		-- reference: https://roblox.github.io/roact/api-reference/#init
+		init: ((self: RoactStatefulComponent, initialProps: { [any]: any }) -> ())?,
+		-- reference: https://roblox.github.io/roact/api-reference/#render
+		render: (self: RoactStatefulComponent) -> RoactElement?,
+		-- reference: https://roblox.github.io/roact/api-reference/#shouldupdate
+		shouldUpdate: ((nextProps: { [any]: any }, nextState: { [any]: any }) -> boolean)?,
+		-- * static lifecycle function, reference: https://roblox.github.io/roact/api-reference/#validateprops
+		validateProps: ((props: { [any]: any }) -> (boolean, string?))?,
+
+		-- reference: https://roblox.github.io/roact/api-reference/#didmount
+		didMount: ((self: RoactStatefulComponent) -> ())?,
+		-- reference: https://roblox.github.io/roact/api-reference/#willunmount
+		willUnmount: ((self: RoactStatefulComponent) -> ())?,
+		-- reference: https://roblox.github.io/roact/api-reference/#willupdate
+		willUpdate: ((self: RoactStatefulComponent, nextProps: { [any]: any }, nextState: { [any]: any }) -> ())?,
+		-- reference: https://roblox.github.io/roact/api-reference/#didupdate
+		didUpdate: ((self: RoactStatefulComponent, previousProps: { [any]: any }, previousState: { [any]: any }) -> ())?,
+
+		-- * static lifecycle function, reference: https://roblox.github.io/roact/api-reference/#getderivedstatefromprops
+		getDerivedStateFromProps: (nextProps: { [any]: any }, lastState: { [any]: any }) -> { [any]: any }?,
+	},
+	{} :: RoactStatefulComponentImpl
+))
 export type RoactElement = {
 	props: { [any]: any },
 	component: string | RoactFunctionComponent | RoactStatefulComponent | RoactFragment | RoactPortal,
+	source: string?,
 }
-export type RoactFragment = {}
+export type RoactFragment = {
+	elements: { [any]: RoactElement },
+}
 export type RoactPortal = Symbol
+-- TODO: add generic render value type
+type RoactContextConsumer = typeof(setmetatable(
+	{} :: {
+		validateProps: (props: { render: (any) -> () }) -> (boolean, string?),
+		init: (self: RoactContextConsumer) -> (),
+		render: (self: RoactContextConsumer) -> RoactElement?,
+		didUpdate: (self: RoactContextConsumer) -> (),
+		didMount: (self: RoactContextConsumer) -> (),
+		willUnmount: (self: RoactContextConsumer) -> (),
+	},
+	{} :: RoactStatefulComponentImpl
+))
+type RoactContextProvider = typeof(setmetatable(
+	{} :: {
+		init: (self: RoactContextProvider, props: { [any]: any }) -> (),
+		willUpdate: (self: RoactContextProvider, nextProps: { [any]: any }) -> (),
+		didUpdate: (self: RoactContextProvider, prevProps: { [any]: any }) -> (),
+		render: (self: RoactContextProvider) -> RoactFragment,
+	},
+	{} :: RoactStatefulComponentImpl
+))
 export type RoactContext = {
-	Consumer: {},
-	Provider: {},
+	Consumer: RoactContextConsumer,
+	Provider: RoactContextProvider,
 }
 
 return nil
