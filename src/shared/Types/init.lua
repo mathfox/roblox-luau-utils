@@ -1,11 +1,32 @@
 -- the table returned by the table.pack function: https://create.roblox.com/docs/reference/engine/libraries/table#pack
-export type PackedValues<T = any> = { n: number, [number]: T }
+export type PackedValues<T> = { n: number, [number]: T }
 
-export type Symbol = typeof(setmetatable({}, {} :: { __tostring: () -> string }))
+export type Symbol = typeof(setmetatable({}, {} :: {
+	__tostring: () -> string,
+}))
+
+export type EnumeratorItem<T = string> = typeof(setmetatable({} :: {
+	name: string,
+	value: T,
+	type: Enumerator<T>,
+}, {} :: {
+	__tostring: () -> string,
+}))
+export type Enumerator<T = string> = typeof(setmetatable(
+	{} :: {
+		fromRawValue: (rawValue: T) -> EnumeratorItem<T>?,
+		isEnumeratorItem: (value: any) -> boolean,
+		getEnumeratorItems: () -> { EnumeratorItem<T> },
+	},
+	{} :: {
+		__tostring: () -> string,
+		__index: { [string]: EnumeratorItem<T> },
+	}
+))
 
 -- reference: https://doc.rust-lang.org/std/result/enum.Result.html#
 type ResultImpl<T, E> = {
-	__tostring: () -> "string",
+	__tostring: () -> string,
 	__index: ResultImpl<T, E>,
 	__eq: <U>(U) -> boolean,
 
@@ -28,9 +49,9 @@ type ResultImpl<T, E> = {
 	-- luau specific method in order to simulate match keyword from rust
 	match: <S, F>(self: Result<T, E>, onOk: (T) -> S, onErr: (E) -> F) -> S | F,
 }
+export type Result<T, E> = typeof(setmetatable({}, {} :: ResultImpl<T, E>))
 export type Ok<T> = Result<T, nil>
 export type Err<E> = Result<nil, E>
-export type Result<T, E> = typeof(setmetatable({}, {} :: ResultImpl<T, E>))
 
 -- reference: https://doc.rust-lang.org/std/option/enum.Option.html
 type OptionImpl<T> = {
@@ -56,17 +77,19 @@ type OptionImpl<T> = {
 	match: <U...>(self: Option<T>, onSome: (T) -> U..., onNone: () -> U...) -> U...,
 }
 export type Option<T> = typeof(setmetatable({}, {} :: OptionImpl<T>))
-export type None = Option<nil>
 export type Some<T> = Option<T>
+export type None = Option<nil>
 
-export type Connection = typeof(setmetatable({} :: {
-	connected: boolean,
-}, {} :: {
+type ConnectionImpl = {
+	__index: ConnectionImpl,
 	__tostring: () -> "Connection",
-	__index: {
-		disconnect: (self: Connection) -> (),
-	},
-}))
+
+	connected: true,
+	disconnect: (self: Connection) -> (),
+}
+export type Connection = typeof(setmetatable({} :: {
+	connected: false?,
+}, {} :: ConnectionImpl))
 export type Signal<T... = ...any> = typeof(setmetatable(
 	{},
 	{} :: {
@@ -80,6 +103,46 @@ export type Signal<T... = ...any> = typeof(setmetatable(
 		},
 	}
 ))
+
+export type PromiseExecutor<T...> = (resolve: (T...) -> (), reject: (...any) -> (), onCancel: (cancellationHook: (() -> ())?) -> boolean) -> ()
+-- reference: https://eryn.io/roblox-lua-promise/api/Promise
+export type Promise<T...> = {
+	andThen: <R...>(self: Promise<T...>, successHandler: (T...) -> R..., failureHandler: (...any) -> R...) -> Promise<R...>,
+	andThenCall: <V..., R...>(self: Promise<T...>, callback: (V...) -> R..., V...) -> Promise<R...>,
+	andThenReturn: <R...>(self: Promise<T...>, R...) -> Promise<R...>,
+	await: (self: Promise<T...>) -> (boolean, T...),
+	awaitStatus: (self: Promise<T...>) -> (EnumeratorItem<string>, T...),
+	cancel: (self: Promise<T...>) -> (),
+	catch: (self: Promise<T...>, failureHandler: <R...>(...any) -> R...) -> Promise<R...>,
+	expect: (self: Promise<T...>) -> T...,
+	finally: (self: Promise<T...>, finallyHandler: (status: EnumeratorItem<string>) -> ...any) -> Promise<T...>,
+	finallyCall: <R...>(self: Promise<T...>, callback: (R...) -> ...any, R...) -> Promise<T...>,
+	finallyReturn: <R...>(self: Promise<T...>, R...) -> Promise<T...>,
+	getStatus: (self: Promise<T...>) -> EnumeratorItem<string>,
+	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#now
+	now: <E...>(self: Promise<T...>, E...) -> Promise<T...> | Promise<E...>,
+	tap: (self: Promise<T...>, tapHandler: (T...) -> ...any) -> Promise<T...>,
+	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#timeout
+	timeout: <E...>(self: Promise<T...>, seconds: number, E...) -> Promise<T...> | Promise<E...>,
+}
+
+type JanitorIndex = boolean | number | string | (...any) -> ...any | { [any]: any } | thread
+-- * this type is not supposed to be used externally
+export type JanitorImpl = {
+	__index: JanitorImpl,
+	__tostring: () -> "Janitor",
+	__call: (self: Janitor) -> (),
+
+	add: <T>(self: Janitor, object: T, methodNameOrTrue: (string | true)?, index: JanitorIndex) -> T,
+	addPromise: (self: Janitor, promise: Promise<...any>) -> Symbol,
+	get: (self: Janitor, index: JanitorIndex) -> any,
+	remove: (self: Janitor, index: JanitorIndex) -> Janitor,
+	linkToInstance: (self: Janitor, object: Instance, allowMultiple: true?) -> RBXScriptConnection,
+	linkToInstances: (self: Janitor, ...Instance) -> (),
+	cleanup: (self: Janitor) -> (),
+	destroy: (self: Janitor) -> (),
+}
+export type Janitor = typeof(setmetatable({}, {} :: JanitorImpl))
 
 export type InstanceCache<T> = {
 	params: InstanceCacheParams<T>,
@@ -95,13 +158,6 @@ export type InstanceCacheParams<T> = {
 	instance: T,
 	amount: { initial: number, expansion: number },
 	parent: Instance?,
-}
-
-export type EnumeratorItem<T = string> = { name: string, value: T, type: Enumerator<T> }
-export type Enumerator<T = string> = {
-	fromRawValue: (rawValue: T) -> EnumeratorItem<T>?,
-	isEnumeratorItem: (value: any) -> boolean,
-	getEnumeratorItems: () -> { EnumeratorItem<T> },
 }
 
 export type CollectionComponentDescription = {
@@ -129,39 +185,6 @@ export type CollectionComponentExtension = {
 	started: (CollectionComponentInstance) -> (),
 	stopping: (CollectionComponentInstance) -> (),
 	stopped: (CollectionComponentInstance) -> (),
-}
-
-export type PromiseExecutor<T...> = (resolve: (T...) -> (), reject: (...any) -> (), onCancel: (cancellationHook: (() -> ())?) -> boolean) -> ()
--- reference: https://eryn.io/roblox-lua-promise/api/Promise
-export type Promise<T...> = {
-	andThen: <R...>(self: Promise<T...>, successHandler: (T...) -> R..., failureHandler: (...any) -> R...) -> Promise<R...>,
-	andThenCall: <V..., R...>(self: Promise<T...>, callback: (V...) -> R..., V...) -> Promise<R...>,
-	andThenReturn: <R...>(self: Promise<T...>, R...) -> Promise<R...>,
-	await: (self: Promise<T...>) -> (boolean, T...),
-	awaitStatus: (self: Promise<T...>) -> (EnumeratorItem<string>, T...),
-	cancel: (self: Promise<T...>) -> (),
-	catch: (self: Promise<T...>, failureHandler: <R...>(...any) -> R...) -> Promise<R...>,
-	expect: (self: Promise<T...>) -> T...,
-	finally: (self: Promise<T...>, finallyHandler: (status: EnumeratorItem<string>) -> ...any) -> Promise<T...>,
-	finallyCall: <R...>(self: Promise<T...>, callback: (R...) -> ...any, R...) -> Promise<T...>,
-	finallyReturn: <R...>(self: Promise<T...>, R...) -> Promise<T...>,
-	getStatus: (self: Promise<T...>) -> EnumeratorItem<string>,
-	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#now
-	now: <E...>(self: Promise<T...>, E...) -> Promise<T...> | Promise<E...>,
-	tap: (self: Promise<T...>, tapHandler: (T...) -> ...any) -> Promise<T...>,
-	-- originally was able to return a Promise.reject with only one value passed in: https://eryn.io/roblox-lua-promise/api/Promise#timeout
-	timeout: <E...>(self: Promise<T...>, seconds: number, E...) -> Promise<T...> | Promise<E...>,
-}
-
-export type Janitor = {
-	add: <T>(self: Janitor, object: T, methodName: string?, index: any) -> T,
-	addPromise: (self: Janitor, promise: Promise<...any>) -> Symbol,
-	get: (self: Janitor, index: any) -> any,
-	remove: (self: Janitor, index: any) -> Janitor,
-	linkToInstance: (self: Janitor, object: Instance, allowMultiple: true?) -> (),
-	linkToInstances: (self: Janitor, ...Instance) -> (),
-	cleanup: (self: Janitor) -> (),
-	destroy: (self: Janitor) -> (),
 }
 
 export type Caster = {
@@ -262,10 +285,23 @@ export type RoduxAction<Type = any> = { type: Type, [any]: any }
 export type RoduxAnyAction = RoduxAction
 export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: (any, Args...) -> Action & { type: Type } }))
 
+-- roact related types, reference: https://roblox.github.io/roact/
 export type RoactFunctionComponent = ({ [any]: any }) -> RoactElement
-export type RoactStatefulComponent = {}
+export type RoactStatefulComponent = {
+	-- reference: https://roblox.github.io/roact/api-reference/#didmount
+	didMount: (self: RoactStatefulComponent) -> (),
+	-- reference: https://roblox.github.io/roact/api-reference/#willunmount
+	willUnmount: (self: RoactStatefulComponent) -> (),
+	-- reference: https://roblox.github.io/roact/api-reference/#willupdate
+	willUpdate: (self: RoactStatefulComponent, nextProps: { [any]: any }, nextState: { [any]: any }) -> (),
+	-- reference: https://roblox.github.io/roact/api-reference/#didupdate
+	didUpdate: (self: RoactStatefulComponent, previousProps: { [any]: any }, previousState: { [any]: any }) -> (),
+	-- reference: https://roblox.github.io/roact/api-reference/#getderivedstatefromprops
+	-- * static lifecycle function
+	getDerivedStateFromProps: (nextProps: { [any]: any }, lastState: { [any]: any }) -> { [any]: any }?,
+}
 export type RoactElement = {
-	props: { [any]: any }?,
+	props: { [any]: any },
 	component: string | RoactFunctionComponent | RoactStatefulComponent | RoactFragment | RoactPortal,
 }
 export type RoactFragment = {}

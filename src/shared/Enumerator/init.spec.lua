@@ -1,6 +1,10 @@
 return function()
 	local Enumerator = require(script.Parent)
 
+	it("should expose a constructor function", function()
+		expect(Enumerator).to.be.a("function")
+	end)
+
 	it("should throw an error on attempt to modify Enumerator", function()
 		expect(function()
 			Enumerator("a", { "a" }).NEW_FIELD = {}

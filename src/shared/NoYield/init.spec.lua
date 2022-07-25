@@ -1,6 +1,10 @@
 return function()
 	local NoYield = require(script.Parent)
 
+	it("should be a function", function()
+		expect(NoYield).to.be.a("function")
+	end)
+
 	it("should call functions normally", function()
 		local callCount = 0
 

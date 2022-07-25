@@ -18,4 +18,19 @@ return function()
 			setmetatable(ModuleScriptUtils, {})
 		end).to.throw()
 	end)
+
+	it("should expose only known APIs", function()
+		local knownAPIs = {
+			loadChildren = "function",
+			loadChildrenFilter = "function",
+			loadDescendants = "function",
+			loadDescendantsFilter = "function",
+		}
+
+		expect(function()
+			for key, value in ModuleScriptUtils do
+				assert(knownAPIs[key] ~= nil and type(value) == knownAPIs[key])
+			end
+		end).never.throw()
+	end)
 end

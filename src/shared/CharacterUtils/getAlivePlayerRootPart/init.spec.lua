@@ -1,6 +1,10 @@
 return function()
 	local getAlivePlayerRootPart = require(script.Parent)
 
+	it("should be a function", function()
+		expect(getAlivePlayerRootPart).to.be.a("function")
+	end)
+
 	it("should support renamed humanoids", function()
 		expect(function()
 			local character = Instance.new("Folder")

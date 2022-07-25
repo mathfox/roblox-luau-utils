@@ -42,7 +42,7 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumeratorValues
 
 		for key, value in enumeratorValues :: { [string]: T } do
 			local enumeratorItem = table.freeze(setmetatable(
-				{ name = key, type = enumerator, value = value },
+				{ name = key, value = value, type = enumerator },
 				table.freeze({
 					__tostring = function()
 						return ("%s.%s"):format(enumeratorName, key)
@@ -66,7 +66,7 @@ local function EnumeratorConstructor<T>(enumeratorName: string, enumeratorValues
 	else
 		for index, value in enumeratorValues :: { string } do
 			valuesToEnumeratorItems[value] = table.freeze(setmetatable(
-				{ name = value, type = enumerator, value = value },
+				{ name = value, value = value, type = enumerator },
 				table.freeze({
 					__tostring = function()
 						return ("%s.%s"):format(enumeratorName, value)

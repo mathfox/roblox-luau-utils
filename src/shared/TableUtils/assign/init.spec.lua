@@ -1,7 +1,11 @@
 return function()
 	local Option = require(script.Parent.Parent.Parent.Option)
 
-	local assign = require(script.Parent.Parent.Parent.TableUtils.assign)
+	local assign = require(script.Parent)
+
+	it("should be a function", function()
+		expect(assign).to.be.a("function")
+	end)
 
 	it("should accept zero additional tables", function()
 		local input = {}
