@@ -28,6 +28,7 @@ local function runEventHandlerInFreeThread(...)
 end
 
 local Connection = {} :: { [any]: any, _next: any }
+Connection.connected = true
 Connection.__index = Connection
 
 function Connection.__tostring(): "Connection"
@@ -71,7 +72,7 @@ function Signal.new(): Signal
 end
 
 function Signal.prototype:connect(fn: (...any) -> ())
-	local connection = setmetatable({ connected = true, _signal = self, _fn = fn }, Connection) :: Connection
+	local connection = setmetatable({ _signal = self, _fn = fn }, Connection) :: Connection
 
 	if self._last then
 		(connection :: AnyConnection & { _next: any })._next = self._last
@@ -86,7 +87,6 @@ function Signal.prototype:once(fn: (...any) -> ())
 	local connection: Connection = nil
 
 	connection = setmetatable({
-		connected = true,
 		_signal = self,
 		_fn = function(...)
 			connection:disconnect()

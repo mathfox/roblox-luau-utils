@@ -1,7 +1,9 @@
 -- the table returned by the table.pack function: https://create.roblox.com/docs/reference/engine/libraries/table#pack
 export type PackedValues<T> = { n: number, [number]: T }
 
-export type Symbol = typeof(setmetatable({}, {} :: { __tostring: () -> string }))
+export type Symbol = typeof(setmetatable({}, {} :: {
+	__tostring: () -> string,
+}))
 
 export type EnumeratorItem<T = string> = typeof(setmetatable({} :: {
 	name: string,
@@ -78,14 +80,16 @@ export type Option<T> = typeof(setmetatable({}, {} :: OptionImpl<T>))
 export type Some<T> = Option<T>
 export type None = Option<nil>
 
-export type Connection = typeof(setmetatable({} :: {
-	connected: boolean,
-}, {} :: {
+type ConnectionImpl = {
+	__index: ConnectionImpl,
 	__tostring: () -> "Connection",
-	__index: {
-		disconnect: (self: Connection) -> (),
-	},
-}))
+
+	connected: true,
+	disconnect: (self: Connection) -> (),
+}
+export type Connection = typeof(setmetatable({} :: {
+	connected: false?,
+}, {} :: ConnectionImpl))
 export type Signal<T... = ...any> = typeof(setmetatable(
 	{},
 	{} :: {
@@ -274,10 +278,23 @@ export type RoduxAction<Type = any> = { type: Type, [any]: any }
 export type RoduxAnyAction = RoduxAction
 export type RoduxActionCreator<Type, Action, Args...> = typeof(setmetatable({} :: { name: Type }, {} :: { __call: (any, Args...) -> Action & { type: Type } }))
 
+-- roact related types, reference: https://roblox.github.io/roact/
 export type RoactFunctionComponent = ({ [any]: any }) -> RoactElement
-export type RoactStatefulComponent = {}
+export type RoactStatefulComponent = {
+	-- reference: https://roblox.github.io/roact/api-reference/#didmount
+	didMount: (self: RoactStatefulComponent) -> (),
+	-- reference: https://roblox.github.io/roact/api-reference/#willunmount
+	willUnmount: (self: RoactStatefulComponent) -> (),
+	-- reference: https://roblox.github.io/roact/api-reference/#willupdate
+	willUpdate: (self: RoactStatefulComponent, nextProps: { [any]: any }, nextState: { [any]: any }) -> (),
+	-- reference: https://roblox.github.io/roact/api-reference/#didupdate
+	didUpdate: (self: RoactStatefulComponent, previousProps: { [any]: any }, previousState: { [any]: any }) -> (),
+	-- reference: https://roblox.github.io/roact/api-reference/#getderivedstatefromprops
+	-- * static lifecycle function
+	getDerivedStateFromProps: (nextProps: { [any]: any }, lastState: { [any]: any }) -> { [any]: any }?,
+}
 export type RoactElement = {
-	props: { [any]: any }?,
+	props: { [any]: any },
 	component: string | RoactFunctionComponent | RoactStatefulComponent | RoactFragment | RoactPortal,
 }
 export type RoactFragment = {}
