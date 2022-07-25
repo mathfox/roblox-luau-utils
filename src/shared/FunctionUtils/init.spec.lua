@@ -18,4 +18,20 @@ return function()
 			setmetatable(FunctionUtils, {})
 		end).to.throw()
 	end)
+
+	it("should expose only known APIs", function()
+		local knownAPIs = {
+			bindArgs = "function",
+			noop = "function",
+			returnArgs = "function",
+			void = "function",
+		}
+
+		expect(function()
+			for key, value in FunctionUtils do
+				assert(knownAPIs[key] ~= nil)
+				assert(type(value) == knownAPIs[key])
+			end
+		end).never.throw()
+	end)
 end

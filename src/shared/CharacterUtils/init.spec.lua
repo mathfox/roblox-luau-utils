@@ -18,4 +18,22 @@ return function()
 			setmetatable(CharacterUtils, {})
 		end).to.throw()
 	end)
+
+	it("should expose known APIs", function()
+		local knownAPIs = {
+			getAlivePlayerHumanoid = "function",
+			getAlivePlayerRootPart = "function",
+			getPlayerFromCharacterDescendant = "table",
+			getPlayerHumanoid = "function",
+			getPlayerRootPart = "function",
+			unequipPlayerTools = "function",
+		}
+
+		expect(function()
+			for key, value in CharacterUtils do
+				assert(knownAPIs[key] ~= nil)
+				assert(type(value) == knownAPIs[key])
+			end
+		end).never.throw()
+	end)
 end

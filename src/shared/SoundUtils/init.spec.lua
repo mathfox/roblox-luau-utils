@@ -18,4 +18,18 @@ return function()
 			setmetatable(SoundUtils, {})
 		end).to.throw()
 	end)
+
+	it("should expose known APIs", function()
+		local knownAPIs = {
+			promiseAllSoundsLoaded = "function",
+			promiseSoundLoaded = "function",
+		}
+
+		expect(function()
+			for key, value in SoundUtils do
+				assert(knownAPIs[key] ~= nil)
+				assert(type(value) == knownAPIs[key])
+			end
+		end).never.throw()
+	end)
 end
