@@ -1,5 +1,3 @@
---!strict
-
 -- the table returned by the table.pack function: https://create.roblox.com/docs/reference/engine/libraries/table#pack
 export type PackedValues<T> = { n: number, [number]: T }
 
