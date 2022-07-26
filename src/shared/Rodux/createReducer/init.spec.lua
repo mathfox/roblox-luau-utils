@@ -1,7 +1,7 @@
 return function()
 	local createReducer = require(script.Parent)
 
-	it("should be a function", function()
+	it("should expose a function", function()
 		expect(createReducer).to.be.a("function")
 	end)
 
